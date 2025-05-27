@@ -13,6 +13,9 @@ PKG_SOURCE_VERSION:=8bf668e033843b1d0a43bb17ebafcc8d13b36a81
 PKG_SOURCE_URL:=https://github.com/nextdns/nextdns
 PKG_MIRROR_HASH:=370ff6fc679b12e5cd3e15f81e90e879e01c66e7014411a01c80958429a6c18b
 
+PKG_LICENSE:=MIT
+PKG_LICENSE_FILES:=LICENSE
+
 PKG_BUILD_PARALLEL:=1
 
 include $(INCLUDE_DIR)/package.mk
@@ -23,7 +26,7 @@ define Package/nextdns/Default
 	CATEGORY:=Network
 	SUBMENU:=IP Addresses and Names
 	TITLE:=NextDNS CLI Client
-	URL:=https://github.com/nextdns/nextdns
+	URL:=https://nextdns.io/
 	MAINTAINER:=Entware team, https://entware.net
 endef
 
