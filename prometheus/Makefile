@@ -5,14 +5,14 @@
 include $(TOPDIR)/rules.mk
 
 PKG_NAME:=prometheus
-PKG_VERSION:=3.2.1
+PKG_VERSION:=3.4.0
 PKG_RELEASE:=1
 
 PKG_SOURCE_PROTO:=git
-PKG_SOURCE_DATE:=2025-02-26
-PKG_SOURCE_VERSION:=804c49d58f3f3784c77c9c8ec17c9062092cae27
+PKG_SOURCE_DATE:=2025-05-17
+PKG_SOURCE_VERSION:=546b1d242e209ed4228aa01a248dbf3e41e573ea
 PKG_SOURCE_URL:=https://github.com/prometheus/prometheus
-PKG_MIRROR_HASH:=c6e30a842cc780fee4bb6c79d6666d91dbdd9f5bbd433ceda653da4b61893c03
+PKG_MIRROR_HASH:=c0aa4231235e23dc942da8b3a483c7bd917e03b522b0ee4ce38e1a40a0a5aefe
 
 PKG_LICENSE:=Apache-2.0
 PKG_LICENSE_FILES:=LICENSE
@@ -63,7 +63,7 @@ define Download/prometheus-web-ui
   URL:=https://github.com/prometheus/prometheus/releases/download/v$(PKG_VERSION)/
   URL_FILE:=$(WEB_FILE)
   FILE:=$(WEB_FILE)
-  HASH:=1e15ced33f4a5604132b1f9f912eeb9e111c3a4d9ead02b3cad85be021e9f226
+  HASH:=19ceafadf839b8d64b8f0e14f591edcb076add8f789297d981b3650b4ac5d79d
 endef
 
 GO_BUILD_ARGS += -a
@@ -81,7 +81,7 @@ GO_TARGET:=./cmd/...
 
 GO_VARS += GO111MODULE=on
 
-define Build/CompilePre
+define Build/Web
 	$(HOST_TAR) -xzf $(DL_DIR)/$(WEB_FILE) -C $(PKG_BUILD_DIR)/web/ui
 	( cd $(PKG_BUILD_DIR)/web/ui; \
 		$(FIND) ./static -type f -a -name "*.map" -delete; )
@@ -90,7 +90,7 @@ define Build/CompilePre
 endef
 
 define Build/Compile
-	$(call Build/CompilePre)
+	$(call Build/Web)
 	$(call Build/Compile/Go)
 endef
 
