@@ -18,7 +18,7 @@
  			fmt.Println("Failed to dump config")
 --- a/cmd/headscale/cli/root.go
 +++ b/cmd/headscale/cli/root.go
-@@ -27,7 +27,7 @@ func init() {
+@@ -33,7 +33,7 @@ func init() {
  
  	cobra.OnInitialize(initConfig)
  	rootCmd.PersistentFlags().
@@ -70,7 +70,7 @@
  	viper.SetDefault("tls_letsencrypt_challenge_type", HTTP01ChallengeType)
  
  	viper.SetDefault("log.level", "info")
-@@ -297,7 +297,7 @@ func LoadConfig(path string, isFile bool
+@@ -298,7 +298,7 @@ func LoadConfig(path string, isFile bool
  	viper.SetDefault("derp.server.stun.enabled", true)
  	viper.SetDefault("derp.server.automatically_add_embedded_derp_region", true)
  
@@ -79,48 +79,6 @@
  	viper.SetDefault("unix_socket_permission", "0o770")
  
  	viper.SetDefault("grpc_listen_addr", ":50443")
---- a/hscontrol/types/config_test.go
-+++ b/hscontrol/types/config_test.go
-@@ -197,7 +197,7 @@ func TestReadConfig(t *testing.T) {
- 			},
- 			want: map[string]string{
- 				"policy.mode": "file",
--				"policy.path": "/etc/policy.hujson",
-+				"policy.path": "/opt/etc/policy.hujson",
- 			},
- 		},
- 	}
---- a/integration/dsic/dsic.go
-+++ b/integration/dsic/dsic.go
-@@ -21,8 +21,8 @@ import (
- const (
- 	dsicHashLength       = 6
- 	dockerContextPath    = "../."
--	caCertRoot           = "/usr/local/share/ca-certificates"
--	DERPerCertRoot       = "/usr/local/share/derper-certs"
-+	caCertRoot           = "/opt/share/ca-certificates"
-+	DERPerCertRoot       = "/opt/share/derper-certs"
- 	dockerExecuteTimeout = 60 * time.Second
- )
- 
-@@ -151,7 +151,7 @@ func New(
- 		Networks:   []*dockertest.Network{dsic.network},
- 		ExtraHosts: dsic.withExtraHosts,
- 		// we currently need to give us some time to inject the certificate further down.
--		Entrypoint: []string{"/bin/sh", "-c", "/bin/sleep 3 ; update-ca-certificates ; derper " + cmdArgs.String()},
-+		Entrypoint: []string{"/bin/sh", "-c", "sleep 3 ; update-ca-certificates ; derper " + cmdArgs.String()},
- 		ExposedPorts: []string{
- 			"80/tcp",
- 			fmt.Sprintf("%d/tcp", dsic.derpPort),
-@@ -232,7 +232,7 @@ func New(
- 
- // Shutdown stops and cleans up the DERPer container.
- func (t *DERPServerInContainer) Shutdown() error {
--	err := t.SaveLog("/tmp/control")
-+	err := t.SaveLog("/opt/tmp/control")
- 	if err != nil {
- 		log.Printf(
- 			"Failed to save log from %s: %s",
 --- a/integration/hsic/config.go
 +++ b/integration/hsic/config.go
 @@ -4,9 +4,9 @@ import "github.com/juanfont/headscale/hs
@@ -144,9 +102,9 @@
  		"HEADSCALE_DATABASE_DEBUG":                    "0",
  		"HEADSCALE_DATABASE_GORM_SLOW_THRESHOLD":      "1",
  		"HEADSCALE_EPHEMERAL_NODE_INACTIVITY_TIMEOUT": "30m",
-@@ -24,8 +24,8 @@ func DefaultConfigEnv() map[string]strin
- 		"HEADSCALE_DNS_BASE_DOMAIN":                   "headscale.net",
+@@ -25,8 +25,8 @@ func DefaultConfigEnv() map[string]strin
  		"HEADSCALE_DNS_MAGIC_DNS":                     "true",
+ 		"HEADSCALE_DNS_OVERRIDE_LOCAL_DNS":            "false",
  		"HEADSCALE_DNS_NAMESERVERS_GLOBAL":            "127.0.0.11 1.1.1.1",
 -		"HEADSCALE_PRIVATE_KEY_PATH":                  "/tmp/private.key",
 -		"HEADSCALE_NOISE_PRIVATE_KEY_PATH":            "/tmp/noise_private.key",
@@ -157,7 +115,7 @@
  		"HEADSCALE_DERP_AUTO_UPDATE_ENABLED":          "false",
 --- a/integration/hsic/hsic.go
 +++ b/integration/hsic/hsic.go
-@@ -32,10 +32,10 @@ import (
+@@ -34,10 +34,10 @@ import (
  const (
  	hsicHashLength                = 6
  	dockerContextPath             = "../."
@@ -172,7 +130,7 @@
  	headscaleDefaultPort          = 8080
  	IntegrationTestDockerFileName = "Dockerfile.integration"
  )
-@@ -204,7 +204,7 @@ func WithEmbeddedDERPServerOnly() Option
+@@ -222,7 +222,7 @@ func WithEmbeddedDERPServerOnly() Option
  		hsic.env["HEADSCALE_DERP_SERVER_REGION_CODE"] = "headscale"
  		hsic.env["HEADSCALE_DERP_SERVER_REGION_NAME"] = "Headscale Embedded DERP"
  		hsic.env["HEADSCALE_DERP_SERVER_STUN_LISTEN_ADDR"] = "0.0.0.0:3478"
@@ -181,7 +139,7 @@
  
  		// Envknob for enabling DERP debug logs
  		hsic.env["DERP_DEBUG_LOGS"] = "true"
-@@ -223,10 +223,10 @@ func WithDERPConfig(derpMap tailcfg.DERP
+@@ -241,10 +241,10 @@ func WithDERPConfig(derpMap tailcfg.DERP
  			return
  		}
  
@@ -194,7 +152,7 @@
  				contents: contents,
  			})
  
-@@ -320,8 +320,8 @@ func New(
+@@ -339,8 +339,8 @@ func New(
  
  	env := []string{
  		"HEADSCALE_DEBUG_PROFILING_ENABLED=1",
@@ -205,7 +163,7 @@
  		"HEADSCALE_DEBUG_DEADLOCK=1",
  		"HEADSCALE_DEBUG_DEADLOCK_TIMEOUT=5s",
  		"HEADSCALE_DEBUG_HIGH_CARDINALITY_METRICS=1",
-@@ -350,7 +350,7 @@ func New(
+@@ -369,7 +369,7 @@ func New(
  		// Cmd:          []string{"headscale", "serve"},
  		// TODO(kradalby): Get rid of this hack, we currently need to give us some
  		// to inject the headscale configuration further down.
@@ -214,7 +172,7 @@
  		Env:        env,
  	}
  
-@@ -396,7 +396,7 @@ func New(
+@@ -415,7 +415,7 @@ func New(
  		}
  	}
  
@@ -223,7 +181,7 @@
  	if err != nil {
  		return nil, fmt.Errorf("failed to write headscale config to container: %w", err)
  	}
-@@ -444,7 +444,7 @@ func (t *HeadscaleInContainer) hasTLS()
+@@ -467,7 +467,7 @@ func (t *HeadscaleInContainer) hasTLS()
  
  // Shutdown stops and cleans up the Headscale container.
  func (t *HeadscaleInContainer) Shutdown() (string, string, error) {
@@ -232,7 +190,7 @@
  	if err != nil {
  		log.Printf(
  			"Failed to save log from control: %s",
-@@ -452,7 +452,7 @@ func (t *HeadscaleInContainer) Shutdown(
+@@ -475,7 +475,7 @@ func (t *HeadscaleInContainer) Shutdown(
  		)
  	}
  
@@ -241,7 +199,7 @@
  	if err != nil {
  		log.Printf(
  			"Failed to metrics from control: %s",
-@@ -471,7 +471,7 @@ func (t *HeadscaleInContainer) Shutdown(
+@@ -494,7 +494,7 @@ func (t *HeadscaleInContainer) Shutdown(
  		)
  	}
  
@@ -250,7 +208,7 @@
  	if err != nil {
  		log.Printf(
  			"Failed to save profile from control: %s",
-@@ -479,7 +479,7 @@ func (t *HeadscaleInContainer) Shutdown(
+@@ -502,7 +502,7 @@ func (t *HeadscaleInContainer) Shutdown(
  		)
  	}
  
@@ -259,7 +217,7 @@
  	if err != nil {
  		log.Printf(
  			"Failed to save mapresponses from control: %s",
-@@ -489,7 +489,7 @@ func (t *HeadscaleInContainer) Shutdown(
+@@ -512,7 +512,7 @@ func (t *HeadscaleInContainer) Shutdown(
  
  	// We dont have a database to save if we use postgres
  	if !t.postgres {
@@ -268,7 +226,7 @@
  		if err != nil {
  			log.Printf(
  				"Failed to save database from control: %s",
-@@ -538,7 +538,7 @@ func (t *HeadscaleInContainer) SaveMetri
+@@ -561,7 +561,7 @@ func (t *HeadscaleInContainer) SaveMetri
  }
  
  func (t *HeadscaleInContainer) SaveProfile(savePath string) error {
@@ -277,7 +235,7 @@
  	if err != nil {
  		return err
  	}
-@@ -556,7 +556,7 @@ func (t *HeadscaleInContainer) SaveProfi
+@@ -579,7 +579,7 @@ func (t *HeadscaleInContainer) SaveProfi
  }
  
  func (t *HeadscaleInContainer) SaveMapResponses(savePath string) error {
@@ -286,7 +244,7 @@
  	if err != nil {
  		return err
  	}
-@@ -574,7 +574,7 @@ func (t *HeadscaleInContainer) SaveMapRe
+@@ -597,7 +597,7 @@ func (t *HeadscaleInContainer) SaveMapRe
  }
  
  func (t *HeadscaleInContainer) SaveDatabase(savePath string) error {
@@ -297,7 +255,7 @@
  	}
 --- a/integration/tsic/tsic.go
 +++ b/integration/tsic/tsic.go
-@@ -33,7 +33,7 @@ const (
+@@ -35,7 +35,7 @@ const (
  	defaultPingTimeout   = 300 * time.Millisecond
  	defaultPingCount     = 10
  	dockerContextPath    = "../."
@@ -306,7 +264,7 @@
  	dockerExecuteTimeout = 60 * time.Second
  )
  
-@@ -236,7 +236,7 @@ func New(
+@@ -228,7 +228,7 @@ func New(
  		withEntrypoint: []string{
  			"/bin/sh",
  			"-c",
@@ -315,7 +273,7 @@
  		},
  	}
  
-@@ -364,7 +364,7 @@ func New(
+@@ -360,7 +360,7 @@ func New(
  
  // Shutdown stops and cleans up the Tailscale container.
  func (t *TailscaleInContainer) Shutdown() (string, string, error) {
@@ -324,7 +282,7 @@
  	if err != nil {
  		log.Printf(
  			"Failed to save log from %s: %s",
-@@ -616,9 +616,9 @@ func (t *TailscaleInContainer) Status(sa
+@@ -640,9 +640,9 @@ func (t *TailscaleInContainer) Status(sa
  		return nil, fmt.Errorf("failed to unmarshal tailscale status: %w", err)
  	}
  
@@ -336,7 +294,7 @@
  	}
  
  	return &status, err
-@@ -650,9 +650,9 @@ func (t *TailscaleInContainer) Netmap()
+@@ -699,9 +699,9 @@ func (t *TailscaleInContainer) Netmap()
  		return nil, fmt.Errorf("failed to unmarshal tailscale netmap: %w", err)
  	}
  
@@ -348,207 +306,3 @@
  	}
  
  	return &nm, err
---- a/integration/acl_test.go
-+++ b/integration/acl_test.go
-@@ -71,7 +71,7 @@ func aclScenario(
- 			tsic.WithDockerEntrypoint([]string{
- 				"/bin/sh",
- 				"-c",
--				"/bin/sleep 3 ; apk add python3 curl ; update-ca-certificates ; python3 -m http.server --bind :: 80 & tailscaled --tun=tsdev",
-+				"sleep 3 ; apk add python3 curl ; update-ca-certificates ; python3 -m http.server --bind :: 80 & tailscaled --tun=tsdev",
- 			}),
- 			tsic.WithDockerWorkdir("/"),
- 		},
-@@ -1038,7 +1038,7 @@ func TestPolicyUpdateWhileRunningWithCLI
- 			tsic.WithDockerEntrypoint([]string{
- 				"/bin/sh",
- 				"-c",
--				"/bin/sleep 3 ; apk add python3 curl ; update-ca-certificates ; python3 -m http.server --bind :: 80 & tailscaled --tun=tsdev",
-+				"sleep 3 ; apk add python3 curl ; update-ca-certificates ; python3 -m http.server --bind :: 80 & tailscaled --tun=tsdev",
- 			}),
- 			tsic.WithDockerWorkdir("/"),
- 		},
-@@ -1098,7 +1098,7 @@ func TestPolicyUpdateWhileRunningWithCLI
- 
- 	pBytes, _ := json.Marshal(p)
- 
--	policyFilePath := "/etc/headscale/policy.json"
-+	policyFilePath := "/opt/etc/headscale/policy.json"
- 
- 	err = headscale.WriteFile(policyFilePath, pBytes)
- 	require.NoError(t, err)
---- a/integration/auth_oidc_test.go
-+++ b/integration/auth_oidc_test.go
-@@ -78,7 +78,7 @@ func TestOIDCAuthenticationPingAll(t *te
- 	oidcMap := map[string]string{
- 		"HEADSCALE_OIDC_ISSUER":             oidcConfig.Issuer,
- 		"HEADSCALE_OIDC_CLIENT_ID":          oidcConfig.ClientID,
--		"CREDENTIALS_DIRECTORY_TEST":        "/tmp",
-+		"CREDENTIALS_DIRECTORY_TEST":        "/opt/tmp",
- 		"HEADSCALE_OIDC_CLIENT_SECRET_PATH": "${CREDENTIALS_DIRECTORY_TEST}/hs_client_oidc_secret",
- 		// TODO(kradalby): Remove when strip_email_domain is removed
- 		// after #2170 is cleaned up
-@@ -91,7 +91,7 @@ func TestOIDCAuthenticationPingAll(t *te
- 		hsic.WithTestName("oidcauthping"),
- 		hsic.WithConfigEnv(oidcMap),
- 		hsic.WithTLS(),
--		hsic.WithFileInContainer("/tmp/hs_client_oidc_secret", []byte(oidcConfig.ClientSecret)),
-+		hsic.WithFileInContainer("/opt/tmp/hs_client_oidc_secret", []byte(oidcConfig.ClientSecret)),
- 	)
- 	assertNoErrHeadscaleEnv(t, err)
- 
-@@ -472,7 +472,7 @@ func TestOIDC024UserCreation(t *testing.
- 			oidcMap := map[string]string{
- 				"HEADSCALE_OIDC_ISSUER":             oidcConfig.Issuer,
- 				"HEADSCALE_OIDC_CLIENT_ID":          oidcConfig.ClientID,
--				"CREDENTIALS_DIRECTORY_TEST":        "/tmp",
-+				"CREDENTIALS_DIRECTORY_TEST":        "/opt/tmp",
- 				"HEADSCALE_OIDC_CLIENT_SECRET_PATH": "${CREDENTIALS_DIRECTORY_TEST}/hs_client_oidc_secret",
- 			}
- 
-@@ -485,7 +485,7 @@ func TestOIDC024UserCreation(t *testing.
- 				hsic.WithTestName("oidcmigration"),
- 				hsic.WithConfigEnv(oidcMap),
- 				hsic.WithTLS(),
--				hsic.WithFileInContainer("/tmp/hs_client_oidc_secret", []byte(oidcConfig.ClientSecret)),
-+				hsic.WithFileInContainer("/opt/tmp/hs_client_oidc_secret", []byte(oidcConfig.ClientSecret)),
- 			)
- 			assertNoErrHeadscaleEnv(t, err)
- 
-@@ -542,7 +542,7 @@ func TestOIDCAuthenticationWithPKCE(t *t
- 		"HEADSCALE_OIDC_ISSUER":             oidcConfig.Issuer,
- 		"HEADSCALE_OIDC_CLIENT_ID":          oidcConfig.ClientID,
- 		"HEADSCALE_OIDC_CLIENT_SECRET_PATH": "${CREDENTIALS_DIRECTORY_TEST}/hs_client_oidc_secret",
--		"CREDENTIALS_DIRECTORY_TEST":        "/tmp",
-+		"CREDENTIALS_DIRECTORY_TEST":        "/opt/tmp",
- 		"HEADSCALE_OIDC_PKCE_ENABLED":       "1", // Enable PKCE
- 		"HEADSCALE_OIDC_MAP_LEGACY_USERS":   "0",
- 		"HEADSCALE_OIDC_STRIP_EMAIL_DOMAIN": "0",
-@@ -553,7 +553,7 @@ func TestOIDCAuthenticationWithPKCE(t *t
- 		hsic.WithTestName("oidcauthpkce"),
- 		hsic.WithConfigEnv(oidcMap),
- 		hsic.WithTLS(),
--		hsic.WithFileInContainer("/tmp/hs_client_oidc_secret", []byte(oidcConfig.ClientSecret)),
-+		hsic.WithFileInContainer("/opt/tmp/hs_client_oidc_secret", []byte(oidcConfig.ClientSecret)),
- 	)
- 	assertNoErrHeadscaleEnv(t, err)
- 
-@@ -606,7 +606,7 @@ func TestOIDCReloginSameNodeNewUser(t *t
- 	oidcMap := map[string]string{
- 		"HEADSCALE_OIDC_ISSUER":             oidcConfig.Issuer,
- 		"HEADSCALE_OIDC_CLIENT_ID":          oidcConfig.ClientID,
--		"CREDENTIALS_DIRECTORY_TEST":        "/tmp",
-+		"CREDENTIALS_DIRECTORY_TEST":        "/opt/tmp",
- 		"HEADSCALE_OIDC_CLIENT_SECRET_PATH": "${CREDENTIALS_DIRECTORY_TEST}/hs_client_oidc_secret",
- 		// TODO(kradalby): Remove when strip_email_domain is removed
- 		// after #2170 is cleaned up
-@@ -619,7 +619,7 @@ func TestOIDCReloginSameNodeNewUser(t *t
- 		hsic.WithTestName("oidcauthrelog"),
- 		hsic.WithConfigEnv(oidcMap),
- 		hsic.WithTLS(),
--		hsic.WithFileInContainer("/tmp/hs_client_oidc_secret", []byte(oidcConfig.ClientSecret)),
-+		hsic.WithFileInContainer("/opt/tmp/hs_client_oidc_secret", []byte(oidcConfig.ClientSecret)),
- 		hsic.WithEmbeddedDERPServerOnly(),
- 	)
- 	assertNoErrHeadscaleEnv(t, err)
---- a/integration/dns_test.go
-+++ b/integration/dns_test.go
-@@ -96,7 +96,7 @@ func TestResolveMagicDNSExtraRecordsPath
- 		"magicdns2": 1,
- 	}
- 
--	const erPath = "/tmp/extra_records.json"
-+	const erPath = "/opt/tmp/extra_records.json"
- 
- 	extraRecords := []tailcfg.DNSRecord{
- 		{
-@@ -111,7 +111,7 @@ func TestResolveMagicDNSExtraRecordsPath
- 		tsic.WithDockerEntrypoint([]string{
- 			"/bin/sh",
- 			"-c",
--			"/bin/sleep 3 ; apk add python3 curl bind-tools ; update-ca-certificates ; tailscaled --tun=tsdev",
-+			"sleep 3 ; apk add python3 curl bind-tools ; update-ca-certificates ; tailscaled --tun=tsdev",
- 		}),
- 	},
- 		hsic.WithTestName("extrarecords"),
---- a/integration/general_test.go
-+++ b/integration/general_test.go
-@@ -389,7 +389,7 @@ func TestTaildrop(t *testing.T) {
- 		curlCommand := []string{
- 			"curl",
- 			"--unix-socket",
--			"/var/run/tailscale/tailscaled.sock",
-+			"/opt/var/run/tailscale/tailscaled.sock",
- 			"http://local-tailscaled.sock/localapi/v0/file-targets",
- 		}
- 		err = retry(10, 1*time.Second, func() error {
-@@ -429,7 +429,7 @@ func TestTaildrop(t *testing.T) {
- 	}
- 
- 	for _, client := range allClients {
--		command := []string{"touch", fmt.Sprintf("/tmp/file_from_%s", client.Hostname())}
-+		command := []string{"touch", fmt.Sprintf("/opt/tmp/file_from_%s", client.Hostname())}
- 
- 		if _, _, err := client.Execute(command); err != nil {
- 			t.Fatalf("failed to create taildrop file on %s, err: %s", client.Hostname(), err)
-@@ -446,7 +446,7 @@ func TestTaildrop(t *testing.T) {
- 			t.Run(fmt.Sprintf("%s-%s", client.Hostname(), peer.Hostname()), func(t *testing.T) {
- 				command := []string{
- 					"tailscale", "file", "cp",
--					fmt.Sprintf("/tmp/file_from_%s", client.Hostname()),
-+					fmt.Sprintf("/opt/tmp/file_from_%s", client.Hostname()),
- 					fmt.Sprintf("%s:", peerFQDN),
- 				}
- 
-@@ -476,7 +476,7 @@ func TestTaildrop(t *testing.T) {
- 		command := []string{
- 			"tailscale", "file",
- 			"get",
--			"/tmp/",
-+			"/opt/tmp/",
- 		}
- 		if _, _, err := client.Execute(command); err != nil {
- 			t.Fatalf("failed to get taildrop file on %s, err: %s", client.Hostname(), err)
-@@ -490,7 +490,7 @@ func TestTaildrop(t *testing.T) {
- 			t.Run(fmt.Sprintf("%s-%s", client.Hostname(), peer.Hostname()), func(t *testing.T) {
- 				command := []string{
- 					"ls",
--					fmt.Sprintf("/tmp/file_from_%s", peer.Hostname()),
-+					fmt.Sprintf("/opt/tmp/file_from_%s", peer.Hostname()),
- 				}
- 				log.Printf(
- 					"Checking file in %s from %s\n",
-@@ -502,11 +502,11 @@ func TestTaildrop(t *testing.T) {
- 				assertNoErrf(t, "failed to execute command to ls taildrop: %s", err)
- 
- 				log.Printf("Result for %s: %s\n", peer.Hostname(), result)
--				if fmt.Sprintf("/tmp/file_from_%s\n", peer.Hostname()) != result {
-+				if fmt.Sprintf("/opt/tmp/file_from_%s\n", peer.Hostname()) != result {
- 					t.Fatalf(
- 						"taildrop result is not correct %s, wanted %s",
- 						result,
--						fmt.Sprintf("/tmp/file_from_%s\n", peer.Hostname()),
-+						fmt.Sprintf("/opt/tmp/file_from_%s\n", peer.Hostname()),
- 					)
- 				}
- 			})
---- a/integration/ssh_test.go
-+++ b/integration/ssh_test.go
-@@ -69,7 +69,7 @@ func sshScenario(t *testing.T, policy *p
- 			tsic.WithDockerEntrypoint([]string{
- 				"/bin/sh",
- 				"-c",
--				"/bin/sleep 3 ; apk add openssh ; adduser ssh-it-user ; update-ca-certificates ; tailscaled --tun=tsdev",
-+				"sleep 3 ; apk add openssh ; adduser ssh-it-user ; update-ca-certificates ; tailscaled --tun=tsdev",
- 			}),
- 			tsic.WithDockerWorkdir("/"),
- 		},
-@@ -391,7 +391,7 @@ func doSSH(t *testing.T, client Tailscal
- 	peerFQDN, _ := peer.FQDN()
- 
- 	command := []string{
--		"/usr/bin/ssh", "-o StrictHostKeyChecking=no", "-o ConnectTimeout=1",
-+		"/opt/bin/ssh", "-o StrictHostKeyChecking=no", "-o ConnectTimeout=1",
- 		fmt.Sprintf("%s@%s", "ssh-it-user", peerFQDN),
- 		"'hostname'",
- 	}
