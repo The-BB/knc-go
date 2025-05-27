@@ -1,6 +1,6 @@
 --- a/client/cmd/root.go
 +++ b/client/cmd/root.go
-@@ -90,11 +90,11 @@ func Execute() error {
+@@ -95,11 +95,11 @@ func Execute() error {
  }
  
  func init() {
@@ -16,7 +16,7 @@
  
  	switch runtime.GOOS {
  	case "windows":
-@@ -113,7 +113,7 @@ func init() {
+@@ -118,7 +118,7 @@ func init() {
  	oldDefaultConfigPath = oldDefaultConfigPathDir + "config.json"
  	oldDefaultLogFile = oldDefaultLogFileDir + "client.log"
  
@@ -58,19 +58,6 @@
  
  	// ipv4ForwardingPath is the path to the file containing the IP forwarding setting.
  	ipv4ForwardingPath = "net.ipv4.ip_forward"
---- a/client/server/debug.go
-+++ b/client/server/debug.go
-@@ -146,8 +146,8 @@ const (
- 	errorLogFile  = "netbird.err"
- 	stdoutLogFile = "netbird.out"
- 
--	darwinErrorLogPath  = "/var/log/netbird.out.log"
--	darwinStdoutLogPath = "/var/log/netbird.err.log"
-+	darwinErrorLogPath  = "/opt/var/log/netbird.out.log"
-+	darwinStdoutLogPath = "/opt/var/log/netbird.err.log"
- )
- 
- // DebugBundle creates a debug bundle and returns the location.
 --- a/client/system/osrelease_unix.go
 +++ b/client/system/osrelease_unix.go
 @@ -11,9 +11,9 @@ import (
@@ -87,32 +74,14 @@
  	defer file.Close()
 --- a/client/ui/client_ui.go
 +++ b/client/ui/client_ui.go
-@@ -100,7 +100,7 @@ func main() {
+@@ -103,7 +103,7 @@ func main() {
  
  // parseFlags reads and returns all needed command-line flags.
- func parseFlags() (daemonAddr string, showSettings, showNetworks bool, errorMsg string, saveLogsInFile bool) {
+ func parseFlags() (daemonAddr string, showSettings, showNetworks, showDebug bool, errorMsg string, saveLogsInFile bool) {
 -	defaultDaemonAddr := "unix:///var/run/netbird.sock"
 +	defaultDaemonAddr := "unix:///opt/var/run/netbird.sock"
  	if runtime.GOOS == "windows" {
  		defaultDaemonAddr = "tcp://127.0.0.1:41731"
- 	}
-@@ -109,7 +109,7 @@ func parseFlags() (daemonAddr string, sh
- 	flag.BoolVar(&showNetworks, "networks", false, "run networks window")
- 	flag.StringVar(&errorMsg, "error-msg", "", "displays an error message window")
- 
--	tmpDir := "/tmp"
-+	tmpDir := "/opt/var/log/netbird"
- 	if runtime.GOOS == "windows" {
- 		tmpDir = os.TempDir()
- 	}
-@@ -120,7 +120,7 @@ func parseFlags() (daemonAddr string, sh
- 
- // initLogFile initializes logging into a file.
- func initLogFile() error {
--	tmpDir := "/tmp"
-+	tmpDir := "/opt/var/log/netbird"
- 	if runtime.GOOS == "windows" {
- 		tmpDir = os.TempDir()
  	}
 --- a/management/cmd/defaults.go
 +++ b/management/cmd/defaults.go
@@ -149,3 +118,14 @@
  
  	if runtime.GOOS == "windows" {
  		defaultLogFile = os.Getenv("PROGRAMDATA") + "\\Netbird\\" + "signal.log"
+--- a/upload-server/server/local.go
++++ b/upload-server/server/local.go
+@@ -14,7 +14,7 @@ import (
+ )
+ 
+ const (
+-	defaultDir = "/var/lib/netbird"
++	defaultDir = "/opt/var/lib/netbird"
+ 	putHandler = "/{dir}/{file}"
+ )
+ 
