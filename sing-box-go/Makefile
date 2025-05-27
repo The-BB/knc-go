@@ -5,13 +5,16 @@
 include $(TOPDIR)/rules.mk
 
 PKG_NAME:=sing-box
-PKG_VERSION:=1.11.7
+PKG_VERSION:=1.11.11
 PKG_RELEASE:=1
 
 PKG_SOURCE_PROTO:=git
 PKG_SOURCE_VERSION:=v$(PKG_VERSION)
 PKG_SOURCE_URL:=https://github.com/SagerNet/sing-box
-PKG_MIRROR_HASH:=edb1383c62d6a0cedcd93d046036886f4f17d50ecb38261155faa8149d0ccdc9
+PKG_MIRROR_HASH:=dca1204da7d32f8430d7f92d308d97d0d98af7ded71ad9d48aa77bf069269942
+
+PKG_LICENSE:=GPL-3.0-or-later
+PKG_LICENSE_FILES:=LICENSE
 
 PKG_BUILD_PARALLEL:=1
 
@@ -59,13 +62,17 @@ GO_LDFLAGS += \
 GO_TARGET:=./cmd/sing-box
 
 GO_TAGS:= \
+	with_acme, \
 	with_clash_api, \
 	with_dhcp, \
 	with_ech, \
+	with_embedded_tor, \
+	with_grpc, \
 	with_gvisor, \
 	with_quic, \
 	with_reality_server, \
 	with_utls, \
+	with_v2ray_api, \
 	with_wireguard
 
 define Package/sing-box-go/install
