@@ -5,14 +5,14 @@
 include $(TOPDIR)/rules.mk
 
 PKG_NAME:=gocryptfs
-PKG_VERSION:=2.5.3
+PKG_VERSION:=2.5.4
 PKG_RELEASE:=1
 
 PKG_SOURCE_PROTO:=git
-PKG_SOURCE_DATE:=2025-04-05
+PKG_SOURCE_DATE:=2025-04-13
 PKG_SOURCE_VERSION:=v$(PKG_VERSION)
 PKG_SOURCE_URL:=https://github.com/rfjakob/gocryptfs
-PKG_MIRROR_HASH:=46fee33a0cc25aca41d523869eb58739cf282a7f1c4d60191cb8a68a08f3dbdb
+PKG_MIRROR_HASH:=dc32f3d34d2104ece6ce18e8f81fe51dd8cf8a861a8c8296df4c4bc96e978cd1
 
 PKG_LICENSE:=MIT
 PKG_LICENSE_FILES:=LICENSE
@@ -50,9 +50,11 @@ endef
 
 Package/gocryptfs_nohf/description=$(Package/gocryptfs/description)
 
+# go list -m github.com/hanwen/go-fuse/v2 | cut -d' ' -f2-
+
 GO_LDFLAGS += \
 	-X 'main.GitVersion=$(PKG_VERSION)' \
-	-X 'main.GitVersionFuse="[unknown]"' \
+	-X 'main.GitVersionFuse=v2.5.0' \
 	-X 'main.BuildDate=$(PKG_SOURCE_DATE)'
 
 #GO_TARGET:=./gocryptfs-xray ./contrib/statfs ./contrib/findholes ./contrib/atomicrename
