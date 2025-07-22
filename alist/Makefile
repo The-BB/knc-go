@@ -5,14 +5,14 @@
 include $(TOPDIR)/rules.mk
 
 PKG_NAME:=alist
-PKG_VERSION:=3.44.0
+PKG_VERSION:=3.45.1
 PKG_RELEASE:=1
 
 PKG_SOURCE_PROTO:=git
-PKG_SOURCE_DATE:=2025-03-27
-PKG_SOURCE_VERSION:=0cde4e73d614a4bf0b28872391a13d0f8a6d166a
+PKG_SOURCE_DATE:=2025-06-27
+PKG_SOURCE_VERSION:=9da56bab4d2cf646fa9f36b033a2e372a3a57bd1
 PKG_SOURCE_URL:=https://github.com/AlistGo/alist
-PKG_MIRROR_HASH:=b2380537f39a2740a3ea1e0dcf83fc008db92a7aef47eb729704fc063e6032c2
+PKG_MIRROR_HASH:=b404740d6bd5e775c18757ddedb82a6d4b2d7aa1c6be6b44b8ae8a8778da7e00
 
 PKG_LICENSE:=AGPL-3.0
 PKG_LICENSE_FILES:=LICENSE
@@ -28,7 +28,7 @@ define Package/alist/Default
   CATEGORY:=Network
   SUBMENU:=Filesystem
   TITLE:=A file list program that supports multiple storage
-  URL:=https://alist.nn.ci/
+  URL:=https://alistgo.com
 endef
 
 define Package/alist
@@ -48,13 +48,13 @@ endef
 
 Package/alist_nohf/description=$(Package/alist/description)
 
-WEB_VERSION:=$(PKG_VERSION)
+WEB_VERSION:=3.45.0
 WEB_FILE:=$(PKG_NAME)-web-$(WEB_VERSION).tar.gz
 define Download/alist-web
   FILE:=$(WEB_FILE)
   URL_FILE:=dist.tar.gz
   URL:=https://github.com/AlistGo/alist-web/releases/download/$(WEB_VERSION)
-  HASH:=3709bec59bbc14f0f9f74193cebbb25a317c978fa3a5ae06a900eb341e1b5ae7
+  HASH:=408b1822893ba6dd6bbeb4055d6c8b96c178d10f4fbb8e5696cf14dcc88dd2fb
 endef
 
 GIT_TAG:=v$(PKG_VERSION)-$(COMMIT_SHORT)
