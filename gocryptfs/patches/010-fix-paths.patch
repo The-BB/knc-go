@@ -11,7 +11,7 @@
  	log.SetFlags(log.Lmicroseconds)
 --- a/mount.go
 +++ b/mount.go
-@@ -512,7 +512,7 @@ func initGoFuse(rootNode fs.InodeEmbedde
+@@ -518,7 +518,7 @@ func initGoFuse(rootNode fs.InodeEmbedde
  func haveFusermount2() bool {
  	path, err := exec.LookPath("fusermount")
  	if err != nil {

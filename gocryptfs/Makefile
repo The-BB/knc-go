@@ -5,14 +5,14 @@
 include $(TOPDIR)/rules.mk
 
 PKG_NAME:=gocryptfs
-PKG_VERSION:=2.5.4
+PKG_VERSION:=2.6.0
 PKG_RELEASE:=1
 
 PKG_SOURCE_PROTO:=git
-PKG_SOURCE_DATE:=2025-04-13
+PKG_SOURCE_DATE:=2025-07-14
 PKG_SOURCE_VERSION:=v$(PKG_VERSION)
 PKG_SOURCE_URL:=https://github.com/rfjakob/gocryptfs
-PKG_MIRROR_HASH:=dc32f3d34d2104ece6ce18e8f81fe51dd8cf8a861a8c8296df4c4bc96e978cd1
+PKG_MIRROR_HASH:=f3469ac6b8f1019c745d47dbc3e8cfbca158eaa3f055412c9270ec012366d372
 
 PKG_LICENSE:=MIT
 PKG_LICENSE_FILES:=LICENSE
@@ -54,7 +54,7 @@ Package/gocryptfs_nohf/description=$(Package/gocryptfs/description)
 
 GO_LDFLAGS += \
 	-X 'main.GitVersion=$(PKG_VERSION)' \
-	-X 'main.GitVersionFuse=v2.5.0' \
+	-X 'main.GitVersionFuse=v2.8.0' \
 	-X 'main.BuildDate=$(PKG_SOURCE_DATE)'
 
 #GO_TARGET:=./gocryptfs-xray ./contrib/statfs ./contrib/findholes ./contrib/atomicrename
