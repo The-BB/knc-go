@@ -5,13 +5,13 @@
 include $(TOPDIR)/rules.mk
 
 PKG_NAME:=wireguard-go
-PKG_VERSION:=0.0.20230223
-PKG_RELEASE:=2
+PKG_VERSION:=0.0.20250522
+PKG_RELEASE:=1
 
 PKG_SOURCE_PROTO:=git
-PKG_SOURCE_VERSION:=e24fc776e0ffb6e3c293895163d95bdd8a3c386f
+PKG_SOURCE_VERSION:=$(PKG_VERSION)
 PKG_SOURCE_URL:=https://git.zx2c4.com/wireguard-go
-PKG_MIRROR_HASH:=13193587b99f70b152f6312dd55c749177e5e9ecafb642c8e36b63382462261e
+PKG_MIRROR_HASH:=3d5a2710f6f139f9b96030b9db5c531321eaddfe37dd95ec764d7587110bb69a
 
 PKG_BUILD_PARALLEL:=1
 
@@ -44,15 +44,6 @@ define Package/wireguard-go/description
 endef
 
 Package/wireguard-go_nohf/description=$(Package/wireguard-go/description)
-
-define Build/Compile
-	( cd $(PKG_BUILD_DIR); \
-		$(GO_BIN_GET) -u golang.org/x/net \
-		golang.zx2c4.com/wireguard/conn \
-		golang.zx2c4.com/wireguard/device; \
-	)
-	$(call Build/Compile/Go)
-endef
 
 define Package/wireguard-go/install
 	$(INSTALL_DIR) $(1)/opt/bin
