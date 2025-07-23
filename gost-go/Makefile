@@ -1,17 +1,17 @@
 # SPDX-License-Identifier: GPL-2.0-only
 #
-# Copyright (C) 2024 Entware
+# Copyright (C) 2024-2025 Entware
 
 include $(TOPDIR)/rules.mk
 
 PKG_NAME:=gost-go
-PKG_VERSION:=3.0.0
+PKG_VERSION:=3.1.0
 PKG_RELEASE:=1
 
 PKG_SOURCE_PROTO:=git
 PKG_SOURCE_VERSION:=v$(PKG_VERSION)
 PKG_SOURCE_URL:=https://github.com/go-gost/gost
-PKG_MIRROR_HASH:=0a417befd0b8cfa9c46d65125610df40519aac403664ea37f0ad8f9a6e8330e2
+PKG_MIRROR_HASH:=3042fbfd44f8a76f2ed0014f662f289bf94155f94acfb2d8a38c95f80993cdb6
 
 PKG_LICENSE:=MIT
 PKG_LICENSE_FILES:=LICENSE
