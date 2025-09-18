@@ -1,6 +1,6 @@
 --- a/client/cmd/root.go
 +++ b/client/cmd/root.go
-@@ -88,11 +88,11 @@ func Execute() error {
+@@ -91,11 +91,11 @@ func Execute() error {
  }
  
  func init() {
@@ -16,7 +16,7 @@
  
  	switch runtime.GOOS {
  	case "windows":
-@@ -111,7 +111,7 @@ func init() {
+@@ -114,7 +114,7 @@ func init() {
  	oldDefaultConfigPath = oldDefaultConfigPathDir + "config.json"
  	oldDefaultLogFile = oldDefaultLogFileDir + "client.log"
  
@@ -49,7 +49,7 @@
  		}
 --- a/client/internal/routemanager/systemops/systemops_linux.go
 +++ b/client/internal/routemanager/systemops/systemops_linux.go
-@@ -29,7 +29,7 @@ const (
+@@ -49,7 +49,7 @@ const (
  	NetbirdVPNTableName = "netbird"
  
  	// rtTablesPath is the path to the file containing the routing table names.
@@ -74,10 +74,10 @@
  	defer file.Close()
 --- a/client/ui/client_ui.go
 +++ b/client/ui/client_ui.go
-@@ -108,7 +108,7 @@ func main() {
+@@ -135,7 +135,7 @@ type cliFlags struct {
+ func parseFlags() *cliFlags {
+ 	var flags cliFlags
  
- // parseFlags reads and returns all needed command-line flags.
- func parseFlags() (daemonAddr string, showSettings, showNetworks, showLoginURL, showDebug bool, errorMsg string, saveLogsInFile bool) {
 -	defaultDaemonAddr := "unix:///var/run/netbird.sock"
 +	defaultDaemonAddr := "unix:///opt/var/run/netbird.sock"
  	if runtime.GOOS == "windows" {
