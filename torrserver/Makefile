@@ -5,13 +5,13 @@
 include $(TOPDIR)/rules.mk
 
 PKG_NAME:=torrserver
-PKG_VERSION:=135
+PKG_VERSION:=136
 PKG_RELEASE:=1
 
 PKG_SOURCE_PROTO:=git
 PKG_SOURCE_VERSION:=MatriX.$(PKG_VERSION)
 PKG_SOURCE_URL:=https://github.com/YouROK/TorrServer
-PKG_MIRROR_HASH:=c2a4ec9a1d7650420c0daa3ac6cdacfeccd9a7288c1d71ef6dd820cc72c0831e
+PKG_MIRROR_HASH:=d2181a764432312e6daf6aff661b05775280a7c30ed8ea72201b348c568be7a0
 
 PKG_LICENSE:=GPL-3.0-only
 PKG_LICENSE_FILES:=LICENSE
@@ -28,7 +28,7 @@ define Package/torrserver/Default
 	CATEGORY:=Network
 	SUBMENU:=BitTorrent
 	TITLE:=stream torrent to http
-	URL:=https://github.com/YouROK/TorrServer
+	URL:=https://yourok.ru/
 	MAINTAINER:=Entware team, https://entware.net
 	DEPENDS:=+libstdcpp
 endef
