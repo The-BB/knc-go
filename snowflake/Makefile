@@ -29,18 +29,20 @@ define Package/snowflake/Default
 	EXTRA_DEPENDS:=tor-geoip
 endef
 
-define Package/snowflake-go
+define Package/snowflake
 	$(call Package/snowflake/Default)
 	VARIANT:=hf
+	PROVIDES:=snowflake-go
 endef
 
-define Package/snowflake-go_nohf
+define Package/snowflake_nohf
 	$(call Package/snowflake/Default)
 	VARIANT:=nohf
+	PROVIDES:=snowflake-go_nohf
 	DEPENDS:=@arm
 endef
 
-define Package/snowflake-go/description
+define Package/snowflake/description
  Snowflake is a system that allows people from all over the world to
  access censored websites and applications. Similar to how VPNs assist
  users in getting around Internet censorship, Snowflake helps you avoid
@@ -48,14 +50,14 @@ define Package/snowflake-go/description
  as though you're using the Internet for a regular video or voice call.
 endef
 
-Package/snowflake-go_hf/description=$(Package/snowflake-go/description)
+Package/snowflake_hf/description=$(Package/snowflake/description)
 
 GO_VARS += GO111MODULE=on
 GO_TARGET:=./broker ./client ./probetest ./proxy ./server
 
 BINS:=broker client probetest proxy server
 
-define Package/snowflake-go/install
+define Package/snowflake/install
 	$(INSTALL_DIR) $(1)/opt/bin
 	for bin in $(BINS); do \
 		$(INSTALL_BIN) $(PKG_INSTALL_DIR)/bin/$$$$bin \
@@ -63,5 +65,5 @@ define Package/snowflake-go/install
 	done
 endef
 
-$(eval $(call BuildPackage,snowflake-go))
-$(eval $(call BuildPackage,snowflake-go_nohf))
+$(eval $(call BuildPackage,snowflake))
+$(eval $(call BuildPackage,snowflake_nohf))
