@@ -14,6 +14,7 @@ PKG_SOURCE_VERSION:=071cf6509b1076a15becc669fb8885a6fa77e8a8
 PKG_SOURCE_URL:=https://github.com/twpayne/chezmoi
 PKG_MIRROR_HASH:=df6b5af8e6d7c12e47cd0a07ff6d3850609605afbb38d272246ed806a8e428eb
 
+PKG_MAINTAINER:=Entware team, https://entware.net
 PKG_LICENSE:=MIT
 PKG_LICENSE_FILES:=LICENSE
 
@@ -23,29 +24,37 @@ include $(INCLUDE_DIR)/package.mk
 include $(INCLUDE_DIR)/golang.mk
 
 define Package/chezmoi/Default
-	SECTION:=utils
-	CATEGORY:=Utilities
-	TITLE:=Manage dotfiles
-	URL:=https://www.chezmoi.io
-	MAINTAINER:=Entware team, https://entware.net
+  SECTION:=utils
+  CATEGORY:=Utilities
+  TITLE:=Manage dotfiles
+  URL:=https://www.chezmoi.io
+  PROVIDES:=chezmoi
 endef
 
 define Package/chezmoi
-	$(call Package/chezmoi/Default)
-	VARIANT:=hf
+  $(call Package/chezmoi/Default)
+  VARIANT:=default
+  DEFAULT_VARIANT:=1
 endef
 
-define Package/chezmoi_nohf
-	$(call Package/chezmoi/Default)
-	VARIANT:=nohf
-	DEPENDS:=@arm
+define Package/chezmoi-hf
+  $(call Package/chezmoi/Default)
+  VARIANT:=hf
+  DEPENDS:=@(mips||mipsel)
+endef
+
+define Package/chezmoi-sf
+  $(call Package/chezmoi/Default)
+  VARIANT:=sf
+  DEPENDS:=@arm
 endef
 
 define Package/chezmoi/description
   Manage your dotfiles across multiple diverse machines, securely.
 endef
 
-Package/chezmoi_nohf/description=$(Package/chezmoi/description)
+Package/chezmoi-hf/description=$(Package/chezmoi/description)
+Package/chezmoi-sf/description=$(Package/chezmoi/description)
 
 GO_LDFLAGS += \
 	-X 'main.version=v$(PKG_VERSION)' \
@@ -60,7 +69,9 @@ define Package/chezmoi/install
 	$(INSTALL_BIN) $(PKG_INSTALL_DIR)/bin/chezmoi $(1)/opt/bin
 endef
 
-Package/chezmoi_nohf/install=$(Package/chezmoi/install)
+Package/chezmoi-hf/install=$(Package/chezmoi/install)
+Package/chezmoi-sf/install=$(Package/chezmoi/install)
 
 $(eval $(call BuildPackage,chezmoi))
-$(eval $(call BuildPackage,chezmoi_nohf))
+$(eval $(call BuildPackage,chezmoi-hf))
+$(eval $(call BuildPackage,chezmoi-sf))
