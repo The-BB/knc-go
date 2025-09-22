@@ -2,6 +2,8 @@
 #
 # Copyright (C) 2024-2025 Entware
 
+PKG_DEFAULT_DEPENDS:=
+
 COMMIT_SHORT:=$(call version_abbrev,$(PKG_SOURCE_VERSION))
 XIMPORTPATH:=$(shell echo $(PKG_SOURCE_URL) | cut -d/ -f3-)
 
@@ -42,27 +44,43 @@ GO_VARS += GOOS=linux
 GO_VARS += GOARCH=$(GOARCH)
 
 # https://go.dev/wiki/MinimumRequirements:
-# "The GOARM64 environment variable defaults to v8.0."
+# amd64	 - GOAMD64=v1
+# 386	 - GO386=sse2
+# arm	 - GOARM=5 (use software floating point)
+# arm	 - GOARM=7 (use VFPv3)
+# arm64	 - GOARM64=v8.0
+# mips	 - hardfloat
+# mipsel - hardfloat
+
+# BUILD_VARIANT:=default
+# keep for aarch64, arm, x86_64
+# switch from hardfloat to softfloat for mips, mipsel
+
 ifeq ($(ARCH),aarch64)
   GO_VARS += GOARM64=v8.0
 endif
 
 ifeq ($(ARCH),arm)
-  ifeq ($(BUILD_VARIANT),hf)
-	GO_VARS += GOARM=7,hardfloat
-	### or (?)
-	#GO_VARS += GOARM=7
-	#GO_VARS += GOARMFP=hard
-  else
+  ifeq ($(BUILD_VARIANT),sf)
 	GO_VARS += GOARM=7,softfloat
 	### or (?)
 	#GO_VARS += GOARM=7
 	#GO_VARS += GOARMFP=soft
+  else
+	GO_VARS += GOARM=7,hardfloat
+	### or (?)
+	#GO_VARS += GOARM=7
+	#GO_VARS += GOARMFP=hard
+
   endif
 endif
 
 ifeq ($(ARCH),$(filter $(ARCH),mips mipsel))
-  GO_VARS += GOMIPS=softfloat
+  ifeq ($(BUILD_VARIANT),hf)
+	GO_VARS += GOMIPS=hardfloat
+  else
+	GO_VARS += GOMIPS=softfloat
+  endif
 endif
 
 GO_VARS += \
