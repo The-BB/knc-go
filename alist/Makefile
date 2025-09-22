@@ -29,16 +29,24 @@ define Package/alist/Default
   SUBMENU:=Filesystem
   TITLE:=A file list program that supports multiple storage
   URL:=https://alistgo.com
+  PROVIDES:=alist
 endef
 
 define Package/alist
   $(call Package/alist/Default)
-  VARIANT:=hf
+  VARIANT:=default
+  DEFAULT_VARIANT:=1
 endef
 
-define Package/alist_nohf
+define Package/alist-hf
   $(call Package/alist/Default)
-  VARIANT:=nohf
+  VARIANT:=hf
+  DEPENDS:=@(mips||mipsel)
+endef
+
+define Package/alist-sf
+  $(call Package/alist/Default)
+  VARIANT:=sf
   DEPENDS:=@arm
 endef
 
@@ -46,7 +54,8 @@ define Package/alist/description
   A file list program that supports multiple storage.
 endef
 
-Package/alist_nohf/description=$(Package/alist/description)
+Package/alist-hf/description=$(Package/alist/description)
+Package/alist-sf/description=$(Package/alist/description)
 
 WEB_VERSION:=$(PKG_VERSION)
 WEB_FILE:=$(PKG_NAME)-web-$(WEB_VERSION).tar.gz
@@ -84,8 +93,10 @@ define Package/alist/install
 	$(INSTALL_BIN) $(PKG_INSTALL_DIR)/bin/alist $(1)/opt/sbin
 endef
 
-Package/alist_nohf/install=$(Package/alist/install)
+Package/alist-hf/install=$(Package/alist/install)
+Package/alist-sf/install=$(Package/alist/install)
 
 $(eval $(call Download,alist-web))
 $(eval $(call BuildPackage,alist))
-$(eval $(call BuildPackage,alist_nohf))
+$(eval $(call BuildPackage,alist-hf))
+$(eval $(call BuildPackage,alist-sf))
