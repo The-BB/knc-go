@@ -27,16 +27,24 @@ define Package/fzf/Default
   CATEGORY:=Utilities
   TITLE:=A command-line fuzzy finder
   URL:=https://github.com/junegunn/fzf
+  PROVIDES:=fzf
 endef
 
 define Package/fzf
   $(call Package/fzf/Default)
-  VARIANT:=hf
+  VARIANT:=default
+  DEFAULT_VARIANT:=1
 endef
 
-define Package/fzf_nohf
+define Package/fzf-hf
   $(call Package/fzf/Default)
-  VARIANT:=nohf
+  VARIANT:=hf
+  DEPENDS:=@(mips||mipsel)
+endef
+
+define Package/fzf-sf
+  $(call Package/fzf/Default)
+  VARIANT:=sf
   DEPENDS:=@arm
 endef
 
@@ -44,7 +52,8 @@ define Package/fzf/description
   fzf is a general-purpose command-line fuzzy finder.
 endef
 
-Package/fzf_nohf/description=$(Package/fzf/description)
+Package/fzf-hf/description=$(Package/fzf/description)
+Package/fzf-sf/description=$(Package/fzf/description)
 
 GO_LDFLAGS += \
 	-X 'main.version=$(PKG_VERSION)' \
@@ -55,7 +64,9 @@ define Package/fzf/install
 	$(INSTALL_BIN) $(PKG_INSTALL_DIR)/bin/fzf $(1)/opt/sbin
 endef
 
-Package/fzf_nohf/install=$(Package/fzf/install)
+Package/fzf-hf/install=$(Package/fzf/install)
+Package/fzf-sf/install=$(Package/fzf/install)
 
 $(eval $(call BuildPackage,fzf))
-$(eval $(call BuildPackage,fzf_nohf))
+$(eval $(call BuildPackage,fzf-hf))
+$(eval $(call BuildPackage,fzf-sf))
