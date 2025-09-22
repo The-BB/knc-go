@@ -13,6 +13,7 @@ PKG_SOURCE_VERSION:=v$(PKG_VERSION)
 PKG_SOURCE_URL:=https://github.com/juanfont/headscale
 PKG_MIRROR_HASH:=d52539384ccbced7f91b60e9ca70880fef5716f188603302a392b78395ff10b0
 
+PKG_MAINTAINER:=Entware team, https://entware.net
 PKG_LICENSE:=BSD-3-Clause
 PKG_LICENSE_FILES:=LICENSE
 
@@ -22,24 +23,26 @@ include $(INCLUDE_DIR)/package.mk
 include $(INCLUDE_DIR)/golang.mk
 
 define Package/headscale/Default
-	SECTION:=net
-	CATEGORY:=Network
-	SUBMENU:=VPN
-	TITLE:=Tailscale control server
-	URL:=https://github.com/juanfont/headscale
-	MAINTAINER:=Entware team, https://entware.net
-	DEPENDS:=+ca-bundle @!(mips||mipsel)
+  SECTION:=net
+  CATEGORY:=Network
+  SUBMENU:=VPN
+  TITLE:=Tailscale control server
+  URL:=https://github.com/juanfont/headscale
+  PROVIDES:=headscale
+  DEPENDS:=@!(mips||mipsel)
+  EXTRA_DEPENDS:=ca-bundle
 endef
 
 define Package/headscale
-	$(call Package/headscale/Default)
-	VARIANT:=hf
+  $(call Package/headscale/Default)
+  VARIANT:=default
+  DEFAULT_VARIANT:=1
 endef
 
-define Package/headscale_nohf
-	$(call Package/headscale/Default)
-	VARIANT:=nohf
-	DEPENDS+=@arm
+define Package/headscale-sf
+  $(call Package/headscale/Default)
+  VARIANT:=sf
+  DEPENDS+=@arm
 endef
 
 define Package/headscale/description
@@ -50,13 +53,13 @@ define Package/headscale/description
  use, or a small open-source organisation.
 endef
 
-Package/headscale_nohf/description=$(Package/headscale/description)
+Package/headscale-sf/description=$(Package/headscale/description)
 
 define Package/headscale/conffiles
 /opt/etc/headscale/config.yaml
 endef
 
-Package/headscale_nohf/conffiles=$(Package/headscale/conffiles)
+Package/headscale-sf/conffiles=$(Package/headscale/conffiles)
 
 GO_LDFLAGS += \
 	-X '$(XIMPORTPATH)/cmd/headscale/cli.Version=v$(PKG_VERSION)'
@@ -75,7 +78,7 @@ define Package/headscale/install
 	$(INSTALL_DIR) $(1)/opt/var/{lib,run}/headscale
 endef
 
-Package/headscale_nohf/install=$(Package/headscale/install)
+Package/headscale-sf/install=$(Package/headscale/install)
 
 $(eval $(call BuildPackage,headscale))
-$(eval $(call BuildPackage,headscale_nohf))
+$(eval $(call BuildPackage,headscale-sf))
