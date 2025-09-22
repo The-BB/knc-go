@@ -16,6 +16,7 @@ PKG_SOURCE_VERSION:=759372f2207b1c8e46c210e822b5e8fdc92ea6a7
 PKG_SOURCE_URL:=https://github.com/prometheus/promlens
 PKG_MIRROR_HASH:=0104665451f56178e00d4b936310f75b7d2de767bfce101923f332c220b7d9ac
 
+PKG_MAINTAINER:=Entware team, https://entware.net
 PKG_LICENSE:=Apache-2.0
 PKG_LICENSE_FILES:=LICENSE
 
@@ -31,18 +32,19 @@ define Package/promlens/Default
   SUBMENU:=prometheus tools
   TITLE:=The query builder, analyzer, and explainer for PromQL
   URL:=http://prometheus.io
-  MAINTAINER:=Entware team, https://entware.net
+  PROVIDES:=promlens
   DEPENDS:=@!(mips||mipsel)
 endef
 
 define Package/promlens
   $(call Package/promlens/Default)
-  VARIANT:=hf
+  VARIANT:=default
+  DEFAULT_VARIANT:=1
 endef
 
-define Package/promlens_nohf
+define Package/promlens-sf
   $(call Package/promlens/Default)
-  VARIANT:=nohf
+  VARIANT:=sf
   DEPENDS+=@arm
 endef
 
@@ -50,7 +52,7 @@ define Package/promlens/description
   PromLens is a web-based PromQL query builder, analyzer, and visualizer.
 endef
 
-Package/promlens_nohf/description=$(Package/promlens/description)
+Package/promlens-sf/description=$(Package/promlens/description)
 
 GO_BUILD_ARGS += -a
 
@@ -80,7 +82,7 @@ define Package/promlens/install
 	$(INSTALL_BIN) $(PKG_INSTALL_DIR)/bin/promlens $(1)/opt/bin
 endef
 
-Package/promlens_nohf/install=$(Package/promlens/install)
+Package/promlens-sf/install=$(Package/promlens/install)
 
 $(eval $(call BuildPackage,promlens))
-$(eval $(call BuildPackage,promlens_nohf))
+$(eval $(call BuildPackage,promlens-sf))
