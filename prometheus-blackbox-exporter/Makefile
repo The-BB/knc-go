@@ -14,6 +14,7 @@ PKG_SOURCE_VERSION:=46ea0224f57b708fdff317f8872765a77ef64034
 PKG_SOURCE_URL:=https://github.com/prometheus/blackbox_exporter
 PKG_MIRROR_HASH:=339e60a685dbe547fe57f6ef7d69c269e3ed95a1bffb7bb5e45fadf4b5d4f375
 
+PKG_MAINTAINER:=Entware team, https://entware.net
 PKG_LICENSE:=Apache-2.0
 PKG_LICENSE_FILES:=LICENSE
 
@@ -28,17 +29,24 @@ define Package/prometheus-blackbox-exporter/Default
   SUBMENU:=prometheus tools
   TITLE:=Blackbox prober exporter
   URL:=https://prometheus.io/
-  MAINTAINER:=Entware team, https://entware.net
+  PROVIDES:=prometheus-blackbox-exporter
 endef
 
 define Package/prometheus-blackbox-exporter
   $(call Package/prometheus-blackbox-exporter/Default)
-  VARIANT:=hf
+  VARIANT:=default
+  DEFAULT_VARIANT:=1
 endef
 
-define Package/prometheus-blackbox-exporter_nohf
+define Package/prometheus-blackbox-exporter-hf
   $(call Package/prometheus-blackbox-exporter/Default)
-  VARIANT:=nohf
+  VARIANT:=hf
+  DEPENDS:=@(mips||mipsel)
+endef
+
+define Package/prometheus-blackbox-exporter-sf
+  $(call Package/prometheus-blackbox-exporter/Default)
+  VARIANT:=sf
   DEPENDS:=@arm
 endef
 
@@ -47,13 +55,15 @@ define Package/prometheus-blackbox-exporter/description
   over HTTP, HTTPS, DNS, TCP, ICMP and gRPC.
 endef
 
-Package/prometheus-blackbox-exporter_nohf/description=$(Package/prometheus-blackbox-exporter/description)
+Package/prometheus-blackbox-exporter-hf/description=$(Package/prometheus-blackbox-exporter/description)
+Package/prometheus-blackbox-exporter-sf/description=$(Package/prometheus-blackbox-exporter/description)
 
 define Package/blackbox_exporter/conffiles
 /opt/etc/prometheus/blackbox.yml
 endef
 
-Package/blackbox_exporter_nohf/conffiles=$(Package/blackbox_exporter/conffiles)
+Package/blackbox_exporter-hf/conffiles=$(Package/blackbox_exporter/conffiles)
+Package/blackbox_exporter-sf/conffiles=$(Package/blackbox_exporter/conffiles)
 
 GO_BUILD_ARGS += -a
 
@@ -75,7 +85,9 @@ define Package/prometheus-blackbox-exporter/install
 	$(INSTALL_DATA) $(PKG_BUILD_DIR)/blackbox.yml $(1)/opt/etc/prometheus
 endef
 
-Package/prometheus-blackbox-exporter_nohf/install=$(Package/prometheus-blackbox-exporter/install)
+Package/prometheus-blackbox-exporter-hf/install=$(Package/prometheus-blackbox-exporter/install)
+Package/prometheus-blackbox-exporter-sf/install=$(Package/prometheus-blackbox-exporter/install)
 
 $(eval $(call BuildPackage,prometheus-blackbox-exporter))
-$(eval $(call BuildPackage,prometheus-blackbox-exporter_nohf))
+$(eval $(call BuildPackage,prometheus-blackbox-exporter-hf))
+$(eval $(call BuildPackage,prometheus-blackbox-exporter-sf))
