@@ -30,18 +30,26 @@ define Package/coredns/Default
   SUBMENU:=IP Addresses and Names
   TITLE:=DNS server that chains plugins
   URL:=https://coredns.io
-  DEPENDS:=+ca-bundle
+  PROVIDES:=coredns
+  EXTRA_DEPENDS:=ca-bundle
 endef
 
 define Package/coredns
   $(call Package/coredns/Default)
-  VARIANT:=hf
+  VARIANT:=default
+  DEFAULT_VARIANT:=1
 endef
 
-define Package/coredns_nohf
+define Package/coredns-hf
   $(call Package/coredns/Default)
-  VARIANT:=nohf
-  DEPENDS+=@arm
+  VARIANT:=hf
+  DEPENDS:=@(mips||mipsel)
+endef
+
+define Package/coredns-sf
+  $(call Package/coredns/Default)
+  VARIANT:=sf
+  DEPENDS:=@arm
 endef
 
 define Package/coredns/description
@@ -49,7 +57,8 @@ define Package/coredns/description
   Each plugin performs a (DNS) function.
 endef
 
-Package/coredns_nohf/description=$(Package/coredns/description)
+Package/coredns-hf/description=$(Package/coredns/description)
+Package/coredns-sf/description=$(Package/coredns/description)
 
 GO_LDFLAGS += \
 	-X '$(XIMPORTPATH)/coremain.GitCommit=$(COMMIT_SHORT)'
@@ -68,7 +77,9 @@ define Package/coredns/install
 	$(INSTALL_BIN) $(PKG_INSTALL_DIR)/bin/coredns $(1)/opt/sbin
 endef
 
-Package/coredns_nohf/install=$(Package/coredns/install)
+Package/coredns-hf/install=$(Package/coredns/install)
+Package/coredns-sf/install=$(Package/coredns/install)
 
 $(eval $(call BuildPackage,coredns))
-$(eval $(call BuildPackage,coredns_nohf))
+$(eval $(call BuildPackage,coredns-hf))
+$(eval $(call BuildPackage,coredns-sf))
