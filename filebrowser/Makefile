@@ -29,16 +29,24 @@ define Package/filebrowser/Default
   SUBMENU:=Filesystem
   TITLE:=Web File Browser
   URL:=https://filebrowser.org
+  PROVIDES:=filebrowser
 endef
 
 define Package/filebrowser
   $(call Package/filebrowser/Default)
-  VARIANT:=hf
+  VARIANT:=default
+  DEFAULT_VARIANT:=1
 endef
 
-define Package/filebrowser_nohf
+define Package/filebrowser-hf
   $(call Package/filebrowser/Default)
-  VARIANT:=nohf
+  VARIANT:=hf
+  DEPENDS:=@(mips||mipsel)
+endef
+
+define Package/filebrowser-sf
+  $(call Package/filebrowser/Default)
+  VARIANT:=sf
   DEPENDS:=@arm
 endef
 
@@ -49,13 +57,15 @@ define Package/filebrowser/description
   directory. It can be used as a standalone app or as a middleware.
 endef
 
-Package/filebrowser_nohf/description=$(Package/filebrowser/description)
+Package/filebrowser-hf/description=$(Package/filebrowser/description)
+Package/filebrowser-sf/description=$(Package/filebrowser/description)
 
 define Package/filebrowser/conffiles
 /opt/etc/filebrowser/filebrowser.conf
 endef
 
-Package/filebrowser_nohf/conffiles=$(Package/filebrowser/conffiles)
+Package/filebrowser-hf/conffiles=$(Package/filebrowser/conffiles)
+Package/filebrowser-sf/conffiles=$(Package/filebrowser/conffiles)
 
 GO_LDFLAGS += \
 	-X '$(XIMPORTPATH)/v2/version.Version=$(PKG_VERSION)' \
@@ -84,7 +94,9 @@ define Package/filebrowser/install
 	$(INSTALL_DATA) ./files/filebrowser.conf $(1)/opt/etc/filebrowser
 endef
 
-Package/filebrowser_nohf/install=$(Package/filebrowser/install)
+Package/filebrowser-hf/install=$(Package/filebrowser/install)
+Package/filebrowser-sf/install=$(Package/filebrowser/install)
 
 $(eval $(call BuildPackage,filebrowser))
-$(eval $(call BuildPackage,filebrowser_nohf))
+$(eval $(call BuildPackage,filebrowser-hf))
+$(eval $(call BuildPackage,filebrowser-sf))
