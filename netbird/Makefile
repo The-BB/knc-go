@@ -31,17 +31,24 @@ define Package/netbird/Default
   SUBMENU:=VPN
   TITLE:=A WireGuard-based mesh network (client)
   URL:=https://netbird.io/
-#  DEPENDS:=+ca-bundle +iptables
+  PROVIDES:=netbird
 endef
 
 define Package/netbird
   $(call Package/netbird/Default)
-  VARIANT:=hf
+  VARIANT:=default
+  DEFAULT_VARIANT:=1
 endef
 
-define Package/netbird_nohf
+define Package/netbird-hf
   $(call Package/netbird/Default)
-  VARIANT:=nohf
+  VARIANT:=hf
+  DEPENDS:=@(mips||mipsel)
+endef
+
+define Package/netbird-sf
+  $(call Package/netbird/Default)
+  VARIANT:=sf
   DEPENDS:=@arm
 endef
 
@@ -50,14 +57,16 @@ define Package/netbird/description
   mesh network with SSO/MFA and simple access controls.
 endef
 
-Package/netbird_nohf/description=$(Package/netbird/description)
+Package/netbird-hf/description=$(Package/netbird/description)
+Package/netbird-sf/description=$(Package/netbird/description)
 
 define Package/netbird/conffiles
 /opt/etc/netbird/config.json
 /opt/etc/netbird/env
 endef
 
-Package/netbird_nohf/conffiles=$(Package/netbird/conffiles)
+Package/netbird-hf/conffiles=$(Package/netbird/conffiles)
+Package/netbird-sf/conffiles=$(Package/netbird/conffiles)
 
 GO_LDFLAGS += \
 	-X '$(XIMPORTPATH)/version.version=$(PKG_VERSION)' \
@@ -79,7 +88,9 @@ define Package/netbird/install
 #	$(INSTALL_BIN) $(PKG_INSTALL_DIR)/bin/signal $(1)/opt/sbin/netbird-signal
 endef
 
-Package/netbird_nohf/install=$(Package/netbird/install)
+Package/netbird-hf/install=$(Package/netbird/install)
+Package/netbird-sf/install=$(Package/netbird/install)
 
 $(eval $(call BuildPackage,netbird))
-$(eval $(call BuildPackage,netbird_nohf))
+$(eval $(call BuildPackage,netbird-hf))
+$(eval $(call BuildPackage,netbird-sf))
