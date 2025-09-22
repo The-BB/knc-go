@@ -30,18 +30,26 @@ define Package/meshname/Default
   SUBMENU:=IP Addresses and Names
   TITLE:=universal naming system for all IPv6-based mesh networks
   URL:=https://github.com/zhoreeq/meshname
-  DEPENDS:=+ca-bundle
+  PROVIDES:=meshname
+  EXTRA_DEPENDS:=ca-bundle
 endef
 
 define Package/meshname
   $(call Package/meshname/Default)
-  VARIANT:=hf
+  VARIANT:=default
+  DEFAULT_VARIANT:=1
 endef
 
-define Package/meshname_nohf
+define Package/meshname-hf
   $(call Package/meshname/Default)
-  VARIANT:=nohf
-  DEPENDS+=@arm
+  VARIANT:=hf
+  DEPENDS:=@(mips||mipsel)
+endef
+
+define Package/meshname-sf
+  $(call Package/meshname/Default)
+  VARIANT:=sf
+  DEPENDS:=@arm
 endef
 
 define Package/meshname/description
@@ -49,7 +57,8 @@ define Package/meshname/description
   including CJDNS and Yggdrasil. Implements the Meshname protocol.
 endef
 
-Package/meshname_nohf/description=$(Package/meshname/description)
+Package/meshname-hf/description=$(Package/meshname/description)
+Package/meshname-sf/description=$(Package/meshname/description)
 
 GO_TARGET:=./cmd/meshnamed
 
@@ -58,7 +67,9 @@ define Package/meshname/install
 	$(INSTALL_BIN) $(PKG_INSTALL_DIR)/bin/meshnamed $(1)/opt/sbin
 endef
 
-Package/meshname_nohf/install=$(Package/meshname/install)
+Package/meshname-hf/install=$(Package/meshname/install)
+Package/meshname-sf/install=$(Package/meshname/install)
 
 $(eval $(call BuildPackage,meshname))
-$(eval $(call BuildPackage,meshname_nohf))
+$(eval $(call BuildPackage,meshname-hf))
+$(eval $(call BuildPackage,meshname-sf))
