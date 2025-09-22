@@ -16,6 +16,7 @@ PKG_SOURCE_VERSION:=b28b09684a775fa069da642606709db98cac6abb
 PKG_SOURCE_URL:=https://github.com/AlfredArouna/netflow_exporter
 PKG_MIRROR_HASH:=7328cdf332521bad28448cca70eb6abba02b0b76ce078b831ac1ffadfa622862
 
+PKG_MAINTAINER:=Entware team, https://entware.net
 PKG_LICENSE:=
 PKG_LICENSE_FILES:=
 
@@ -30,17 +31,24 @@ define Package/netflow-exporter/Default
   SUBMENU:=prometheus tools
   TITLE:=Prometheus netflow Exporter
   URL:=https://github.com/AlfredArouna/netflow_exporter
-  MAINTAINER:=Entware team, https://entware.net
+  PROVIDES:=netflow-exporter
 endef
 
 define Package/netflow-exporter
   $(call Package/netflow-exporter/Default)
-  VARIANT:=hf
+  VARIANT:=default
+  DEFAULT_VARIANT:=1
 endef
 
-define Package/netflow-exporter_nohf
+define Package/netflow-exporter-hf
   $(call Package/netflow-exporter/Default)
-  VARIANT:=nohf
+  VARIANT:=hf
+  DEPENDS:=@(mips||mipsel)
+endef
+
+define Package/netflow-exporter-sf
+  $(call Package/netflow-exporter/Default)
+  VARIANT:=sf
   DEPENDS:=@arm
 endef
 
@@ -49,7 +57,8 @@ define Package/netflow-exporter/description
   for use by the Prometheus monitoring system.
 endef
 
-Package/netflow-exporter_nohf/description=$(Package/netflow-exporter/description)
+Package/netflow-exporter-hf/description=$(Package/netflow-exporter/description)
+Package/netflow-exporter-sf/description=$(Package/netflow-exporter/description)
 
 GO_LDFLAGS += \
 	-X 'github.com/prometheus/common/version.Version=$(PKG_VERSION)' \
@@ -70,7 +79,9 @@ define Package/netflow-exporter/install
 	$(INSTALL_BIN) ./files/S99netflow_exporter $(1)/opt/etc/init.d
 endef
 
-Package/netflow-exporter_nohf/install=$(Package/netflow-exporter/install)
+Package/netflow-exporter-hf/install=$(Package/netflow-exporter/install)
+Package/netflow-exporter-sf/install=$(Package/netflow-exporter/install)
 
 $(eval $(call BuildPackage,netflow-exporter))
-$(eval $(call BuildPackage,netflow-exporter_nohf))
+$(eval $(call BuildPackage,netflow-exporter-hf))
+$(eval $(call BuildPackage,netflow-exporter-sf))
