@@ -14,6 +14,7 @@ PKG_SOURCE_VERSION:=f2ec547b49af53815038a50265aa2adcd1275959
 PKG_SOURCE_URL:=https://github.com/prometheus/node_exporter
 PKG_MIRROR_HASH:=22a44bfed612154afa0715a61f6b31ed2d5272fe9900a591e6b4edd1adb8abfd
 
+PKG_MAINTAINER:=Entware team, https://entware.net
 PKG_LICENSE:=Apache-2.0
 PKG_LICENSE_FILES:=LICENSE
 
@@ -28,17 +29,24 @@ define Package/prometheus-node-exporter/Default
   SUBMENU:=prometheus tools
   TITLE:=Exporter for machine metrics
   URL:=https://prometheus.io/
-  MAINTAINER:=Entware team, https://entware.net
+  PROVIDES:=prometheus-node-exporter
 endef
 
 define Package/prometheus-node-exporter
   $(call Package/prometheus-node-exporter/Default)
-  VARIANT:=hf
+  VARIANT:=default
+  DEFAULT_VARIANT:=1
 endef
 
-define Package/prometheus-node-exporter_nohf
+define Package/prometheus-node-exporter-hf
   $(call Package/prometheus-node-exporter/Default)
-  VARIANT:=nohf
+  VARIANT:=hf
+  DEPENDS:=@(mips||mipsel)
+endef
+
+define Package/prometheus-node-exporter-sf
+  $(call Package/prometheus-node-exporter/Default)
+  VARIANT:=sf
   DEPENDS:=@arm
 endef
 
@@ -47,7 +55,8 @@ define Package/prometheus-node-exporter/description
   kernels, written in Go with pluggable metric collectors.
 endef
 
-Package/prometheus-node-exporter_nohf/description=$(Package/prometheus-node-exporter/description)
+Package/prometheus-node-exporter-hf/description=$(Package/prometheus-node-exporter/description)
+Package/prometheus-node-exporter-sf/description=$(Package/prometheus-node-exporter/description)
 
 GO_BUILD_ARGS += -a
 
@@ -67,7 +76,9 @@ define Package/prometheus-node-exporter/install
 	$(INSTALL_BIN) ./files/S99node_exporter $(1)/opt/etc/init.d
 endef
 
-Package/prometheus-node-exporter_nohf/install=$(Package/prometheus-node-exporter/install)
+Package/prometheus-node-exporter-hf/install=$(Package/prometheus-node-exporter/install)
+Package/prometheus-node-exporter-sf/install=$(Package/prometheus-node-exporter/install)
 
 $(eval $(call BuildPackage,prometheus-node-exporter))
-$(eval $(call BuildPackage,prometheus-node-exporter_nohf))
+$(eval $(call BuildPackage,prometheus-node-exporter-hf))
+$(eval $(call BuildPackage,prometheus-node-exporter-sf))
