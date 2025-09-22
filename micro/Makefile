@@ -29,16 +29,24 @@ define Package/micro/Default
   SUBMENU:=Editors
   TITLE:=a modern and intuitive terminal-based text editor
   URL:=https://micro-editor.github.io/
+  PROVIDES:=micro
 endef
 
 define Package/micro
   $(call Package/micro/Default)
-  VARIANT:=hf
+  VARIANT:=default
+  DEFAULT_VARIANT:=1
 endef
 
-define Package/micro_nohf
+define Package/micro-hf
   $(call Package/micro/Default)
-  VARIANT:=nohf
+  VARIANT:=hf
+  DEPENDS:=@(mips||mipsel)
+endef
+
+define Package/micro-sf
+  $(call Package/micro/Default)
+  VARIANT:=sf
   DEPENDS:=@arm
 endef
 
@@ -48,7 +56,8 @@ define Package/micro/description
   modern terminals.
 endef
 
-Package/micro_nohf/description=$(Package/micro/description)
+Package/micro-hf/description=$(Package/micro/description)
+Package/micro-sf/description=$(Package/micro/description)
 
 GO_LDFLAGS += \
 	-X '$(XIMPORTPATH)/v2/internal/util.Version=$(PKG_VERSION)' \
@@ -67,7 +76,9 @@ define Package/micro/install
 	$(INSTALL_BIN) $(PKG_INSTALL_DIR)/bin/micro $(1)/opt/sbin
 endef
 
-Package/micro_nohf/install=$(Package/micro/install)
+Package/micro-hf/install=$(Package/micro/install)
+Package/micro-sf/install=$(Package/micro/install)
 
 $(eval $(call BuildPackage,micro))
-$(eval $(call BuildPackage,micro_nohf))
+$(eval $(call BuildPackage,micro-hf))
+$(eval $(call BuildPackage,micro-sf))
