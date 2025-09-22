@@ -13,6 +13,7 @@ PKG_SOURCE_VERSION:=MatriX.$(PKG_VERSION)
 PKG_SOURCE_URL:=https://github.com/YouROK/TorrServer
 PKG_MIRROR_HASH:=d2181a764432312e6daf6aff661b05775280a7c30ed8ea72201b348c568be7a0
 
+PKG_MAINTAINER:=Entware team, https://entware.net
 PKG_LICENSE:=GPL-3.0-only
 PKG_LICENSE_FILES:=LICENSE
 
@@ -24,31 +25,39 @@ include $(INCLUDE_DIR)/package.mk
 include $(INCLUDE_DIR)/golang.mk
 
 define Package/torrserver/Default
-	SECTION:=net
-	CATEGORY:=Network
-	SUBMENU:=BitTorrent
-	TITLE:=stream torrent to http
-	URL:=https://yourok.ru/
-	MAINTAINER:=Entware team, https://entware.net
-	DEPENDS:=+libstdcpp
+  SECTION:=net
+  CATEGORY:=Network
+  SUBMENU:=BitTorrent
+  TITLE:=stream torrent to http
+  URL:=https://yourok.ru/
+  PROVIDES:=torrserver
+  DEPENDS:=+libc +libgcc +libpthread
 endef
 
 define Package/torrserver
-	$(call Package/torrserver/Default)
-	VARIANT:=hf
+  $(call Package/torrserver/Default)
+  VARIANT:=default
+  DEFAULT_VARIANT:=1
 endef
 
-define Package/torrserver_nohf
-	$(call Package/torrserver/Default)
-	VARIANT:=nohf
-	DEPENDS+=@arm
+define Package/torrserver-hf
+  $(call Package/torrserver/Default)
+  VARIANT:=hf
+  DEPENDS+=@(mips||mipsel)
+endef
+
+define Package/torrserver-sf
+  $(call Package/torrserver/Default)
+  VARIANT:=sf
+  DEPENDS+=@arm
 endef
 
 define Package/torrserver/description
  torrserver is a server to stream torrent via http to torrserv client.
 endef
 
-Package/torrserver_nohf/description=$(Package/torrserver/description)
+Package/torrserver-hf/description=$(Package/torrserver/description)
+Package/torrserver-sf/description=$(Package/torrserver/description)
 
 GO_SRC_SUBDIR:=server
 GO_TAGS:=nosqlite
@@ -78,7 +87,9 @@ define Package/torrserver/install
 	touch $(1)/opt/etc/torrserver/.keep
 endef
 
-Package/torrserver_nohf/install=$(Package/torrserver/install)
+Package/torrserver-hf/install=$(Package/torrserver/install)
+Package/torrserver-sf/install=$(Package/torrserver/install)
 
 $(eval $(call BuildPackage,torrserver))
-$(eval $(call BuildPackage,torrserver_nohf))
+#$(eval $(call BuildPackage,torrserver-hf))
+$(eval $(call BuildPackage,torrserver-sf))
