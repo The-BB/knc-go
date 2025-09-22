@@ -25,20 +25,28 @@ include $(INCLUDE_DIR)/golang.mk
 define Package/go2rtc/Default
   SECTION:=multimedia
   CATEGORY:=Multimedia
-  TITLE:=go2rtc camera streaming
+  TITLE:=camera streaming application
   URL:=https://github.com/AlexxIT/go2rtc
-  DEPENDS:=+ffmpeg
+  PROVIDES:=go2rpc
+  EXTRA_DEPENDS:=ffmpeg
 endef
 
 define Package/go2rtc
   $(call Package/go2rtc/Default)
-  VARIANT:=hf
+  VARIANT:=default
+  DEFAULT_VARIANT:=1
 endef
 
-define Package/go2rtc_nohf
+define Package/go2rtc-hf
   $(call Package/go2rtc/Default)
-  VARIANT:=nohf
-  DEPENDS+=@arm
+  VARIANT:=hf
+  DEPENDS:=@(mips||mipsel)
+endef
+
+define Package/go2rtc-sf
+  $(call Package/go2rtc/Default)
+  VARIANT:=sf
+  DEPENDS:=@arm
 endef
 
 define Package/go2rtc/description
@@ -46,13 +54,15 @@ define Package/go2rtc/description
  HTTP-FLV, WebRTC, MSE, HLS, MP4, MJPEG, HomeKit, FFmpeg, etc.
 endef
 
-Package/go2rtc_nohf/description=$(Package/go2rtc/description)
+Package/go2rtc-hf/description=$(Package/go2rtc/description)
+Package/go2rtc-sf/description=$(Package/go2rtc/description)
 
 define Package/go2rtc/conffiles
 /opt/etc/go2rtc.yaml
 endef
 
-Package/go2rtc_nohf/conffiles=$(Package/go2rtc/conffiles)
+Package/go2rtc-hf/conffiles=$(Package/go2rtc/conffiles)
+Package/go2rtc-sf/conffiles=$(Package/go2rtc/conffiles)
 
 define Build/Prepare
 	$(call Build/Prepare/Default)
@@ -69,7 +79,9 @@ define Package/go2rtc/install
 	$(INSTALL_BIN) $(PKG_INSTALL_DIR)/bin/go2rtc $(1)/opt/sbin
 endef
 
-Package/go2rtc_nohf/install=$(Package/go2rtc/install)
+Package/go2rtc-hf/install=$(Package/go2rtc/install)
+Package/go2rtc-sf/install=$(Package/go2rtc/install)
 
 $(eval $(call BuildPackage,go2rtc))
-$(eval $(call BuildPackage,go2rtc_nohf))
+$(eval $(call BuildPackage,go2rtc-hf))
+$(eval $(call BuildPackage,go2rtc-sf))
