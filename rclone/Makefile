@@ -13,6 +13,7 @@ PKG_SOURCE_VERSION:=v$(PKG_VERSION)
 PKG_SOURCE_URL:=https://github.com/rclone/rclone
 PKG_MIRROR_HASH:=b45d5f5e31ae9785acc7c4f317c03a1fc585719acfba594d250b2f3076790dba
 
+PKG_MAINTAINER:=Entware team, https://entware.net
 PKG_LICENSE:=MIT
 PKG_LICENSE_FILES:=LICENSE
 
@@ -22,23 +23,30 @@ include $(INCLUDE_DIR)/package.mk
 include $(INCLUDE_DIR)/golang.mk
 
 define Package/rclone/Default
-	SECTION:=net
-	CATEGORY:=Network
-	SUBMENU:=File Transfer
-	TITLE:=rsync for cloud storage
-	URL:=https://rclone.org
-	MAINTAINER:=Entware team, https://entware.net
+  SECTION:=net
+  CATEGORY:=Network
+  SUBMENU:=File Transfer
+  TITLE:=rsync for cloud storage
+  URL:=https://rclone.org
+  PROVIDES:=rclone
 endef
 
 define Package/rclone
-	$(call Package/rclone/Default)
-	VARIANT:=hf
+  $(call Package/rclone/Default)
+  VARIANT:=default
+  DEFAULT_VARIANT:=1
 endef
 
-define Package/rclone_nohf
-	$(call Package/rclone/Default)
-	VARIANT:=nohf
-	DEPENDS:=@arm
+define Package/rclone-hf
+  $(call Package/rclone/Default)
+  VARIANT:=hf
+  DEPENDS:=@(mips||mipsel)
+endef
+
+define Package/rclone-sf
+  $(call Package/rclone/Default)
+  VARIANT:=sf
+  DEPENDS:=@arm
 endef
 
 define Package/rclone/description
@@ -56,7 +64,8 @@ define Package/rclone/description
     The local filesystem
 endef
 
-Package/rclone_nohf/description=$(Package/rclone/description)
+Package/rclone-hf/description=$(Package/rclone/description)
+Package/rclone-sf/description=$(Package/rclone/description)
 
 define Build/Prepare
 	$(call Build/Prepare/Default)
@@ -77,7 +86,9 @@ define Package/rclone/install
 	$(INSTALL_DIR) $(1)/opt/var/cache/rclone
 endef
 
-Package/rclone_nohf/install=$(Package/rclone/install)
+Package/rclone-hf/install=$(Package/rclone/install)
+Package/rclone-sf/install=$(Package/rclone/install)
 
 $(eval $(call BuildPackage,rclone))
-$(eval $(call BuildPackage,rclone_nohf))
+$(eval $(call BuildPackage,rclone-hf))
+$(eval $(call BuildPackage,rclone-sf))
