@@ -31,16 +31,24 @@ define Package/q/Default
   SUBMENU:=IP Addresses and Names
   TITLE:=command line DNS client
   URL:=https://github.com/natesales/q
+  PROVIDES:=q
 endef
 
 define Package/q
   $(call Package/q/Default)
-  VARIANT:=hf
+  VARIANT:=default
+  DEFAULT_VARIANT:=1
 endef
 
-define Package/q_nohf
+define Package/q-hf
   $(call Package/q/Default)
-  VARIANT:=nohf
+  VARIANT:=hf
+  DEPENDS:=@(mips||mipsel)
+endef
+
+define Package/q-sf
+  $(call Package/q/Default)
+  VARIANT:=sf
   DEPENDS:=@arm
 endef
 
@@ -49,7 +57,8 @@ define Package/q/description
  and DoQ.
 endef
 
-Package/q_nohf/description=$(Package/q/description)
+Package/q-hf/description=$(Package/q/description)
+Package/q-sf/description=$(Package/q/description)
 
 GO_LDFLAGS += \
 	-X 'main.version=$(PKG_VERSION)' \
@@ -61,7 +70,9 @@ define Package/q/install
 	$(INSTALL_BIN) $(PKG_INSTALL_DIR)/bin/q $(1)/opt/sbin
 endef
 
-Package/q_nohf/install=$(Package/q/install)
+Package/q-hf/install=$(Package/q/install)
+Package/q-sf/install=$(Package/q/install)
 
 $(eval $(call BuildPackage,q))
-$(eval $(call BuildPackage,q_nohf))
+$(eval $(call BuildPackage,q-hf))
+$(eval $(call BuildPackage,q-sf))
