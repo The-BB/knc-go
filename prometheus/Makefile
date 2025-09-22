@@ -14,6 +14,7 @@ PKG_SOURCE_VERSION:=8be3a9560fbdd18a94dedec4b747c35178177202
 PKG_SOURCE_URL:=https://github.com/prometheus/prometheus
 PKG_MIRROR_HASH:=0e75cead9676de3fb243afc6d1e991429222a95be34ce39f7d92bf4d47f06de2
 
+PKG_MAINTAINER:=Entware team, https://entware.net
 PKG_LICENSE:=Apache-2.0
 PKG_LICENSE_FILES:=LICENSE
 
@@ -28,17 +29,24 @@ define Package/prometheus/Default
   SUBMENU:=prometheus tools
   TITLE:=Monitoring system and time series database
   URL:=http://prometheus.io
-  MAINTAINER:=Entware team, https://entware.net
+  PROVIDES:=prometheus
 endef
 
 define Package/prometheus
   $(call Package/prometheus/Default)
-  VARIANT:=hf
+  VARIANT:=default
+  DEFAULT_VARIANT:=1
 endef
 
-define Package/prometheus_nohf
+define Package/prometheus-hf
   $(call Package/prometheus/Default)
-  VARIANT:=nohf
+  VARIANT:=hf
+  DEPENDS:=@(mips||mipsel)
+endef
+
+define Package/prometheus-sf
+  $(call Package/prometheus/Default)
+  VARIANT:=sf
   DEPENDS:=@arm
 endef
 
@@ -50,13 +58,15 @@ define Package/prometheus/description
   when specified conditions are observed.
 endef
 
-Package/prometheus_nohf/description=$(Package/prometheus/description)
+Package/prometheus-hf/description=$(Package/prometheus/description)
+Package/prometheus-sf/description=$(Package/prometheus/description)
 
 define Package/prometheus/conffiles
 /opt/etc/prometheus/prometheus.yml
 endef
 
-Package/prometheus_nohf/conffiles=$(Package/prometheus/conffiles)
+Package/prometheus-hf/conffiles=$(Package/prometheus/conffiles)
+Package/prometheus-sf/conffiles=$(Package/prometheus/conffiles)
 
 WEB_FILE:=$(PKG_NAME)-web-ui-$(PKG_VERSION).tar.gz
 define Download/prometheus-web-ui
@@ -106,8 +116,10 @@ define Package/prometheus/install
 	$(INSTALL_DIR) $(1)/opt/var/lib/prometheus
 endef
 
-Package/prometheus_nohf/install=$(Package/prometheus/install)
+Package/prometheus-hf/install=$(Package/prometheus/install)
+Package/prometheus-sf/install=$(Package/prometheus/install)
 
 $(eval $(call Download,prometheus-web-ui))
 $(eval $(call BuildPackage,prometheus))
-$(eval $(call BuildPackage,prometheus_nohf))
+$(eval $(call BuildPackage,prometheus-hf))
+$(eval $(call BuildPackage,prometheus-sf))
