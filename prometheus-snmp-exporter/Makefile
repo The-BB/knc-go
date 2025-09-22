@@ -14,12 +14,11 @@ PKG_SOURCE_VERSION:=42f8f2a991516b39ed60ef67eb69263d817ecd52
 PKG_SOURCE_URL:=https://github.com/prometheus/snmp_exporter
 PKG_MIRROR_HASH:=68b12a59d9425736d5c0c473e719d8230e0e241f4db62950748185179aad8aea
 
+PKG_MAINTAINER:=Entware team, https://entware.net
 PKG_LICENSE:=Apache-2.0
 PKG_LICENSE_FILES:=LICENSE
 
-PKG_BUILD_DEPENDS:=net-snmp
 PKG_BUILD_PARALLEL:=1
-PKG_CGO_ENABLED:=1
 
 include $(INCLUDE_DIR)/package.mk
 include $(INCLUDE_DIR)/golang.mk
@@ -30,17 +29,24 @@ define Package/prometheus-snmp-exporter/Default
   SUBMENU:=prometheus tools
   TITLE:=SNMP Exporter for Prometheus
   URL:=https://prometheus.io/
-  MAINTAINER:=Entware team, https://entware.net
+  PROVIDES:=prometheus-snmp-exporter
 endef
 
 define Package/prometheus-snmp-exporter
   $(call Package/prometheus-snmp-exporter/Default)
-  VARIANT:=hf
+  VARIANT:=default
+  DEFAULT_VARIANT:=1
 endef
 
-define Package/prometheus-snmp-exporter_nohf
+define Package/prometheus-snmp-exporter-hf
   $(call Package/prometheus-snmp-exporter/Default)
-  VARIANT:=nohf
+  VARIANT:=hf
+  DEPENDS:=@(mips||mipsel)
+endef
+
+define Package/prometheus-snmp-exporter-sf
+  $(call Package/prometheus-snmp-exporter/Default)
+  VARIANT:=sf
   DEPENDS:=@arm
 endef
 
@@ -49,7 +55,8 @@ define Package/prometheus-snmp-exporter/description
   in a format which Prometheus can ingest.
 endef
 
-Package/prometheus-snmp-exporter_nohf/description=$(Package/prometheus-snmp-exporter/description)
+Package/prometheus-snmp-exporter-hf/description=$(Package/prometheus-snmp-exporter/description)
+Package/prometheus-snmp-exporter-sf/description=$(Package/prometheus-snmp-exporter/description)
 
 GO_BUILD_ARGS += -a
 
@@ -71,7 +78,9 @@ define Package/prometheus-snmp-exporter/install
 	$(INSTALL_DATA) $(PKG_BUILD_DIR)/snmp.yml $(1)/opt/etc/prometheus/snmp_exporter
 endef
 
-Package/prometheus-snmp-exporter_nohf/install=$(Package/prometheus-snmp-exporter/install)
+Package/prometheus-snmp-exporter-hf/install=$(Package/prometheus-snmp-exporter/install)
+Package/prometheus-snmp-exporter-sf/install=$(Package/prometheus-snmp-exporter/install)
 
 $(eval $(call BuildPackage,prometheus-snmp-exporter))
-$(eval $(call BuildPackage,prometheus-snmp-exporter_nohf))
+$(eval $(call BuildPackage,prometheus-snmp-exporter-hf))
+$(eval $(call BuildPackage,prometheus-snmp-exporter-sf))
