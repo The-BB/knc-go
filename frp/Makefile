@@ -13,6 +13,7 @@ PKG_SOURCE_VERSION:=v$(PKG_VERSION)
 PKG_SOURCE_URL:=https://github.com/fatedier/frp
 PKG_MIRROR_HASH:=bf63cfdc1a34aca9e24408ab7ff5ab1e0fe985334c4454ba066ec31dff286486
 
+PKG_MAINTAINER:=Entware team, https://entware.net
 PKG_LICENSE:=Apache-2.0
 PKG_LICENSE_FILES:=LICENSE
 
@@ -22,25 +23,30 @@ include $(INCLUDE_DIR)/package.mk
 include $(INCLUDE_DIR)/golang.mk
 
 define Package/frp/Default
-	SECTION:=net
-	CATEGORY:=Network
-	SUBMENU:=Routing and Redirection
-	TITLE:=fast reverse proxy
-	URL:=https://github.com/fatedier/frp
-	MAINTAINER:=Entware team, https://entware.net
+  SECTION:=net
+  CATEGORY:=Network
+  SUBMENU:=Routing and Redirection
+  TITLE:=fast reverse proxy
+  URL:=https://github.com/fatedier/frp
+  PROVIDES:=frp
 endef
 
 define Package/frp
-	$(call Package/frp/Default)
-	VARIANT:=hf
-	PROVIDES:=frp-go
+  $(call Package/frp/Default)
+  VARIANT:=default
+  DEFAULT_VARIANT:=1
 endef
 
-define Package/frp_nohf
-	$(call Package/frp/Default)
-	VARIANT:=nohf
-	PROVIDES:=frp-go_nohf
-	DEPENDS:=@arm
+define Package/frp-hf
+  $(call Package/frp/Default)
+  VARIANT:=hf
+  DEPENDS:=@(mips||mipsel)
+endef
+
+define Package/frp-sf
+  $(call Package/frp/Default)
+  VARIANT:=sf
+  DEPENDS:=@arm
 endef
 
 define Package/frp/description
@@ -51,13 +57,15 @@ define Package/frp/description
  frp also offers a P2P connect mode.
 endef
 
-Package/frp_nohf/description=$(Package/frp/description)
+Package/frp-hf/description=$(Package/frp/description)
+Package/frp-sf/description=$(Package/frp/description)
 
 define Package/frp/conffiles
 /opt/etc/frp/
 endef
 
-Package/frp_nohf/conffiles=$(Package/frp/conffiles)
+Package/frp-hf/conffiles=$(Package/frp/conffiles)
+Package/frp-sf/conffiles=$(Package/frp/conffiles)
 
 GO_VARS += GO111MODULE=on
 
@@ -71,7 +79,9 @@ define Package/frp/install
 	$(INSTALL_CONF) $(PKG_BUILD_DIR)/conf/*.toml $(1)/opt/etc/frp
 endef
 
-Package/frp_nohf/install=$(Package/frp/install)
+Package/frp-hf/install=$(Package/frp/install)
+Package/frp-sf/install=$(Package/frp/install)
 
 $(eval $(call BuildPackage,frp))
-$(eval $(call BuildPackage,frp_nohf))
+$(eval $(call BuildPackage,frp-hf))
+$(eval $(call BuildPackage,frp-sf))
