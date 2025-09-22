@@ -13,6 +13,7 @@ PKG_SOURCE_VERSION:=0733cb4d2a731dbb92d927f66230694e014f4df2
 PKG_SOURCE_URL:=https://github.com/kopia/kopia
 PKG_MIRROR_HASH:=a04c2b13f59f26a64edcfb06a7e8d0a1c1ada6378c0eca79e45ac05b363973a1
 
+PKG_MAINTAINER:=Entware team, https://entware.net
 PKG_LICENSE:=Apache-2.0
 PKG_LICENSE_FILES:=LICENSE
 
@@ -27,17 +28,24 @@ define Package/kopia/Default
   SUBMENU:=Backup
   TITLE:=backup/restore tool
   URL:=https://kopia.io/
-  MAINTAINER:=Entware team, https://entware.net
+  PROVIDES:=kopia
 endef
 
 define Package/kopia
   $(call Package/kopia/Default)
-  VARIANT:=hf
+  VARIANT:=default
+  DEFAULT_VARIANT:=1
 endef
 
-define Package/kopia_nohf
+define Package/kopia-hf
   $(call Package/kopia/Default)
-  VARIANT:=nohf
+  VARIANT:=hf
+  DEPENDS:=@(mips||mipsel)
+endef
+
+define Package/kopia-sf
+  $(call Package/kopia/Default)
+  VARIANT:=sf
   DEPENDS:=@arm
 endef
 
@@ -48,13 +56,15 @@ define Package/kopia/description
   or server, or locally on your machine.
 endef
 
-Package/kopia_nohf/description=$(Package/kopia/description)
+Package/kopia-hf/description=$(Package/kopia/description)
+Package/kopia-sf/description=$(Package/kopia/description)
 
 define Package/kopia/conffiles
 /opt/etc/kopia/kopia.conf
 endef
 
-Package/kopia_nohf/conffiles=$(Package/kopia/conffiles)
+Package/kopia-hf/conffiles=$(Package/kopia/conffiles)
+Package/kopia-sf/conffiles=$(Package/kopia/conffiles)
 
 GO_LDFLAGS += \
 	-X '$(XIMPORTPATH)/repo.BuildVersion=$(PKG_VERSION)' \
@@ -70,7 +80,9 @@ define Package/kopia/install
 	$(INSTALL_BIN) ./files/S99kopia $(1)/opt/etc/init.d
 endef
 
-Package/kopia_nohf/install=$(Package/kopia/install)
+Package/kopia-hf/install=$(Package/kopia/install)
+Package/kopia-sf/install=$(Package/kopia/install)
 
 $(eval $(call BuildPackage,kopia))
-$(eval $(call BuildPackage,kopia_nohf))
+$(eval $(call BuildPackage,kopia-hf))
+$(eval $(call BuildPackage,kopia-sf))
