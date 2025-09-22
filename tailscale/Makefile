@@ -13,6 +13,7 @@ PKG_SOURCE_VERSION:=912a84eadc4e2c6150137c838a910736f7852a6f
 PKG_SOURCE_URL:=https://github.com/tailscale/tailscale
 PKG_MIRROR_HASH:=27067e5206524e26ccd22abac25cb99fa3b326d5a626c1b65e99036c1c78b994
 
+PKG_MAINTAINER:=Entware team, https://entware.net
 PKG_LICENSE:=BSD-3-Clause
 PKG_LICENSE_FILES:=LICENSE
 
@@ -22,24 +23,31 @@ include $(INCLUDE_DIR)/package.mk
 include $(INCLUDE_DIR)/golang.mk
 
 define Package/tailscale/Default
-	SECTION:=net
-	CATEGORY:=Network
-	SUBMENU:=VPN
-	TITLE:=Private WireGuard networks made easy
-	URL:=https://tailscale.com/
-	MAINTAINER:=Entware team, https://entware.net
-	EXTRA_DEPENDS:=ca-bundle, coreutils-nohup
+  SECTION:=net
+  CATEGORY:=Network
+  SUBMENU:=VPN
+  TITLE:=Private WireGuard networks made easy
+  URL:=https://tailscale.com/
+  PROVIDES:=tailscale
+  EXTRA_DEPENDS:=ca-bundle, coreutils-nohup
 endef
 
 define Package/tailscale
-	$(call Package/tailscale/Default)
-	VARIANT:=hf
+  $(call Package/tailscale/Default)
+  VARIANT:=default
+  DEFAULT_VARIANT:=1
 endef
 
-define Package/tailscale_nohf
-	$(call Package/tailscale/Default)
-	VARIANT:=nohf
-	DEPENDS:=@arm
+define Package/tailscale-hf
+  $(call Package/tailscale/Default)
+  VARIANT:=hf
+  DEPENDS:=@(mips||mipsel)
+endef
+
+define Package/tailscale-sf
+  $(call Package/tailscale/Default)
+  VARIANT:=sf
+  DEPENDS:=@arm
 endef
 
 define Package/tailscale/description
@@ -47,7 +55,8 @@ define Package/tailscale/description
  firewall rules for you, and works from anywhere
 endef
 
-Package/tailscale_nohf/description=$(Package/tailscale/description)
+Package/tailscale-hf/description=$(Package/tailscale/description)
+Package/tailscale-sf/description=$(Package/tailscale/description)
 
 PKG_SHORT_VER:=$(subst $(space),.,$(wordlist 1,2,$(subst .,$(space),$(PKG_VERSION))))
 
@@ -67,7 +76,9 @@ define Package/tailscale/install
 	$(INSTALL_BIN) ./files/S06tailscaled $(1)/opt/etc/init.d/
 endef
 
-Package/tailscale_nohf/install=$(Package/tailscale/install)
+Package/tailscale-hf/install=$(Package/tailscale/install)
+Package/tailscale-sf/install=$(Package/tailscale/install)
 
 $(eval $(call BuildPackage,tailscale))
-$(eval $(call BuildPackage,tailscale_nohf))
+$(eval $(call BuildPackage,tailscale-hf))
+$(eval $(call BuildPackage,tailscale-sf))
