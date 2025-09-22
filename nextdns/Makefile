@@ -13,6 +13,7 @@ PKG_SOURCE_VERSION:=v$(PKG_VERSION)
 PKG_SOURCE_URL:=https://github.com/nextdns/nextdns
 PKG_MIRROR_HASH:=0fa04b754d836a67e48e587e596cb966bd8c4f6382da9cfbce2d53545c046511
 
+PKG_MAINTAINER:=Entware team, https://entware.net
 PKG_LICENSE:=MIT
 PKG_LICENSE_FILES:=LICENSE
 
@@ -22,23 +23,30 @@ include $(INCLUDE_DIR)/package.mk
 include $(INCLUDE_DIR)/golang.mk
 
 define Package/nextdns/Default
-	SECTION:=net
-	CATEGORY:=Network
-	SUBMENU:=IP Addresses and Names
-	TITLE:=NextDNS CLI Client
-	URL:=https://nextdns.io/
-	MAINTAINER:=Entware team, https://entware.net
+  SECTION:=net
+  CATEGORY:=Network
+  SUBMENU:=IP Addresses and Names
+  TITLE:=NextDNS CLI Client
+  URL:=https://nextdns.io/
+  PROVIDES:=nextdns
 endef
 
 define Package/nextdns
-	$(call Package/nextdns/Default)
-	VARIANT:=hf
+  $(call Package/nextdns/Default)
+  VARIANT:=default
+  DEFAULT_VARIANT:=1
 endef
 
-define Package/nextdns_nohf
-	$(call Package/nextdns/Default)
-	VARIANT:=nohf
-	DEPENDS:=@arm
+define Package/nextdns-hf
+  $(call Package/nextdns/Default)
+  VARIANT:=hf
+  DEPENDS:=@(mips||mipsel)
+endef
+
+define Package/nextdns-sf
+  $(call Package/nextdns/Default)
+  VARIANT:=sf
+  DEPENDS:=@arm
 endef
 
 define Package/nextdns/description
@@ -49,7 +57,8 @@ define Package/nextdns/description
  provider or a mix of NextDNS + another DNS (split horizon).
 endef
 
-Package/nextdns_nohf/description=$(Package/nextdns/description)
+Package/nextdns-hf/description=$(Package/nextdns/description)
+Package/nextdns-sf/description=$(Package/nextdns/description)
 
 GO_LDFLAGS += \
 	-X 'main.Build=v$(PKG_VERSION)'
@@ -61,7 +70,9 @@ define Package/nextdns/install
 	$(INSTALL_BIN) $(PKG_INSTALL_DIR)/bin/nextdns $(1)/opt/bin
 endef
 
-Package/nextdns_nohf/install=$(Package/nextdns/install)
+Package/nextdns-hf/install=$(Package/nextdns/install)
+Package/nextdns-sf/install=$(Package/nextdns/install)
 
 $(eval $(call BuildPackage,nextdns))
-$(eval $(call BuildPackage,nextdns_nohf))
+$(eval $(call BuildPackage,nextdns-hf))
+$(eval $(call BuildPackage,nextdns-sf))
