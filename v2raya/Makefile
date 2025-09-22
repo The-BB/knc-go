@@ -28,18 +28,26 @@ define Package/v2raya/Default
   SUBMENU:=Web Servers/Proxies
   TITLE:=A Linux web GUI client of Project V
   URL:=https://v2raya.org
-  DEPENDS:=+ca-bundle +iptables
+  PROVIDES:=v2raya
+  EXTRA_DEPENDS:=ca-bundle, iptables
 endef
 
 define Package/v2raya
   $(call Package/v2raya/Default)
-  VARIANT:=hf
+  VARIANT:=default
+  DEFAULT_VARIANT:=1
 endef
 
-define Package/v2raya_nohf
+define Package/v2raya-hf
   $(call Package/v2raya/Default)
-  VARIANT:=nohf
-  DEPENDS+=@arm
+  VARIANT:=hf
+  DEPENDS:=@(mips||mipsel)
+endef
+
+define Package/v2raya-sf
+  $(call Package/v2raya/Default)
+  VARIANT:=sf
+  DEPENDS:=@arm
 endef
 
 define Package/v2raya/description
@@ -47,7 +55,8 @@ define Package/v2raya/description
   VLESS, SS, SSR, Trojan, Tuic and Juicity protocols.
 endef
 
-Package/v2raya_nohf/description=$(Package/v2raya/description)
+Package/v2raya-hf/description=$(Package/v2raya/description)
+Package/v2raya-sf/description=$(Package/v2raya/description)
 
 GO_LDFLAGS += \
 	-X '$(XIMPORTPATH)/conf.Version=v$(PKG_VERSION)'
@@ -78,8 +87,10 @@ define Package/v2raya/install
 	$(INSTALL_DIR) $(1)/opt/share/v2ray
 endef
 
-Package/v2raya_nohf/install=$(Package/v2raya/install)
+Package/v2raya-hf/install=$(Package/v2raya/install)
+Package/v2raya-sf/install=$(Package/v2raya/install)
 
 $(eval $(call Download,v2raya-web))
 $(eval $(call BuildPackage,v2raya))
-$(eval $(call BuildPackage,v2raya_nohf))
+$(eval $(call BuildPackage,v2raya-hf))
+$(eval $(call BuildPackage,v2raya-sf))
