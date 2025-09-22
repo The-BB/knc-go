@@ -29,33 +29,41 @@ define Package/adguardhome/Default
   TITLE:=Network-wide ads & trackers blocking DNS server
   URL:=https://adguard.com/adguard-home.html
   MAINTAINER:=Entware team, https://entware.net
-  DEPENDS:=+ca-bundle
+  PROVIDES:=adguardhome
+  EXTRA_DEPENDS:=ca-bundle
 endef
 
 define Package/adguardhome
   $(call Package/adguardhome/Default)
-  VARIANT:=hf
-  PROVIDES:=adguardhome-go
+  VARIANT:=default
+  DEFAULT_VARIANT:=1
 endef
 
-define Package/adguardhome_nohf
+define Package/adguardhome-hf
   $(call Package/adguardhome/Default)
-  VARIANT:=nohf
-  PROVIDES:=adguardhome-go_nohf
-  DEPENDS+=@arm
+  VARIANT:=hf
+  DEPENDS:=@(mips||mipsel)
+endef
+
+define Package/adguardhome-sf
+  $(call Package/adguardhome/Default)
+  VARIANT:=sf
+  DEPENDS:=@arm
 endef
 
 define Package/adguardhome/description
   AdGuard Home is a network-wide software for blocking ads and tracking.
 endef
 
-Package/adguardhome_nohf/description=$(Package/adguardhome/description)
+Package/adguardhome-hf/description=$(Package/adguardhome/description)
+Package/adguardhome-sf/description=$(Package/adguardhome/description)
 
 define Package/adguardhome/conffiles
 /opt/etc/AdGuardHome/adguardhome.conf
 endef
 
-Package/adguardhome_nohf/conffiles=$(Package/adguardhome/conffiles)
+Package/adguardhome-hf/conffiles=$(Package/adguardhome/conffiles)
+Package/adguardhome-sf/conffiles=$(Package/adguardhome/conffiles)
 
 GO_LDFLAGS += \
 	-X '$(XIMPORTPATH)/internal/version.channel=release' \
@@ -80,7 +88,9 @@ define Package/adguardhome/install
 	$(INSTALL_CONF) ./files/adguardhome.conf $(1)/opt/etc/AdGuardHome
 endef
 
-Package/adguardhome_nohf/install=$(Package/adguardhome/install)
+Package/adguardhome-hf/install=$(Package/adguardhome/install)
+Package/adguardhome-sf/install=$(Package/adguardhome/install)
 
 $(eval $(call BuildPackage,adguardhome))
-$(eval $(call BuildPackage,adguardhome_nohf))
+$(eval $(call BuildPackage,adguardhome-hf))
+$(eval $(call BuildPackage,adguardhome-sf))
