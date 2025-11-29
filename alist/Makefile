@@ -30,6 +30,7 @@ define Package/alist/Default
   TITLE:=A file list program that supports multiple storage
   URL:=https://alistgo.com
   PROVIDES:=alist
+  DEPENDS:=+libc +libgcc +libpthread
 endef
 
 define Package/alist
@@ -41,13 +42,13 @@ endef
 define Package/alist-hf
   $(call Package/alist/Default)
   VARIANT:=hf
-  DEPENDS:=@(mips||mipsel)
+  DEPENDS+=@(mips||mipsel)
 endef
 
 define Package/alist-sf
   $(call Package/alist/Default)
   VARIANT:=sf
-  DEPENDS:=@arm
+  DEPENDS+=@arm
 endef
 
 define Package/alist/description
@@ -98,5 +99,5 @@ Package/alist-sf/install=$(Package/alist/install)
 
 $(eval $(call Download,alist-web))
 $(eval $(call BuildPackage,alist))
-$(eval $(call BuildPackage,alist-hf))
+#$(eval $(call BuildPackage,alist-hf))
 $(eval $(call BuildPackage,alist-sf))
