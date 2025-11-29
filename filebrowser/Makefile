@@ -2,16 +2,21 @@
 #
 # Copyright (C) 2024-2025 Entware
 
+# XXX since v2.45.2:
+# You are using Node.js 18.20.2.
+# Vite requires Node.js version 20.19+ or 22.12+.
+# Please upgrade your Node.js version.
+
 include $(TOPDIR)/rules.mk
 
 PKG_NAME:=filebrowser
-PKG_VERSION:=2.43.0
+PKG_VERSION:=2.45.1
 PKG_RELEASE:=1
 
 PKG_SOURCE_PROTO:=git
-PKG_SOURCE_VERSION:=2f0c1f5fa288bad90ab70d5801a11f86a69b5cac
+PKG_SOURCE_VERSION:=7a5b9646116478d1cbc9110d865852091fa99572
 PKG_SOURCE_URL:=https://github.com/filebrowser/filebrowser
-PKG_MIRROR_HASH:=607b875aa9405d12406a322d80f4d923eec6bd8455a87940661d0b310fc94228
+PKG_MIRROR_HASH:=943448d2f5e0086f54cb7d2d3e3c84014f5d9689b499b2cb167669d2c2c7e0f3
 
 PKG_LICENSE:=Apache-2.0
 PKG_LICENSE_FILES:=LICENSE
