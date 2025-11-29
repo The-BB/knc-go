@@ -2,18 +2,16 @@
 #
 # Copyright (C) 2025 Entware
 
-# https://github.com/Entware/Entware/issues/1000
-
 include $(TOPDIR)/rules.mk
 
 PKG_NAME:=coredns
-PKG_VERSION:=1.12.4
+PKG_VERSION:=1.13.1
 PKG_RELEASE:=1
 
 PKG_SOURCE_PROTO:=git
 PKG_SOURCE_VERSION:=v$(PKG_VERSION)
 PKG_SOURCE_URL:=https://github.com/coredns/coredns
-PKG_MIRROR_HASH:=d3380562ef5f8f6c7feedf9432bdff704dc6aa913125282d102d7dd257a4dfa0
+PKG_MIRROR_HASH:=8c85fe985497397b5ad085ff36c21c7657ecfd7dcd27bed169b404cdc9d4af18
 
 PKG_MAINTAINER:=Entware team, https://entware.net
 PKG_LICENSE:=Apache-2.0
