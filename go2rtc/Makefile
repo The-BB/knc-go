@@ -5,13 +5,13 @@
 include $(TOPDIR)/rules.mk
 
 PKG_NAME:=go2rtc
-PKG_VERSION:=1.9.9
+PKG_VERSION:=1.9.12
 PKG_RELEASE:=1
 
 PKG_SOURCE_PROTO:=git
 PKG_SOURCE_VERSION:=v$(PKG_VERSION)
 PKG_SOURCE_URL:=https://github.com/AlexxIT/go2rtc
-PKG_MIRROR_HASH:=c7043bdee3e0af270fb95c694e09673780b381641ea7a07032db46fadbfbfd6b
+PKG_MIRROR_HASH:=097ddc9a9837c2705c0a7da2ae7dd671673697048955240b82b3db9eb370deb5
 
 PKG_LICENSE:=MIT
 PKG_LICENSE_FILES:=LICENSE
@@ -27,7 +27,7 @@ define Package/go2rtc/Default
   CATEGORY:=Multimedia
   TITLE:=camera streaming application
   URL:=https://github.com/AlexxIT/go2rtc
-  PROVIDES:=go2rpc
+  PROVIDES:=go2rtc
   EXTRA_DEPENDS:=ffmpeg
 endef
 
