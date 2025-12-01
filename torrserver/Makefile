@@ -66,9 +66,7 @@ GO_TARGET:=./cmd
 define Build/Web
 	( cd $(PKG_BUILD_DIR); \
 		NODE_OPTIONS=--openssl-legacy-provider \
-		$(GO_ENV_COMMON) $(GO_BIN) run \
-		$(if $(findstring s,$(OPENWRT_VERBOSE)),-v -x) \
-		gen_web.go; \
+		$(GO_BIN_RUN) gen_web.go; \
 	)
 	( cd $(PKG_BUILD_DIR)/server; $(GO_BIN_MOD_TIDY); )
 endef
