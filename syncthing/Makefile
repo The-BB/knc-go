@@ -5,14 +5,14 @@
 include $(TOPDIR)/rules.mk
 
 PKG_NAME:=syncthing
-PKG_VERSION:=2.0.9
+PKG_VERSION:=2.0.11
 PKG_RELEASE:=1
 
 PKG_SOURCE_PROTO:=git
-PKG_SOURCE_DATE:=2025-09-13
+PKG_SOURCE_DATE:=2025-11-04
 PKG_SOURCE_VERSION:=v$(PKG_VERSION)
 PKG_SOURCE_URL:=https://github.com/syncthing/syncthing
-PKG_MIRROR_HASH:=273ab18f14630848a367a01f917e2f538e930a110bf2e19a4fa715324d46e094
+PKG_MIRROR_HASH:=2cc79877d96f68f3a1e02076e2b3ecbb8f5c9ac686e585601a83d4480ae933a7
 
 PKG_MAINTAINER:=Entware team, https://entware.net
 PKG_LICENSE:=MPL-2.0
@@ -78,9 +78,7 @@ GO_TARGET:=./cmd/syncthing
 define Build/Web
 	( cd $(PKG_BUILD_DIR); \
 		PATH="$(shell $(GO_BIN) env GOROOT)/bin:$(PATH)" \
-		$(GO_ENV_COMMON) $(GO_BIN) run \
-		$(if $(findstring s,$(OPENWRT_VERBOSE)),-v -x) \
-		build.go assets; \
+		$(GO_BIN_RUN) build.go assets; \
 	)
 endef
 
