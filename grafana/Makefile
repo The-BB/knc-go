@@ -2,6 +2,8 @@
 #
 # Copyright (C) 2023-2025 Entware
 
+# XXX 11.x modernc.org/libc@v1.65.0
+
 include $(TOPDIR)/rules.mk
 
 PKG_NAME:=grafana
