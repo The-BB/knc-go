@@ -1,6 +1,6 @@
 --- a/client/cmd/root.go
 +++ b/client/cmd/root.go
-@@ -91,11 +91,11 @@ func Execute() error {
+@@ -89,11 +89,11 @@ func Execute() error {
  }
  
  func init() {
@@ -16,7 +16,7 @@
  
  	switch runtime.GOOS {
  	case "windows":
-@@ -114,7 +114,7 @@ func init() {
+@@ -112,7 +112,7 @@ func init() {
  	oldDefaultConfigPath = oldDefaultConfigPathDir + "config.json"
  	oldDefaultLogFile = oldDefaultLogFileDir + "client.log"
  
@@ -38,7 +38,7 @@
  	}
 --- a/client/iface/configurer/usp.go
 +++ b/client/iface/configurer/usp.go
-@@ -260,7 +260,7 @@ func (t *WGUSPConfigurer) Close() {
+@@ -321,7 +321,7 @@ func (t *WGUSPConfigurer) Close() {
  	}
  
  	if runtime.GOOS == "linux" {
@@ -74,7 +74,7 @@
  	defer file.Close()
 --- a/client/ui/client_ui.go
 +++ b/client/ui/client_ui.go
-@@ -135,7 +135,7 @@ type cliFlags struct {
+@@ -143,7 +143,7 @@ type cliFlags struct {
  func parseFlags() *cliFlags {
  	var flags cliFlags
  
