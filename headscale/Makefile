@@ -5,13 +5,13 @@
 include $(TOPDIR)/rules.mk
 
 PKG_NAME:=headscale
-PKG_VERSION:=0.26.1
+PKG_VERSION:=0.27.1
 PKG_RELEASE:=1
 
 PKG_SOURCE_PROTO:=git
 PKG_SOURCE_VERSION:=v$(PKG_VERSION)
 PKG_SOURCE_URL:=https://github.com/juanfont/headscale
-PKG_MIRROR_HASH:=d52539384ccbced7f91b60e9ca70880fef5716f188603302a392b78395ff10b0
+PKG_MIRROR_HASH:=da2717d716913bf91ee188e8e24cf0379f5c1b93079e346bcdf48a1b1805a109
 
 PKG_MAINTAINER:=Entware team, https://entware.net
 PKG_LICENSE:=BSD-3-Clause
@@ -39,6 +39,11 @@ define Package/headscale
   DEFAULT_VARIANT:=1
 endef
 
+define Package/headscale-hf
+  $(call Package/headscale/Default)
+  VARIANT:=hf
+endef
+
 define Package/headscale-sf
   $(call Package/headscale/Default)
   VARIANT:=sf
@@ -53,12 +58,14 @@ define Package/headscale/description
  use, or a small open-source organisation.
 endef
 
+Package/headscale-hf/description=$(Package/headscale/description)
 Package/headscale-sf/description=$(Package/headscale/description)
 
 define Package/headscale/conffiles
 /opt/etc/headscale/config.yaml
 endef
 
+Package/headscale-hf/conffiles=$(Package/headscale/conffiles)
 Package/headscale-sf/conffiles=$(Package/headscale/conffiles)
 
 GO_LDFLAGS += \
@@ -78,7 +85,9 @@ define Package/headscale/install
 	$(INSTALL_DIR) $(1)/opt/var/{lib,run}/headscale
 endef
 
+Package/headscale-hf/install=$(Package/headscale/install)
 Package/headscale-sf/install=$(Package/headscale/install)
 
 $(eval $(call BuildPackage,headscale))
+#$(eval $(call BuildPackage,headscale-hf))
 $(eval $(call BuildPackage,headscale-sf))
