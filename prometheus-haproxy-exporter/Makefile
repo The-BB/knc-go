@@ -1,7 +1,7 @@
 # SPDX-License-Identifier: GPL-2.0-only
 #
-# Copyright (C) 2023-2024 Entware
-#
+# Copyright (C) 2023-2025 Entware
+
 # Project archived by the owner on Mar 8, 2023.
 
 include $(TOPDIR)/rules.mk
@@ -16,9 +16,9 @@ PKG_SOURCE_VERSION:=d4aba878f043fd3ad0bcacd0149e7d75e67c0faa
 PKG_SOURCE_URL:=https://github.com/prometheus/haproxy_exporter
 PKG_MIRROR_HASH:=8e8c64ccc7e3b0a530516d91ece818fd9260b77c73a22c69ac3273101b8a66c5
 
-PKG_MAINTAINER:=Entware team, https://entware.net
 PKG_LICENSE:=Apache-2.0
 PKG_LICENSE_FILES:=LICENSE
+PKG_MAINTAINER:=Entware team, https://entware.net
 
 PKG_BUILD_PARALLEL:=1
 
