@@ -14,9 +14,9 @@ PKG_SOURCE_VERSION:=4b54702e6b56b48c8e9ee1f30d06e7aa487a9891
 PKG_SOURCE_URL:=https://github.com/natesales/q
 PKG_MIRROR_HASH:=a1193deb84eb85756efe5e379e0ff6e9e22045352902fb58c662957fbfff87a7
 
-PKG_MAINTAINER:=Entware team, https://entware.net
 PKG_LICENSE:=GPL-3.0-only
 PKG_LICENSE_FILES:=LICENSE
+PKG_MAINTAINER:=Entware team, https://entware.net
 
 PKG_BUILD_PARALLEL:=1
 
