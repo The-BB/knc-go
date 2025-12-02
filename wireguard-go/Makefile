@@ -13,9 +13,9 @@ PKG_SOURCE_VERSION:=$(PKG_VERSION)
 PKG_SOURCE_URL:=https://git.zx2c4.com/wireguard-go
 PKG_MIRROR_HASH:=3d5a2710f6f139f9b96030b9db5c531321eaddfe37dd95ec764d7587110bb69a
 
-PKG_MAINTAINER:=Entware team, https://entware.net
 PKG_LICENSE:=MIT
 PKG_LICENSE_FILES:=LICENSE
+PKG_MAINTAINER:=Entware team, https://entware.net
 
 PKG_BUILD_PARALLEL:=1
 
