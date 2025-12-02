@@ -14,9 +14,9 @@ PKG_SOURCE_VERSION:=cb83b7c0d3ddbacdd6ff391bdcc405f8b2ad00f0
 PKG_SOURCE_URL:=https://github.com/netbirdio/netbird
 PKG_MIRROR_HASH:=6129f188753a98afdc2dcb1901800a1c25671b83e960c3d3700188f34fe92bb7
 
-PKG_MAINTAINER:=Entware team, https://entware.net
 PKG_LICENSE:=BSD-3-Clause
 PKG_LICENSE_FILES:=LICENSE
+PKG_MAINTAINER:=Entware team, https://entware.net
 
 PKG_BUILD_PARALLEL:=1
 # for management (and signal?)
