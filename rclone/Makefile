@@ -13,9 +13,9 @@ PKG_SOURCE_VERSION:=v$(PKG_VERSION)
 PKG_SOURCE_URL:=https://github.com/rclone/rclone
 PKG_MIRROR_HASH:=42ea9dde88c2c0163b573efabb51c67d308ef32848387be05fa69486fd152612
 
-PKG_MAINTAINER:=Entware team, https://entware.net
 PKG_LICENSE:=MIT
 PKG_LICENSE_FILES:=LICENSE
+PKG_MAINTAINER:=Entware team, https://entware.net
 
 PKG_BUILD_PARALLEL:=1
 
