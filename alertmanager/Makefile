@@ -14,9 +14,9 @@ PKG_SOURCE_VERSION:=2f0cff51fd1cc761eeb671db43736341ca2ab511
 PKG_SOURCE_URL:=https://github.com/prometheus/alertmanager
 PKG_MIRROR_HASH:=d47a074f81b8da70e6e4ef92e7824b96edcedc6bfcdff13c89b7c3293eafc949
 
-PKG_MAINTAINER:=Entware team, https://entware.net
 PKG_LICENSE:=Apache-2.0
 PKG_LICENSE_FILES:=LICENSE
+PKG_MAINTAINER:=Entware team, https://entware.net
 
 PKG_BUILD_PARALLEL:=1
 
