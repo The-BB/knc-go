@@ -13,9 +13,9 @@ PKG_SOURCE_VERSION:=b69a376aa1b61ad94c9c05b2c2cd263567b8cc23
 PKG_SOURCE_URL:=https://github.com/XTLS/Xray-core
 PKG_MIRROR_HASH:=52ccd1121679bb046ab91d8f62dbcdad674ad82b83a069b08b98431a431db8cc
 
-PKG_MAINTAINER:=Entware team, https://entware.net
 PKG_LICENSE:=MPL-2.0
 PKG_LICENSE_FILES:=LICENSE
+PKG_MAINTAINER:=Entware team, https://entware.net
 
 PKG_BUILD_PARALLEL:=1
 
@@ -79,7 +79,8 @@ define Package/xray-sf
 endef
 
 define Package/xray/description
- scripts & configs.
+  $(call Package/xray-core/description)
+  (scripts & configs)
 endef
 
 Package/xray-hf/description=$(Package/xray/description)
