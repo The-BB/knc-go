@@ -14,9 +14,9 @@ PKG_SOURCE_VERSION:=46ea0224f57b708fdff317f8872765a77ef64034
 PKG_SOURCE_URL:=https://github.com/prometheus/blackbox_exporter
 PKG_MIRROR_HASH:=339e60a685dbe547fe57f6ef7d69c269e3ed95a1bffb7bb5e45fadf4b5d4f375
 
-PKG_MAINTAINER:=Entware team, https://entware.net
 PKG_LICENSE:=Apache-2.0
 PKG_LICENSE_FILES:=LICENSE
+PKG_MAINTAINER:=Entware team, https://entware.net
 
 PKG_BUILD_PARALLEL:=1
 
