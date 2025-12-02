@@ -16,9 +16,9 @@ PKG_SOURCE_VERSION:=b28b09684a775fa069da642606709db98cac6abb
 PKG_SOURCE_URL:=https://github.com/AlfredArouna/netflow_exporter
 PKG_MIRROR_HASH:=7328cdf332521bad28448cca70eb6abba02b0b76ce078b831ac1ffadfa622862
 
-PKG_MAINTAINER:=Entware team, https://entware.net
 PKG_LICENSE:=
 PKG_LICENSE_FILES:=
+PKG_MAINTAINER:=Entware team, https://entware.net
 
 PKG_BUILD_PARALLEL:=1
 
