@@ -14,9 +14,9 @@ PKG_SOURCE_VERSION:=5cda5a8a118f2eff0c786c3d45c82669735a346b
 PKG_SOURCE_URL:=https://github.com/twpayne/chezmoi
 PKG_MIRROR_HASH:=00e996a9181b82ae87cedd43f9abf16ff50b98099f2f206ae0782c866402829a
 
-PKG_MAINTAINER:=Entware team, https://entware.net
 PKG_LICENSE:=MIT
 PKG_LICENSE_FILES:=LICENSE
+PKG_MAINTAINER:=Entware team, https://entware.net
 
 PKG_BUILD_PARALLEL:=1
 
