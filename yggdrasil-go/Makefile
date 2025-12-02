@@ -1,6 +1,6 @@
 # SPDX-License-Identifier: GPL-2.0-only
 #
-# Copyright (C) 2020-2024 Entware
+# Copyright (C) 2020-2025 Entware
 
 include $(TOPDIR)/rules.mk
 
@@ -13,9 +13,9 @@ PKG_SOURCE_VERSION:=v$(PKG_VERSION)
 PKG_SOURCE_URL:=https://github.com/yggdrasil-network/yggdrasil-go
 PKG_MIRROR_HASH:=52653522b1f5a0d1187908c9c76574f095ad1a7e889e4641dd85129b37daeea2
 
-PKG_MAINTAINER:=Entware team, https://entware.net
 PKG_LICENSE:=LGPL-3.0-only
 PKG_LICENSE_FILES:=LICENSE
+PKG_MAINTAINER:=Entware team, https://entware.net
 
 PKG_BUILD_PARALLEL:=1
 
