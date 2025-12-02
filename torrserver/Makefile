@@ -13,9 +13,9 @@ PKG_SOURCE_VERSION:=MatriX.$(PKG_VERSION)
 PKG_SOURCE_URL:=https://github.com/YouROK/TorrServer
 PKG_MIRROR_HASH:=d2181a764432312e6daf6aff661b05775280a7c30ed8ea72201b348c568be7a0
 
-PKG_MAINTAINER:=Entware team, https://entware.net
 PKG_LICENSE:=GPL-3.0-only
 PKG_LICENSE_FILES:=LICENSE
+PKG_MAINTAINER:=Entware team, https://entware.net
 
 PKG_BUILD_DEPENDS:=node-yarn/host
 PKG_BUILD_PARALLEL:=1
