@@ -13,9 +13,9 @@ PKG_SOURCE_VERSION:=e456f78fa2d15b102988eee1025a2451eeaa3ebf
 PKG_SOURCE_URL:=https://github.com/kopia/kopia
 PKG_MIRROR_HASH:=df537f56502143aea3449fa3d4311f6e923c8f9435f840e881d1a4235b10274d
 
-PKG_MAINTAINER:=Entware team, https://entware.net
 PKG_LICENSE:=Apache-2.0
 PKG_LICENSE_FILES:=LICENSE
+PKG_MAINTAINER:=Entware team, https://entware.net
 
 PKG_BUILD_PARALLEL:=1
 
