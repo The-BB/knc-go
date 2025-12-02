@@ -13,9 +13,9 @@ PKG_SOURCE_VERSION:=822adaa259725caca109866843c700e626af24f8
 PKG_SOURCE_URL:=https://github.com/tailscale/tailscale
 PKG_MIRROR_HASH:=0b17d8f9f0c800247cf2b560733f1be1cbad052e2118ae1ba5ae5cf751b66a23
 
-PKG_MAINTAINER:=Entware team, https://entware.net
 PKG_LICENSE:=BSD-3-Clause
 PKG_LICENSE_FILES:=LICENSE
+PKG_MAINTAINER:=Entware team, https://entware.net
 
 PKG_BUILD_PARALLEL:=1
 
