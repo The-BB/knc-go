@@ -14,9 +14,9 @@ PKG_SOURCE_VERSION:=v$(PKG_VERSION)
 PKG_SOURCE_URL:=https://github.com/v2fly/v2ray-core
 PKG_MIRROR_HASH:=ea062109d0db278ad6f871dc30e7de04e5d798c96943c8cbf86adea62e51f2d6
 
-PKG_MAINTAINER:=Entware team, https://entware.net
 PKG_LICENSE:=MIT
 PKG_LICENSE_FILES:=LICENSE
+PKG_MAINTAINER:=Entware team, https://entware.net
 
 PKG_BUILD_PARALLEL:=1
 
@@ -82,7 +82,8 @@ define Package/v2ray-sf
 endef
 
 define Package/v2ray/description
- scripts & configs.
+  $(call Package/v2ray-core/description)
+  (scripts & configs)
 endef
 
 Package/v2ray-hf/description=$(Package/v2ray/description)
