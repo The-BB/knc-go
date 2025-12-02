@@ -14,9 +14,9 @@ PKG_SOURCE_VERSION:=42f8f2a991516b39ed60ef67eb69263d817ecd52
 PKG_SOURCE_URL:=https://github.com/prometheus/snmp_exporter
 PKG_MIRROR_HASH:=68b12a59d9425736d5c0c473e719d8230e0e241f4db62950748185179aad8aea
 
-PKG_MAINTAINER:=Entware team, https://entware.net
 PKG_LICENSE:=Apache-2.0
 PKG_LICENSE_FILES:=LICENSE
+PKG_MAINTAINER:=Entware team, https://entware.net
 
 PKG_BUILD_PARALLEL:=1
 
