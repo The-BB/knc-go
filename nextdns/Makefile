@@ -13,9 +13,9 @@ PKG_SOURCE_VERSION:=v$(PKG_VERSION)
 PKG_SOURCE_URL:=https://github.com/nextdns/nextdns
 PKG_MIRROR_HASH:=0fa04b754d836a67e48e587e596cb966bd8c4f6382da9cfbce2d53545c046511
 
-PKG_MAINTAINER:=Entware team, https://entware.net
 PKG_LICENSE:=MIT
 PKG_LICENSE_FILES:=LICENSE
+PKG_MAINTAINER:=Entware team, https://entware.net
 
 PKG_BUILD_PARALLEL:=1
 
