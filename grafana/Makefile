@@ -16,9 +16,9 @@ PKG_SOURCE_VERSION:=5e7a8b1652847effdfaf023485dc7601675da672
 PKG_SOURCE_URL:=https://github.com/grafana/grafana
 PKG_MIRROR_HASH:=e2b781061e445d1467656ddcd6daf034d3ad5a88a616923c4d54a1d82b2664cd
 
-PKG_MAINTAINER:=Entware team, https://entware.net
 PKG_LICENSE:=AGPL-3.0-only
 PKG_LICENSE_FILES:=LICENSE LICENSING.md
+PKG_MAINTAINER:=Entware team, https://entware.net
 
 PKG_BUILD_DEPENDS:=node-yarn/host
 PKG_BUILD_PARALLEL:=1
