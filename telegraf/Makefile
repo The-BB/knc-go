@@ -13,9 +13,9 @@ PKG_SOURCE_VERSION:=467473bdb7087e42a5c1c11e63d64731883eb079
 PKG_SOURCE_URL:=https://github.com/influxdata/telegraf
 PKG_MIRROR_HASH:=f42b30a7755e77ae6e65b53b0dd7f9fe7058cd916d1d351d0145b9241cc1e5c3
 
-PKG_MAINTAINER:=Entware team, https://entware.net
 PKG_LICENSE:=MIT
 PKG_LICENSE_FILES:=LICENSE
+PKG_MAINTAINER:=Entware team, https://entware.net
 
 PKG_BUILD_PARALLEL:=1
 
