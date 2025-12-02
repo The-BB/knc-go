@@ -71,7 +71,6 @@ ifeq ($(ARCH),arm)
 	### or (?)
 	#GO_VARS += GOARM=7
 	#GO_VARS += GOARMFP=hard
-
   endif
 endif
 
