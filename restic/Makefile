@@ -13,9 +13,9 @@ PKG_SOURCE_VERSION:=v$(PKG_VERSION)
 PKG_SOURCE_URL:=https://github.com/restic/restic
 PKG_MIRROR_HASH:=0ec348b1f2f168f19e0c3d6c37343244bbf7dea1cdc065a2e897de92f5b0ab07
 
-PKG_MAINTAINER:=Entware team, https://entware.net
 PKG_LICENSE:=BSD-2-Clause
 PKG_LICENSE_FILES:=LICENSE
+PKG_MAINTAINER:=Entware team, https://entware.net
 
 PKG_BUILD_PARALLEL:=1
 
