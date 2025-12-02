@@ -14,9 +14,9 @@ PKG_SOURCE_VERSION:=654f19dee6a0c41de78a8d6d870e8c742cdb43b9
 PKG_SOURCE_URL:=https://github.com/prometheus/node_exporter
 PKG_MIRROR_HASH:=36299d2e3d55fa02d89afb1bff49b6b3ff2e395139bfd95858c55da8418b6b97
 
-PKG_MAINTAINER:=Entware team, https://entware.net
 PKG_LICENSE:=Apache-2.0
 PKG_LICENSE_FILES:=LICENSE
+PKG_MAINTAINER:=Entware team, https://entware.net
 
 PKG_BUILD_PARALLEL:=1
 
