@@ -1,6 +1,6 @@
 # SPDX-License-Identifier: GPL-2.0-only
 #
-# Copyright (C) 2023-2024 Entware
+# Copyright (C) 2023-2025 Entware
 
 include $(TOPDIR)/rules.mk
 
@@ -14,9 +14,9 @@ PKG_SOURCE_VERSION:=c0a390a2c43f77863278615b47d46e886bdca726
 PKG_SOURCE_URL:=https://github.com/prometheus/statsd_exporter
 PKG_MIRROR_HASH:=adc968e65987e1f18cbcd170d35287ae3ac062271cf91bfacea7fd7f81d98abf
 
-PKG_MAINTAINER:=Entware team, https://entware.net
 PKG_LICENSE:=Apache-2.0
 PKG_LICENSE_FILES:=LICENSE
+PKG_MAINTAINER:=Entware team, https://entware.net
 
 PKG_BUILD_PARALLEL:=1
 
