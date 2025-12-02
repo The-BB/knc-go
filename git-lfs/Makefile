@@ -13,9 +13,9 @@ PKG_SOURCE_VERSION:=b84b33847fe6458f36ef521534dc0eac953cb379
 PKG_SOURCE_URL:=https://github.com/git-lfs/git-lfs
 PKG_MIRROR_HASH:=3118d03b93af7d9112e173da56354455e3362dfdce0b45ae493fdeae289ba102
 
-PKG_MAINTAINER:=Entware team, https://entware.net
 PKG_LICENSE:=MIT
 PKG_LICENSE_FILES:=LICENSE.md
+PKG_MAINTAINER:=Entware team, https://entware.net
 
 PKG_BUILD_PARALLEL:=1
 
@@ -28,7 +28,6 @@ define Package/git-lfs/Default
   SUBMENU:=Version Control Systems
   TITLE:=Git Large File Storage
   URL:=https://git-lfs.github.com
-  MAINTAINER:=Entware team, https://entware.net
   PROVIDES:=git-lfs
   EXTRA_DEPENDS:=git
 endef
