@@ -16,6 +16,7 @@ PKG_MIRROR_HASH:=f08cf74a890c471163c06bdd22b257b5bc4a9078147f04292db9afdc6f774b2
 
 PKG_LICENSE:=GPL-3.0-only
 PKG_LICENSE_FILES:=LICENSE.txt
+PKG_MAINTAINER:=Entware team, https://entware.net
 
 PKG_BUILD_DEPENDS:=node-yarn/host
 PKG_BUILD_PARALLEL:=1
@@ -28,7 +29,6 @@ define Package/adguardhome/Default
   CATEGORY:=Network
   TITLE:=Network-wide ads & trackers blocking DNS server
   URL:=https://adguard.com/adguard-home.html
-  MAINTAINER:=Entware team, https://entware.net
   PROVIDES:=adguardhome
   EXTRA_DEPENDS:=ca-bundle
 endef
