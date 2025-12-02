@@ -14,9 +14,9 @@ PKG_SOURCE_VERSION:=v$(PKG_VERSION)
 PKG_SOURCE_URL:=https://github.com/syncthing/syncthing
 PKG_MIRROR_HASH:=2cc79877d96f68f3a1e02076e2b3ecbb8f5c9ac686e585601a83d4480ae933a7
 
-PKG_MAINTAINER:=Entware team, https://entware.net
 PKG_LICENSE:=MPL-2.0
 PKG_LICENSE_FILES:=LICENSE
+PKG_MAINTAINER:=Entware team, https://entware.net
 
 PKG_BUILD_DEPENDS:=node/host
 PKG_BUILD_PARALLEL:=1
