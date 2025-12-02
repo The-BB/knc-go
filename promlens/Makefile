@@ -1,7 +1,7 @@
 # SPDX-License-Identifier: GPL-2.0-only
 #
 # Copyright (C) 2023-2025 Entware
-#
+
 # XXX mips(el): modernc.org/libc/**: build constraints exclude all Go files in ***
 
 include $(TOPDIR)/rules.mk
@@ -16,9 +16,9 @@ PKG_SOURCE_VERSION:=759372f2207b1c8e46c210e822b5e8fdc92ea6a7
 PKG_SOURCE_URL:=https://github.com/prometheus/promlens
 PKG_MIRROR_HASH:=0104665451f56178e00d4b936310f75b7d2de767bfce101923f332c220b7d9ac
 
-PKG_MAINTAINER:=Entware team, https://entware.net
 PKG_LICENSE:=Apache-2.0
 PKG_LICENSE_FILES:=LICENSE
+PKG_MAINTAINER:=Entware team, https://entware.net
 
 PKG_BUILD_DEPENDS:=node/host
 PKG_BUILD_PARALLEL:=1
