@@ -16,9 +16,9 @@ PKG_SOURCE_VERSION:=8607c5af48d09b2caeb3add8eb69f7bcea9f5506
 PKG_SOURCE_URL:=https://github.com/cloudflare/goflow
 PKG_MIRROR_HASH:=73cc75f17aba13ada29440c79edb7840513719141e3cd770fcc521b3576b047d
 
-PKG_MAINTAINER:=Entware team, https://entware.net
 PKG_LICENSE:=BSD-3-Clause
 PKG_LICENSE_FILES:=LICENSE.txt
+PKG_MAINTAINER:=Entware team, https://entware.net
 
 PKG_BUILD_PARALLEL:=1
 
