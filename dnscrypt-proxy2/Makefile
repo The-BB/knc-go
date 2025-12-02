@@ -13,9 +13,9 @@ PKG_SOURCE_VERSION:=$(PKG_VERSION)
 PKG_SOURCE_URL:=https://github.com/DNSCrypt/dnscrypt-proxy
 PKG_MIRROR_HASH:=4cb00fbe9c7d9a0e6c853941da59dbaeb12d50b5147083b5f37386d8d2425edb
 
-PKG_MAINTAINER:=Entware team, https://entware.net
 PKG_LICENSE:=ISC
 PKG_LICENSE_FILES:=LICENSE
+PKG_MAINTAINER:=Entware team, https://entware.net
 
 PKG_BUILD_PARALLEL:=1
 
