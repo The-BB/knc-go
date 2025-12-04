@@ -20,7 +20,8 @@ PKG_LICENSE:=AGPL-3.0-only
 PKG_LICENSE_FILES:=LICENSE LICENSING.md
 PKG_MAINTAINER:=Entware team, https://entware.net
 
-PKG_BUILD_DEPENDS:=node-yarn/host
+# ModuleNotFoundError: No module named 'distutils'
+PKG_BUILD_DEPENDS:=node-yarn/host python-setuptools/host
 PKG_BUILD_PARALLEL:=1
 PKG_CGO_ENABLED:=1
 
