@@ -1,6 +1,6 @@
 # SPDX-License-Identifier: GPL-2.0-only
 #
-# Copyright (C) 2011-2025 Entware
+# Copyright (C) 2011-2026 Entware
 
 include $(TOPDIR)/rules.mk
 
@@ -9,7 +9,7 @@ PKG_VERSION:=0.0.14
 PKG_RELEASE:=1
 
 PKG_SOURCE_PROTO:=git
-PKG_SOURCE_VERSION:=336a71d6e4cfd2d33e9c57797828007ad74975e9
+PKG_SOURCE_VERSION:=$(PKG_NAME)proxy-$(PKG_VERSION)
 PKG_SOURCE_URL:=https://gitlab.com/yawning/obfs4
 PKG_MIRROR_HASH:=8fa7950328b64c9cdea86c5d343f3043f9f1273df1b4e6efe985d53f607ba66e
 
