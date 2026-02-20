@@ -1,18 +1,18 @@
 # SPDX-License-Identifier: GPL-2.0-only
 #
-# Copyright (C) 2023-2025 Entware
+# Copyright (C) 2023-2026 Entware
 
 include $(TOPDIR)/rules.mk
 
 PKG_NAME:=prometheus
-PKG_VERSION:=3.7.3
+PKG_VERSION:=3.9.1
 PKG_RELEASE:=1
 
 PKG_SOURCE_PROTO:=git
-PKG_SOURCE_DATE:=2025-10-30
-PKG_SOURCE_VERSION:=0a41f0000705c69ab8e0f9a723fc73e39ed62b07
+PKG_SOURCE_DATE:=2026-01-07
+PKG_SOURCE_VERSION:=9ec59baffb547e24f1468a53eb82901e58feabd8
 PKG_SOURCE_URL:=https://github.com/prometheus/prometheus
-PKG_MIRROR_HASH:=cd8eda138f66cc2d346126cad665eb0c5b4ed1cb91d7f0977b9cfda921c326cf
+PKG_MIRROR_HASH:=57faa7ab60fecba5e15143010d801196e8b6a2f6f2008fabd9fbc676a2b6042d
 
 PKG_LICENSE:=Apache-2.0
 PKG_LICENSE_FILES:=LICENSE
@@ -73,7 +73,7 @@ define Download/prometheus-web-ui
   URL:=https://github.com/prometheus/prometheus/releases/download/v$(PKG_VERSION)/
   URL_FILE:=$(WEB_FILE)
   FILE:=$(WEB_FILE)
-  HASH:=786c3ef7eac9ec9c19636b001372aeafac79a36a541adc5447625b2d4c5acb5c
+  HASH:=a6557f8849d4b1e3f882577a7eff9d22f161a10baaa4e81b8287fe1640afbc5a
 endef
 
 GO_BUILD_ARGS += -a
