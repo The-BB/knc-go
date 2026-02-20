@@ -1,18 +1,18 @@
 # SPDX-License-Identifier: GPL-2.0-only
 #
-# Copyright (C) 2023-2025 Entware
+# Copyright (C) 2023-2026 Entware
 
 include $(TOPDIR)/rules.mk
 
 PKG_NAME:=alertmanager
-PKG_VERSION:=0.29.0
+PKG_VERSION:=0.31.1
 PKG_RELEASE:=1
 
 PKG_SOURCE_PROTO:=git
-PKG_SOURCE_DATE:=2025-10-03
-PKG_SOURCE_VERSION:=2f0cff51fd1cc761eeb671db43736341ca2ab511
+PKG_SOURCE_DATE:=2026-02-12
+PKG_SOURCE_VERSION:=7a639ba087d6e877038cabfdaa645230f79001b8
 PKG_SOURCE_URL:=https://github.com/prometheus/alertmanager
-PKG_MIRROR_HASH:=d47a074f81b8da70e6e4ef92e7824b96edcedc6bfcdff13c89b7c3293eafc949
+PKG_MIRROR_HASH:=ed4d5c8c8232eceb3dda4742b1c9dcf95316e39aa14ebae5641afdb3136a8a4a
 
 PKG_LICENSE:=Apache-2.0
 PKG_LICENSE_FILES:=LICENSE
