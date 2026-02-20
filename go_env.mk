@@ -61,16 +61,16 @@ ifeq ($(ARCH),aarch64)
 endif
 
 ifeq ($(ARCH),arm)
-  ifeq ($(BUILD_VARIANT),sf)
-	GO_VARS += GOARM=7,softfloat
-	### or (?)
-	#GO_VARS += GOARM=7
-	#GO_VARS += GOARMFP=soft
-  else
+  ifeq ($(BUILD_VARIANT),hf)
 	GO_VARS += GOARM=7,hardfloat
 	### or (?)
 	#GO_VARS += GOARM=7
 	#GO_VARS += GOARMFP=hard
+  else
+	GO_VARS += GOARM=7,softfloat
+	### or (?)
+	#GO_VARS += GOARM=7
+	#GO_VARS += GOARMFP=soft
   endif
 endif
 
