@@ -29,7 +29,6 @@ define Package/prometheus-statsd-exporter/Default
   SUBMENU:=prometheus tools
   TITLE:=StatsD to Prometheus metrics exporter
   URL:=https://prometheus.io/
-  MAINTAINER:=Entware team, https://entware.net
   PROVIDES:=prometheus-statsd-exporter
 endef
 
