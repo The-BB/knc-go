@@ -1,17 +1,17 @@
 # SPDX-License-Identifier: GPL-2.0-only
 #
-# Copyright (C) 2020-2025 Entware
+# Copyright (C) 2020-2026 Entware
 
 include $(TOPDIR)/rules.mk
 
 PKG_NAME:=nebula
-PKG_VERSION:=1.9.7
+PKG_VERSION:=1.10.3
 PKG_RELEASE:=1
 
 PKG_SOURCE_PROTO:=git
 PKG_SOURCE_VERSION:=v$(PKG_VERSION)
 PKG_SOURCE_URL:=https://github.com/slackhq/nebula
-PKG_MIRROR_HASH:=e213664b857bb3be216c6f34faf3022e4e49ca1d6d14c8b514e3398b9daed1f3
+PKG_MIRROR_HASH:=23f489c564d0976e921c55b899f9851d2fdfeb8d212184ae890ee6ff6e0489e4
 
 PKG_LICENSE:=MIT
 PKG_LICENSE_FILES:=LICENSE
