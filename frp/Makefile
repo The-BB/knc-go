@@ -1,21 +1,23 @@
 # SPDX-License-Identifier: GPL-2.0-only
 #
-# Copyright (C) 2023-2025 Entware
+# Copyright (C) 2023-2026 Entware
 
 include $(TOPDIR)/rules.mk
 
 PKG_NAME:=frp
-PKG_VERSION:=0.65.0
+PKG_VERSION:=0.67.0
 PKG_RELEASE:=1
 
 PKG_SOURCE_PROTO:=git
 PKG_SOURCE_VERSION:=v$(PKG_VERSION)
 PKG_SOURCE_URL:=https://github.com/fatedier/frp
-PKG_MIRROR_HASH:=8961992dd2fb1869229cd17aa19402e6253a2ee55bf50142a076316d5b96d057
+PKG_MIRROR_HASH:=5d4c1339c2797b4c30cf815f367aff8e9694f45f3e690c2c2899729abe6f35dc
 
 PKG_LICENSE:=Apache-2.0
 PKG_LICENSE_FILES:=LICENSE
 PKG_MAINTAINER:=Entware team, https://entware.net
+
+PKG_BUILD_DEPENDS:=node-yarn/host
 
 PKG_BUILD_PARALLEL:=1
 
@@ -71,6 +73,12 @@ GO_VARS += GO111MODULE=on
 
 GO_TAGS:=frpc, frps
 GO_TARGET:=./cmd/frpc ./cmd/frps
+
+define Build/Compile
+	( cd $(PKG_BUILD_DIR)/web/frpc; yarn install; yarn run build; )
+	( cd $(PKG_BUILD_DIR)/web/frps; yarn install; yarn run build; )
+	$(call Build/Compile/Go)
+endef
 
 define Package/frp/install
 	$(INSTALL_DIR) $(1)/opt/bin
