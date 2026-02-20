@@ -1,17 +1,17 @@
 # SPDX-License-Identifier: GPL-2.0-only
 #
-# Copyright (C) 2011-2025 Entware
+# Copyright (C) 2011-2026 Entware
 
 include $(TOPDIR)/rules.mk
 
 PKG_NAME:=dnscrypt-proxy2
-PKG_VERSION:=2.1.14
+PKG_VERSION:=2.1.15
 PKG_RELEASE:=1
 
 PKG_SOURCE_PROTO:=git
 PKG_SOURCE_VERSION:=$(PKG_VERSION)
 PKG_SOURCE_URL:=https://github.com/DNSCrypt/dnscrypt-proxy
-PKG_MIRROR_HASH:=4cb00fbe9c7d9a0e6c853941da59dbaeb12d50b5147083b5f37386d8d2425edb
+PKG_MIRROR_HASH:=90dfee3884e69f36b2de01a66cb63f4d9accfe39097688ca7864f6fe9f8cb4ee
 
 PKG_LICENSE:=ISC
 PKG_LICENSE_FILES:=LICENSE
