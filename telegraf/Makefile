@@ -1,20 +1,21 @@
 # SPDX-License-Identifier: GPL-2.0-only
 #
-# Copyright (C) 2021-2025 Entware
+# Copyright (C) 2021-2026 Entware
 
 include $(TOPDIR)/rules.mk
 
 PKG_NAME:=telegraf
-PKG_VERSION:=1.35.2
+PKG_VERSION:=1.37.2
 PKG_RELEASE:=1
 
 PKG_SOURCE_PROTO:=git
-PKG_SOURCE_VERSION:=ac1c145160634195c19051c8276796f2045cfea4
+PKG_SOURCE_VERSION:=a6b212be36b1402108b66d3dde38de0ff542f99f
 PKG_SOURCE_URL:=https://github.com/influxdata/telegraf
-PKG_MIRROR_HASH:=cf89f908e4de97ecad9158bf67af1004f0fe9419eb34b79fb6bcaac8d4497417
+PKG_MIRROR_HASH:=fefcf1e0cb15abd0a86c38ee5d62614fd2865e9094518ed17ed07608b7204d64
 
 PKG_LICENSE:=MIT
 PKG_LICENSE_FILES:=LICENSE
+PKG_MAINTAINER:=Entware team, https://entware.net
 
 PKG_BUILD_PARALLEL:=1
 
@@ -22,22 +23,29 @@ include $(INCLUDE_DIR)/package.mk
 include $(INCLUDE_DIR)/golang.mk
 
 define Package/telegraf/Default
-	SECTION:=utils
-	CATEGORY:=Utilities
-	TITLE:=server agent to help you collect metrics
-	URL:=https://www.influxdata.com/time-series-platform/telegraf
-	MAINTAINER:=Entware team, https://entware.net
+  SECTION:=utils
+  CATEGORY:=Utilities
+  TITLE:=server agent to help you collect metrics
+  URL:=https://www.influxdata.com/time-series-platform/telegraf
+  PROVIDES:=telegraf
 endef
 
 define Package/telegraf
-	$(call Package/telegraf/Default)
-	VARIANT:=hf
+  $(call Package/telegraf/Default)
+  VARIANT:=default
+  DEFAULT_VARIANT:=1
 endef
 
-define Package/telegraf_nohf
-	$(call Package/telegraf/Default)
-	VARIANT:=nohf
-	DEPENDS:=@arm
+define Package/telegraf-hf
+  $(call Package/telegraf/Default)
+  VARIANT:=hf
+  DEPENDS:=@(mips||mipsel)
+endef
+
+define Package/telegraf-sf
+  $(call Package/telegraf/Default)
+  VARIANT:=sf
+  DEPENDS:=@arm
 endef
 
 define Package/telegraf/description
@@ -47,7 +55,8 @@ define Package/telegraf/description
  collecting metrics.
 endef
 
-Package/telegraf_nohf/description=$(Package/telegraf/description)
+Package/telegraf-hf/description=$(Package/telegraf/description)
+Package/telegraf-sf/description=$(Package/telegraf/description)
 
 GO_LDFLAGS += \
 	-X '$(XIMPORTPATH)/internal.Commit=$(COMMIT_SHORT)' \
@@ -63,7 +72,9 @@ define Package/telegraf/install
 	$(INSTALL_BIN) $(PKG_INSTALL_DIR)/bin/telegraf $(1)/opt/bin
 endef
 
-Package/telegraf_nohf/install=$(Package/telegraf/install)
+Package/telegraf-hf/install=$(Package/telegraf/install)
+Package/telegraf-sf/install=$(Package/telegraf/install)
 
 $(eval $(call BuildPackage,telegraf))
-$(eval $(call BuildPackage,telegraf_nohf))
+$(eval $(call BuildPackage,telegraf-hf))
+$(eval $(call BuildPackage,telegraf-sf))
