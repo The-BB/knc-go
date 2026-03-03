@@ -1,17 +1,17 @@
 # SPDX-License-Identifier: GPL-2.0-only
 #
-# Copyright (C) 2023-2025 Entware
+# Copyright (C) 2023-2026 Entware
 
 include $(TOPDIR)/rules.mk
 
 PKG_NAME:=v2ray-plugin
-PKG_VERSION:=5.37.0
+PKG_VERSION:=5.44.1
 PKG_RELEASE:=1
 
 PKG_SOURCE_PROTO:=git
 PKG_SOURCE_VERSION:=v$(PKG_VERSION)
 PKG_SOURCE_URL:=https://github.com/teddysun/v2ray-plugin
-PKG_MIRROR_HASH:=2b95ceeb29b506c2ca3cc30158d5f229c821c2f1b88fb2d52e57619a9a6005df
+PKG_MIRROR_HASH:=49f56fe21e8617649b8788441153d44ad8bb39bd1508f628f5905f93d264aa9a
 
 PKG_LICENSE:=MIT
 PKG_LICENSE_FILES:=LICENSE
@@ -28,16 +28,24 @@ define Package/v2ray-plugin/Default
   SUBMENU:=Web Servers/Proxies
   TITLE:=A SIP003 plugin based on v2ray
   URL:=https://github.com/teddysun/v2ray-plugin
+  PROVIDES:=v2ray-plugin
 endef
 
 define Package/v2ray-plugin
   $(call Package/v2ray-plugin/Default)
-  VARIANT:=hf
+  VARIANT:=default
+  DEFAULT_VARIANT:=1
 endef
 
-define Package/v2ray-plugin_nohf
+define Package/v2ray-plugin-hf
   $(call Package/v2ray-plugin/Default)
-  VARIANT:=nohf
+  VARIANT:=hf
+  DEPENDS:=@(mips||mipsel)
+endef
+
+define Package/v2ray-plugin-sf
+  $(call Package/v2ray-plugin/Default)
+  VARIANT:=sf
   DEPENDS:=@arm
 endef
 
@@ -45,7 +53,8 @@ define Package/v2ray-plugin/description
   Yet another SIP003 plugin for shadowsocks, based on v2ray.
 endef
 
-Package/v2ray-plugin_nohf/description=$(Package/v2ray-plugin/description)
+Package/v2ray-plugin-hf/description=$(Package/v2ray-plugin/description)
+Package/v2ray-plugin-sf/description=$(Package/v2ray-plugin/description)
 
 GO_LDFLAGS += -X 'main.VERSION=v$(PKG_VERSION)'
 
@@ -54,7 +63,9 @@ define Package/v2ray-plugin/install
 	$(INSTALL_BIN) $(PKG_INSTALL_DIR)/bin/v2ray-plugin $(1)/opt/bin
 endef
 
-Package/v2ray-plugin_nohf/install=$(Package/v2ray-plugin/install)
+Package/v2ray-plugin-hf/install=$(Package/v2ray-plugin/install)
+Package/v2ray-plugin-sf/install=$(Package/v2ray-plugin/install)
 
 $(eval $(call BuildPackage,v2ray-plugin))
-$(eval $(call BuildPackage,v2ray-plugin_nohf))
+$(eval $(call BuildPackage,v2ray-plugin-hf))
+$(eval $(call BuildPackage,v2ray-plugin-sf))
