@@ -1,17 +1,21 @@
 # SPDX-License-Identifier: GPL-2.0-only
 #
-# Copyright (C) 2011-2025 Entware
+# Copyright (C) 2011-2026 Entware
 
 include $(TOPDIR)/rules.mk
 
 PKG_NAME:=dnscrypt-proxy2
-PKG_VERSION:=2.1.12
+PKG_VERSION:=2.1.15
 PKG_RELEASE:=1
 
 PKG_SOURCE_PROTO:=git
 PKG_SOURCE_VERSION:=$(PKG_VERSION)
 PKG_SOURCE_URL:=https://github.com/DNSCrypt/dnscrypt-proxy
-PKG_MIRROR_HASH:=eb66d39740303d008a6f54ce65ebd65472a2129a8235ae98c6851479c84a778f
+PKG_MIRROR_HASH:=90dfee3884e69f36b2de01a66cb63f4d9accfe39097688ca7864f6fe9f8cb4ee
+
+PKG_LICENSE:=ISC
+PKG_LICENSE_FILES:=LICENSE
+PKG_MAINTAINER:=Entware team, https://entware.net
 
 PKG_BUILD_PARALLEL:=1
 
@@ -19,25 +23,32 @@ include $(INCLUDE_DIR)/package.mk
 include $(INCLUDE_DIR)/golang.mk
 
 define Package/dnscrypt-proxy2/Default
-	SECTION:=net
-	CATEGORY:=Network
-	SUBMENU:=IP Addresses and Names
-	TITLE:=Flexible DNS proxy with encrypted DNS protocols
-	URL:=https://github.com/DNSCrypt/dnscrypt-proxy
-	MAINTAINER:=Entware team, https://entware.net
-	DEPENDS:=+ca-bundle
-	CONFLICTS:=dnscrypt-proxy
+  SECTION:=net
+  CATEGORY:=Network
+  SUBMENU:=IP Addresses and Names
+  TITLE:=Flexible DNS proxy with encrypted DNS protocols
+  URL:=https://dnscrypt.info/
+  PROVIDES:=dnscrypt-proxy2
+  CONFLICTS:=dnscrypt-proxy
+  EXTRA_DEPENDS:=ca-bundle
 endef
 
 define Package/dnscrypt-proxy2
-	$(call Package/dnscrypt-proxy2/Default)
-	VARIANT:=hf
+  $(call Package/dnscrypt-proxy2/Default)
+  VARIANT:=default
+  DEFAULT_VARIANT:=1
 endef
 
-define Package/dnscrypt-proxy2_nohf
-	$(call Package/dnscrypt-proxy2/Default)
-	VARIANT:=nohf
-	DEPENDS+=@arm
+define Package/dnscrypt-proxy2-hf
+  $(call Package/dnscrypt-proxy2/Default)
+  VARIANT:=hf
+  DEPENDS:=@(mips||mipsel)
+endef
+
+define Package/dnscrypt-proxy2-sf
+  $(call Package/dnscrypt-proxy2/Default)
+  VARIANT:=sf
+  DEPENDS:=@arm
 endef
 
 define Package/dnscrypt-proxy2/description
@@ -48,13 +59,15 @@ define Package/dnscrypt-proxy2/description
  computer and recursive name servers.
 endef
 
-Package/dnscrypt-proxy2_nohf/description=$(Package/dnscrypt-proxy2/description)
+Package/dnscrypt-proxy2-hf/description=$(Package/dnscrypt-proxy2/description)
+Package/dnscrypt-proxy2-sf/description=$(Package/dnscrypt-proxy2/description)
 
 define Package/dnscrypt-proxy2/conffiles
 /opt/etc/dnscrypt-proxy.toml
 endef
 
-Package/dnscrypt-proxy2_nohf/conffiles=$(Package/dnscrypt-proxy2/conffiles)
+Package/dnscrypt-proxy2-hf/conffiles=$(Package/dnscrypt-proxy2/conffiles)
+Package/dnscrypt-proxy2-sf/conffiles=$(Package/dnscrypt-proxy2/conffiles)
 
 GO_BUILD_ARGS:= -mod vendor
 GO_TARGET:=./dnscrypt-proxy
@@ -69,7 +82,9 @@ define Package/dnscrypt-proxy2/install
 			$(1)/opt/etc/dnscrypt-proxy.toml
 endef
 
-Package/dnscrypt-proxy2_nohf/install=$(Package/dnscrypt-proxy2/install)
+Package/dnscrypt-proxy2-hf/install=$(Package/dnscrypt-proxy2/install)
+Package/dnscrypt-proxy2-sf/install=$(Package/dnscrypt-proxy2/install)
 
 $(eval $(call BuildPackage,dnscrypt-proxy2))
-$(eval $(call BuildPackage,dnscrypt-proxy2_nohf))
+$(eval $(call BuildPackage,dnscrypt-proxy2-hf))
+$(eval $(call BuildPackage,dnscrypt-proxy2-sf))
