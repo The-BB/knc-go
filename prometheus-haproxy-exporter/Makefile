@@ -1,7 +1,7 @@
 # SPDX-License-Identifier: GPL-2.0-only
 #
-# Copyright (C) 2023-2024 Entware
-#
+# Copyright (C) 2023-2026 Entware
+
 # Project archived by the owner on Mar 8, 2023.
 
 include $(TOPDIR)/rules.mk
@@ -18,6 +18,7 @@ PKG_MIRROR_HASH:=8e8c64ccc7e3b0a530516d91ece818fd9260b77c73a22c69ac3273101b8a66c
 
 PKG_LICENSE:=Apache-2.0
 PKG_LICENSE_FILES:=LICENSE
+PKG_MAINTAINER:=Entware team, https://entware.net
 
 PKG_BUILD_PARALLEL:=1
 
@@ -30,19 +31,26 @@ define Package/prometheus-haproxy-exporter/Default
   SUBMENU:=prometheus tools
   TITLE:=HAProxy Exporter for Prometheus
   URL:=https://prometheus.io/
-  MAINTAINER:=Entware team, https://entware.net
-  DEPENDS:=+haproxy
+  PROVIDES:=prometheus-haproxy-exporter
+  EXTRA_DEPENDS:=haproxy
 endef
 
 define Package/prometheus-haproxy-exporter
   $(call Package/prometheus-haproxy-exporter/Default)
-  VARIANT:=hf
+  VARIANT:=default
+  DEFAULT_VARIANT:=1
 endef
 
-define Package/prometheus-haproxy-exporter_nohf
+define Package/prometheus-haproxy-exporter-hf
   $(call Package/prometheus-haproxy-exporter/Default)
-  VARIANT:=nohf
-  DEPENDS+=@arm
+  VARIANT:=hf
+  DEPENDS:=@(mips||mipsel)
+endef
+
+define Package/prometheus-haproxy-exporter-sf
+  $(call Package/prometheus-haproxy-exporter/Default)
+  VARIANT:=sf
+  DEPENDS:=@arm
 endef
 
 define Package/prometheus-haproxy-exporter/description
@@ -50,7 +58,8 @@ define Package/prometheus-haproxy-exporter/description
   them via HTTP for Prometheus consumption.
 endef
 
-Package/prometheus-haproxy-exporter_nohf/description=$(Package/prometheus-haproxy-exporter/description)
+Package/prometheus-haproxy-exporter-hf/description=$(Package/prometheus-haproxy-exporter/description)
+Package/prometheus-haproxy-exporter-sf/description=$(Package/prometheus-haproxy-exporter/description)
 
 GO_BUILD_ARGS += -a
 
@@ -70,7 +79,9 @@ define Package/prometheus-haproxy-exporter/install
 	$(INSTALL_BIN) ./files/S99haproxy_exporter $(1)/opt/etc/init.d
 endef
 
-Package/prometheus-haproxy-exporter_nohf/install=$(Package/prometheus-haproxy-exporter/install)
+Package/prometheus-haproxy-exporter-hf/install=$(Package/prometheus-haproxy-exporter/install)
+Package/prometheus-haproxy-exporter-sf/install=$(Package/prometheus-haproxy-exporter/install)
 
 $(eval $(call BuildPackage,prometheus-haproxy-exporter))
-$(eval $(call BuildPackage,prometheus-haproxy-exporter_nohf))
+$(eval $(call BuildPackage,prometheus-haproxy-exporter-hf))
+$(eval $(call BuildPackage,prometheus-haproxy-exporter-sf))
