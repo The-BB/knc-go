@@ -1,12 +1,14 @@
 # SPDX-License-Identifier: GPL-2.0-only
 #
-# Copyright (C) 2023-2025 Entware
+# Copyright (C) 2023-2026 Entware
+
+# XXX 11.x modernc.org/libc@v1.65.0
 
 include $(TOPDIR)/rules.mk
 
 PKG_NAME:=grafana
 PKG_VERSION:=10.4.19
-PKG_RELEASE:=1
+PKG_RELEASE:=2
 
 PKG_SOURCE_PROTO:=git
 PKG_SOURCE_DATE:=2025-05-22
@@ -16,8 +18,10 @@ PKG_MIRROR_HASH:=e2b781061e445d1467656ddcd6daf034d3ad5a88a616923c4d54a1d82b2664c
 
 PKG_LICENSE:=AGPL-3.0-only
 PKG_LICENSE_FILES:=LICENSE LICENSING.md
+PKG_MAINTAINER:=Entware team, https://entware.net
 
-PKG_BUILD_DEPENDS:=node-yarn/host
+# ModuleNotFoundError: No module named 'distutils'
+PKG_BUILD_DEPENDS:=node-yarn/host python-setuptools/host
 PKG_BUILD_PARALLEL:=1
 PKG_CGO_ENABLED:=1
 
@@ -30,18 +34,26 @@ define Package/grafana/Default
   SUBMENU:=prometheus tools
   TITLE:=platform for monitoring and observability
   URL:=https://grafana.com
-  MAINTAINER:=Entware team, https://entware.net
+  PROVIDES:=grafana
+  DEPENDS:=+libc +libgcc +libpthread
 endef
 
 define Package/grafana
   $(call Package/grafana/Default)
-  VARIANT:=hf
+  VARIANT:=default
+  DEFAULT_VARIANT:=1
 endef
 
-define Package/grafana_nohf
+define Package/grafana-hf
   $(call Package/grafana/Default)
-  VARIANT:=nohf
-  DEPENDS:=@arm
+  VARIANT:=hf
+  DEPENDS+=@(mips||mipsel)
+endef
+
+define Package/grafana-sf
+  $(call Package/grafana/Default)
+  VARIANT:=sf
+  DEPENDS+=@arm
 endef
 
 define Package/grafana/description
@@ -50,7 +62,8 @@ define Package/grafana/description
   Prometheus, Loki, Elasticsearch, InfluxDB, Postgres and many more. 
 endef
 
-Package/grafana_nohf/description=$(Package/grafana/description)
+Package/grafana-hf/description=$(Package/grafana/description)
+Package/grafana-sf/description=$(Package/grafana/description)
 
 GO_LDFLAGS += \
 	-X 'main.version=$(PKG_VERSION)' \
@@ -124,7 +137,9 @@ define Package/grafana/install
 	$(INSTALL_DIR) $(1)/opt/var/log/grafana
 endef
 
-Package/grafana_nohf/install=$(Package/grafana/install)
+Package/grafana-hf/install=$(Package/grafana/install)
+Package/grafana-sf/install=$(Package/grafana/install)
 
 $(eval $(call BuildPackage,grafana))
-$(eval $(call BuildPackage,grafana_nohf))
+#$(eval $(call BuildPackage,grafana-hf))
+$(eval $(call BuildPackage,grafana-sf))
