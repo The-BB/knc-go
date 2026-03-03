@@ -1,17 +1,17 @@
 # SPDX-License-Identifier: GPL-2.0-only
 #
-# Copyright (C) 2024-2025 Entware
+# Copyright (C) 2024-2026 Entware
 
 include $(TOPDIR)/rules.mk
 
 PKG_NAME:=filebrowser
-PKG_VERSION:=2.41.0
+PKG_VERSION:=2.59.0
 PKG_RELEASE:=1
 
 PKG_SOURCE_PROTO:=git
-PKG_SOURCE_VERSION:=e5e1b6dee48d5d2845350854d4b052458710f286
+PKG_SOURCE_VERSION:=7e78ad97adce35755be97e0101dfb97882125e69
 PKG_SOURCE_URL:=https://github.com/filebrowser/filebrowser
-PKG_MIRROR_HASH:=90a9d57b51bd210dc39ae1188054c268c88c553f6c5c0dc01e378cdf501c6479
+PKG_MIRROR_HASH:=d407d1610f173547fd68caa5a99ecec57ea6c977fbab5ee9be7e2f332c1db7bd
 
 PKG_LICENSE:=Apache-2.0
 PKG_LICENSE_FILES:=LICENSE
@@ -29,16 +29,24 @@ define Package/filebrowser/Default
   SUBMENU:=Filesystem
   TITLE:=Web File Browser
   URL:=https://filebrowser.org
+  PROVIDES:=filebrowser
 endef
 
 define Package/filebrowser
   $(call Package/filebrowser/Default)
-  VARIANT:=hf
+  VARIANT:=default
+  DEFAULT_VARIANT:=1
 endef
 
-define Package/filebrowser_nohf
+define Package/filebrowser-hf
   $(call Package/filebrowser/Default)
-  VARIANT:=nohf
+  VARIANT:=hf
+  DEPENDS:=@(mips||mipsel)
+endef
+
+define Package/filebrowser-sf
+  $(call Package/filebrowser/Default)
+  VARIANT:=sf
   DEPENDS:=@arm
 endef
 
@@ -49,13 +57,15 @@ define Package/filebrowser/description
   directory. It can be used as a standalone app or as a middleware.
 endef
 
-Package/filebrowser_nohf/description=$(Package/filebrowser/description)
+Package/filebrowser-hf/description=$(Package/filebrowser/description)
+Package/filebrowser-sf/description=$(Package/filebrowser/description)
 
 define Package/filebrowser/conffiles
 /opt/etc/filebrowser/filebrowser.conf
 endef
 
-Package/filebrowser_nohf/conffiles=$(Package/filebrowser/conffiles)
+Package/filebrowser-hf/conffiles=$(Package/filebrowser/conffiles)
+Package/filebrowser-sf/conffiles=$(Package/filebrowser/conffiles)
 
 GO_LDFLAGS += \
 	-X '$(XIMPORTPATH)/v2/version.Version=$(PKG_VERSION)' \
@@ -84,7 +94,9 @@ define Package/filebrowser/install
 	$(INSTALL_DATA) ./files/filebrowser.conf $(1)/opt/etc/filebrowser
 endef
 
-Package/filebrowser_nohf/install=$(Package/filebrowser/install)
+Package/filebrowser-hf/install=$(Package/filebrowser/install)
+Package/filebrowser-sf/install=$(Package/filebrowser/install)
 
 $(eval $(call BuildPackage,filebrowser))
-$(eval $(call BuildPackage,filebrowser_nohf))
+$(eval $(call BuildPackage,filebrowser-hf))
+$(eval $(call BuildPackage,filebrowser-sf))
