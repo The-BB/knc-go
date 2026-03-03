@@ -1,0 +1,11 @@
+--- a/plugin/sign/setup.go
++++ b/plugin/sign/setup.go
+@@ -64,7 +64,7 @@ func parse(c *caddy.Controller) (*Sign,
+ 				origin:      origins[i],
+ 				jitterIncep: time.Duration(float32(durationInceptionJitter) * rand.Float32()),     // #nosec G404 -- non-cryptographic jitter.
+ 				jitterExpir: time.Duration(float32(durationExpirationDayJitter) * rand.Float32()), // #nosec G404 -- non-cryptographic jitter.
+-				directory:   "/var/lib/coredns",
++				directory:   "/opt/var/lib/coredns",
+ 				stop:        make(chan struct{}),
+ 				signedfile:  fmt.Sprintf("db.%ssigned", origins[i]), // origins[i] is a fqdn, so it ends with a dot, hence %ssigned.
+ 			}
