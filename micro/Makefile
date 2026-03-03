@@ -1,22 +1,22 @@
 # SPDX-License-Identifier: GPL-2.0-only
 #
-# Copyright (C) 2025 Entware
+# Copyright (C) 2025-2026 Entware
 
 include $(TOPDIR)/rules.mk
 
 PKG_NAME:=micro
-PKG_VERSION:=2.0.14
+PKG_VERSION:=2.0.15
 PKG_RELEASE:=1
 
 PKG_SOURCE_PROTO:=git
-PKG_SOURCE_DATE:=2024-08-27
-PKG_SOURCE_VERSION:=04c577049ca898f097cd6a2dae69af0b4d4493e1
+PKG_SOURCE_DATE:=2025-12-31
+PKG_SOURCE_VERSION:=6a62575bcfdf4965f187eedafceb3400316e612b
 PKG_SOURCE_URL:=https://github.com/zyedidia/micro
-PKG_MIRROR_HASH:=df355d8a7a0d1496aedb78bb302f527437946fcf2efac850b48f82edf220973a
+PKG_MIRROR_HASH:=3f3370792b59dfcde379e80ef8bdb2a7f85e36132ea28918fcfe1ea350c06dde
 
-PKG_MAINTAINER:=Entware team, https://entware.net
 PKG_LICENSE:=MIT
 PKG_LICENSE_FILES:=LICENSE LICENSE-THIRD-PARTY
+PKG_MAINTAINER:=Entware team, https://entware.net
 
 PKG_BUILD_PARALLEL:=1
 
@@ -29,16 +29,24 @@ define Package/micro/Default
   SUBMENU:=Editors
   TITLE:=a modern and intuitive terminal-based text editor
   URL:=https://micro-editor.github.io/
+  PROVIDES:=micro
 endef
 
 define Package/micro
   $(call Package/micro/Default)
-  VARIANT:=hf
+  VARIANT:=default
+  DEFAULT_VARIANT:=1
 endef
 
-define Package/micro_nohf
+define Package/micro-hf
   $(call Package/micro/Default)
-  VARIANT:=nohf
+  VARIANT:=hf
+  DEPENDS:=@(mips||mipsel)
+endef
+
+define Package/micro-sf
+  $(call Package/micro/Default)
+  VARIANT:=sf
   DEPENDS:=@arm
 endef
 
@@ -48,7 +56,8 @@ define Package/micro/description
   modern terminals.
 endef
 
-Package/micro_nohf/description=$(Package/micro/description)
+Package/micro-hf/description=$(Package/micro/description)
+Package/micro-sf/description=$(Package/micro/description)
 
 GO_LDFLAGS += \
 	-X '$(XIMPORTPATH)/v2/internal/util.Version=$(PKG_VERSION)' \
@@ -67,7 +76,9 @@ define Package/micro/install
 	$(INSTALL_BIN) $(PKG_INSTALL_DIR)/bin/micro $(1)/opt/sbin
 endef
 
-Package/micro_nohf/install=$(Package/micro/install)
+Package/micro-hf/install=$(Package/micro/install)
+Package/micro-sf/install=$(Package/micro/install)
 
 $(eval $(call BuildPackage,micro))
-$(eval $(call BuildPackage,micro_nohf))
+$(eval $(call BuildPackage,micro-hf))
+$(eval $(call BuildPackage,micro-sf))
