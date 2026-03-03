@@ -1,6 +1,6 @@
 # SPDX-License-Identifier: GPL-2.0-only
 #
-# Copyright (C) 2024-2025 Entware
+# Copyright (C) 2024-2026 Entware
 
 include $(TOPDIR)/rules.mk
 
@@ -27,16 +27,24 @@ define Package/grpcurl/Default
   CATEGORY:=Network
   TITLE:=CLI tool to interact with gRPC servers
   URL:=https://github.com/fullstorydev/grpcurl
+  PROVIDES:=grpcurl
 endef
 
 define Package/grpcurl
   $(call Package/grpcurl/Default)
-  VARIANT:=hf
+  VARIANT:=default
+  DEFAULT_VARIANT:=1
 endef
 
-define Package/grpcurl_nohf
+define Package/grpcurl-hf
   $(call Package/grpcurl/Default)
-  VARIANT:=nohf
+  VARIANT:=hf
+  DEPENDS:=@(mips||mipsel)
+endef
+
+define Package/grpcurl-sf
+  $(call Package/grpcurl/Default)
+  VARIANT:=sf
   DEPENDS:=@arm
 endef
 
@@ -45,7 +53,8 @@ define Package/grpcurl/description
   It's basically curl for gRPC servers.
 endef
 
-Package/grpcurl_nohf/description=$(Package/grpcurl/description)
+Package/grpcurl-hf/description=$(Package/grpcurl/description)
+Package/grpcurl-sf/description=$(Package/grpcurl/description)
 
 GO_LDFLAGS += \
 	-X 'main.version=$(PKG_VERSION)'
@@ -57,7 +66,9 @@ define Package/grpcurl/install
 	$(INSTALL_BIN) $(PKG_INSTALL_DIR)/bin/grpcurl $(1)/opt/sbin/grpcurl
 endef
 
-Package/grpcurl_nohf/install=$(Package/grpcurl/install)
+Package/grpcurl-hf/install=$(Package/grpcurl/install)
+Package/grpcurl-sf/install=$(Package/grpcurl/install)
 
 $(eval $(call BuildPackage,grpcurl))
-$(eval $(call BuildPackage,grpcurl_nohf))
+$(eval $(call BuildPackage,grpcurl-hf))
+$(eval $(call BuildPackage,grpcurl-sf))
