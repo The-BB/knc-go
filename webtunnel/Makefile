@@ -1,17 +1,17 @@
 # SPDX-License-Identifier: GPL-2.0-only
 #
-# Copyright (C) 2024-2025 Entware
+# Copyright (C) 2024-2026 Entware
 
 include $(TOPDIR)/rules.mk
 
 PKG_NAME:=webtunnel
-PKG_VERSION:=0.0.2
+PKG_VERSION:=0.0.3
 PKG_RELEASE:=1
 
 PKG_SOURCE_PROTO:=git
 PKG_SOURCE_VERSION:=v$(PKG_VERSION)
 PKG_SOURCE_URL:=https://gitlab.torproject.org/tpo/anti-censorship/pluggable-transports/webtunnel
-PKG_MIRROR_HASH:=78eb07588dcf99b55fa5e4410e7f44af2c2e4ff3f03f847483615a2ac5609fe2
+PKG_MIRROR_HASH:=732ff308e72c00605aa14a0461ac0d683e9f29089bb0154dafb1dccd02a12da9
 
 PKG_LICENSE:=MIT
 PKG_LICENSE_FILES:=LICENSE
@@ -31,23 +31,37 @@ endef
 
 define Package/webtunnel-client
   $(call Package/webtunnel/Default)
-  VARIANT:=hf
+  VARIANT:=default
+  DEFAULT_VARIANT:=1
 endef
 
-define Package/webtunnel-client_nohf
+define Package/webtunnel-client-hf
   $(call Package/webtunnel/Default)
-  VARIANT:=nohf
+  VARIANT:=hf
+  DEPENDS:=@(mips||mipsel)
+endef
+
+define Package/webtunnel-client-sf
+  $(call Package/webtunnel/Default)
+  VARIANT:=sf
   DEPENDS:=@arm
 endef
 
 define Package/webtunnel-server
   $(call Package/webtunnel/Default)
-  VARIANT:=hf
+  VARIANT:=default
+  DEFAULT_VARIANT:=1
 endef
 
-define Package/webtunnel-server_nohf
+define Package/webtunnel-server-hf
   $(call Package/webtunnel/Default)
-  VARIANT:=nohf
+  VARIANT:=hf
+  DEPENDS:=@(mips||mipsel)
+endef
+
+define Package/webtunnel-server-sf
+  $(call Package/webtunnel/Default)
+  VARIANT:=sf
   DEPENDS:=@arm
 endef
 
@@ -57,9 +71,11 @@ define Package/webtunnel/description
 endef
 
 Package/webtunnel-client/description=$(Package/webtunnel/description)
-Package/webtunnel-client_nohf/description=$(Package/webtunnel/description)
+Package/webtunnel-client-hf/description=$(Package/webtunnel/description)
+Package/webtunnel-client-sf/description=$(Package/webtunnel/description)
 Package/webtunnel-server/description=$(Package/webtunnel/description)
-Package/webtunnel-server_nohf/description=$(Package/webtunnel/description)
+Package/webtunnel-server-hf/description=$(Package/webtunnel/description)
+Package/webtunnel-server-sf/description=$(Package/webtunnel/description)
 
 GO_TARGET:=./main/client ./main/server
 
@@ -68,16 +84,20 @@ define Package/webtunnel-client/install
 	$(INSTALL_BIN) $(PKG_INSTALL_DIR)/bin/client $(1)/opt/sbin/webtunnel-client
 endef
 
-Package/webtunnel-client_nohf/install=$(Package/webtunnel-client/install)
+Package/webtunnel-client-hf/install=$(Package/webtunnel-client/install)
+Package/webtunnel-client-sf/install=$(Package/webtunnel-client/install)
 
 define Package/webtunnel-server/install
 	$(INSTALL_DIR) $(1)/opt/sbin
 	$(INSTALL_BIN) $(PKG_INSTALL_DIR)/bin/server $(1)/opt/sbin/webtunnel-server
 endef
 
-Package/webtunnel-server_nohf/install=$(Package/webtunnel-server/install)
+Package/webtunnel-server-hf/install=$(Package/webtunnel-server/install)
+Package/webtunnel-server-sf/install=$(Package/webtunnel-server/install)
 
 $(eval $(call BuildPackage,webtunnel-client))
-$(eval $(call BuildPackage,webtunnel-client_nohf))
+$(eval $(call BuildPackage,webtunnel-client-hf))
+$(eval $(call BuildPackage,webtunnel-client-sf))
 $(eval $(call BuildPackage,webtunnel-server))
-$(eval $(call BuildPackage,webtunnel-server_nohf))
+$(eval $(call BuildPackage,webtunnel-server-hf))
+$(eval $(call BuildPackage,webtunnel-server-sf))
