@@ -1,6 +1,6 @@
 # SPDX-License-Identifier: GPL-2.0-only
 #
-# Copyright (C) 2023-2025 Entware
+# Copyright (C) 2023-2026 Entware
 
 include $(TOPDIR)/rules.mk
 
@@ -15,6 +15,7 @@ PKG_MIRROR_HASH:=527006b3d71134267fac3a8c86be71a99bf7dbb2f969916c60f16bec8c24529
 
 PKG_LICENSE:=BSD-3-Clause
 PKG_LICENSE_FILES:=LICENSE
+PKG_MAINTAINER:=Entware team, https://entware.net
 
 PKG_BUILD_PARALLEL:=1
 
@@ -22,25 +23,33 @@ include $(INCLUDE_DIR)/package.mk
 include $(INCLUDE_DIR)/golang.mk
 
 define Package/snowflake/Default
-	SECTION:=net
-	CATEGORY:=Network
-	TITLE:=Snowflake
-	URL:=https://snowflake.torproject.org/
-	EXTRA_DEPENDS:=tor-geoip
+  SECTION:=net
+  CATEGORY:=Network
+  TITLE:=Snowflake
+  URL:=https://snowflake.torproject.org/
+  PROVIDES:=snowflake
+  EXTRA_DEPENDS:=tor-geoip
 endef
 
-define Package/snowflake-go
-	$(call Package/snowflake/Default)
-	VARIANT:=hf
+define Package/snowflake
+  $(call Package/snowflake/Default)
+  VARIANT:=default
+  DEFAULT_VARIANT:=1
 endef
 
-define Package/snowflake-go_nohf
-	$(call Package/snowflake/Default)
-	VARIANT:=nohf
-	DEPENDS:=@arm
+define Package/snowflake-hf
+  $(call Package/snowflake/Default)
+  VARIANT:=hf
+  DEPENDS:=@(mips||mipsel)
 endef
 
-define Package/snowflake-go/description
+define Package/snowflake-sf
+  $(call Package/snowflake/Default)
+  VARIANT:=sf
+  DEPENDS:=@arm
+endef
+
+define Package/snowflake/description
  Snowflake is a system that allows people from all over the world to
  access censored websites and applications. Similar to how VPNs assist
  users in getting around Internet censorship, Snowflake helps you avoid
@@ -48,14 +57,15 @@ define Package/snowflake-go/description
  as though you're using the Internet for a regular video or voice call.
 endef
 
-Package/snowflake-go_hf/description=$(Package/snowflake-go/description)
+Package/snowflake-hf/description=$(Package/snowflake/description)
+Package/snowflake-sf/description=$(Package/snowflake/description)
 
 GO_VARS += GO111MODULE=on
 GO_TARGET:=./broker ./client ./probetest ./proxy ./server
 
 BINS:=broker client probetest proxy server
 
-define Package/snowflake-go/install
+define Package/snowflake/install
 	$(INSTALL_DIR) $(1)/opt/bin
 	for bin in $(BINS); do \
 		$(INSTALL_BIN) $(PKG_INSTALL_DIR)/bin/$$$$bin \
@@ -63,5 +73,9 @@ define Package/snowflake-go/install
 	done
 endef
 
-$(eval $(call BuildPackage,snowflake-go))
-$(eval $(call BuildPackage,snowflake-go_nohf))
+Package/snowflake-hf/install=$(Package/snowflake/install)
+Package/snowflake-sf/install=$(Package/snowflake/install)
+
+$(eval $(call BuildPackage,snowflake))
+$(eval $(call BuildPackage,snowflake-hf))
+$(eval $(call BuildPackage,snowflake-sf))
