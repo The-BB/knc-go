@@ -1,21 +1,22 @@
 # SPDX-License-Identifier: GPL-2.0-only
 #
-# Copyright (C) 2021-2025 Entware
+# Copyright (C) 2021-2026 Entware
 
 include $(TOPDIR)/rules.mk
 
 PKG_NAME:=v2ray
-PKG_VERSION:=5.37.0
+PKG_VERSION:=5.45.1
 PKG_RELEASE:=1
 
 PKG_SOURCE_PROTO:=git
-PKG_SOURCE_DATE:=2025-07-05
+PKG_SOURCE_DATE:=2026-02-15
 PKG_SOURCE_VERSION:=v$(PKG_VERSION)
 PKG_SOURCE_URL:=https://github.com/v2fly/v2ray-core
-PKG_MIRROR_HASH:=cd7377659fd62197bb0011d3321d57e6816c35d930e8b9fdb03c20dad55c5890
+PKG_MIRROR_HASH:=4eeab465ebc9170d6bb1cc9be8a36a4f10f589cd14279cb08a0bfa8f7bb3880f
 
 PKG_LICENSE:=MIT
 PKG_LICENSE_FILES:=LICENSE
+PKG_MAINTAINER:=Entware team, https://entware.net
 
 PKG_BUILD_PARALLEL:=1
 
@@ -23,52 +24,70 @@ include $(INCLUDE_DIR)/package.mk
 include $(INCLUDE_DIR)/golang.mk
 
 define Package/v2ray/Default
-	SECTION:=net
-	CATEGORY:=Network
-	SUBMENU:=Web Servers/Proxies
-	TITLE:=proxy building platform
-	URL:=https://www.v2fly.org
-	MAINTAINER:=Entware team, https://entware.net
+  SECTION:=net
+  CATEGORY:=Network
+  SUBMENU:=Web Servers/Proxies
+  TITLE:=proxy building platform
+  URL:=https://www.v2fly.org
 endef
 
 define Package/v2ray-core
-	$(call Package/v2ray/Default)
-	VARIANT:=hf
-	EXTRA_DEPENDS:=ca-bundle, v2ray-geoip, v2ray-geosite
+  $(call Package/v2ray/Default)
+  VARIANT:=default
+  DEFAULT_VARIANT:=1
+  EXTRA_DEPENDS:=ca-bundle, v2ray-geoip, v2ray-geosite
 endef
 
-define Package/v2ray-core_nohf
-	$(call Package/v2ray/Default)
-	VARIANT:=nohf
-	DEPENDS:=@arm
-	EXTRA_DEPENDS:=ca-bundle, v2ray-geoip, v2ray-geosite
+define Package/v2ray-core-hf
+  $(call Package/v2ray/Default)
+  VARIANT:=hf
+  DEPENDS:=@(mips||mipsel)
+  EXTRA_DEPENDS:=ca-bundle, v2ray-geoip, v2ray-geosite
 endef
 
-define Package/v2ray
-	$(call Package/v2ray/Default)
-	TITLE+= (scripts & configs)
-	VARIANT:=hf
-	DEPENDS:=+v2ray-core
-endef
-
-define Package/v2ray_nohf
-	$(call Package/v2ray/Default)
-	TITLE+= (scripts & configs)
-	VARIANT:=nohf
-	DEPENDS:=+v2ray-core_nohf
+define Package/v2ray-core-sf
+  $(call Package/v2ray/Default)
+  VARIANT:=sf
+  DEPENDS:=@arm
+  EXTRA_DEPENDS:=ca-bundle, v2ray-geoip, v2ray-geosite
 endef
 
 define Package/v2ray-core/description
  A platform for building proxies to bypass network restrictions.
 endef
 
-Package/v2ray-core_nohf/description=$(Package/v2ray-core/description)
+Package/v2ray-core-hf/description=$(Package/v2ray-core/description)
+Package/v2ray-core-sf/description=$(Package/v2ray-core/description)
 
-define Package/v2ray/description
- scripts & configs.
+define Package/v2ray
+  $(call Package/v2ray/Default)
+  TITLE+= (scripts & configs)
+  VARIANT:=default
+  DEFAULT_VARIANT:=1
+  DEPENDS:=+v2ray-core
 endef
 
-Package/v2ray_nohf/description=$(Package/v2ray/description)
+define Package/v2ray-hf
+  $(call Package/v2ray/Default)
+  TITLE+= (scripts & configs)
+  VARIANT:=hf
+  DEPENDS:=+v2ray-core-hf
+endef
+
+define Package/v2ray-sf
+  $(call Package/v2ray/Default)
+  TITLE+= (scripts & configs)
+  VARIANT:=sf
+  DEPENDS:=+v2ray-core-sf
+endef
+
+define Package/v2ray/description
+  $(call Package/v2ray-core/description)
+  (scripts & configs)
+endef
+
+Package/v2ray-hf/description=$(Package/v2ray/description)
+Package/v2ray-sf/description=$(Package/v2ray/description)
 
 define Package/v2ray/conffiles
 /opt/etc/v2ray/config.json
@@ -76,7 +95,8 @@ define Package/v2ray/conffiles
 /opt/etc/v2ray/vpoint_vmess_freedom.json
 endef
 
-Package/v2ray_nohf/conffiles=$(Package/v2ray/conffiles)
+Package/v2ray-hf/conffiles=$(Package/v2ray/conffiles)
+Package/v2ray-sf/conffiles=$(Package/v2ray/conffiles)
 
 GO_LDFLAGS += \
 	-X '$(XIMPORTPATH)/v5.codename=Entware' \
@@ -92,7 +112,8 @@ define Package/v2ray-core/install
 	$(INSTALL_BIN) $(PKG_INSTALL_DIR)/bin/main $(1)/opt/sbin/v2ray
 endef
 
-Package/v2ray-core_nohf/install=$(Package/v2ray-core/install)
+Package/v2ray-core-hf/install=$(Package/v2ray-core/install)
+Package/v2ray-core-sf/install=$(Package/v2ray-core/install)
 
 define Package/v2ray/install
 	$(INSTALL_DIR) $(1)/opt/etc/init.d
@@ -101,9 +122,12 @@ define Package/v2ray/install
 	$(INSTALL_CONF) $(PKG_BUILD_DIR)/release/config/*.json $(1)/opt/etc/v2ray
 endef
 
-Package/v2ray_nohf/install=$(Package/v2ray/install)
+Package/v2ray-hf/install=$(Package/v2ray/install)
+Package/v2ray-sf/install=$(Package/v2ray/install)
 
 $(eval $(call BuildPackage,v2ray-core))
-$(eval $(call BuildPackage,v2ray-core_nohf))
+$(eval $(call BuildPackage,v2ray-core-hf))
+$(eval $(call BuildPackage,v2ray-core-sf))
 $(eval $(call BuildPackage,v2ray))
-$(eval $(call BuildPackage,v2ray_nohf))
+$(eval $(call BuildPackage,v2ray-hf))
+$(eval $(call BuildPackage,v2ray-sf))
