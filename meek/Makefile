@@ -1,6 +1,6 @@
 # SPDX-License-Identifier: GPL-2.0-only
 #
-# Copyright (C) 2024 Entware
+# Copyright (C) 2024-2026 Entware
 
 include $(TOPDIR)/rules.mk
 
@@ -25,29 +25,43 @@ include $(INCLUDE_DIR)/golang.mk
 define Package/meek/Default
   SECTION:=net
   CATEGORY:=Network
-  TITLE:=a blocking-resistant pluggable transport (HTTPS transport)
+  TITLE:=blocking-resistant pluggable transport (HTTPS transport)
   URL:=https://gitlab.torproject.org/tpo/anti-censorship/pluggable-transports/meek
 endef
 
 define Package/meek-client
   $(call Package/meek/Default)
-  VARIANT:=hf
+  VARIANT:=default
+  DEFAULT_VARIANT:=1
 endef
 
-define Package/meek-client_nohf
+define Package/meek-client-hf
   $(call Package/meek/Default)
-  VARIANT:=nohf
+  VARIANT:=hf
+  DEPENDS:=@(mips||mipsel)
+endef
+
+define Package/meek-client-sf
+  $(call Package/meek/Default)
+  VARIANT:=sf
   DEPENDS:=@arm
 endef
 
 define Package/meek-server
   $(call Package/meek/Default)
-  VARIANT:=hf
+  VARIANT:=default
+  DEFAULT_VARIANT:=1
 endef
 
-define Package/meek-server_nohf
+define Package/meek-server-hf
   $(call Package/meek/Default)
-  VARIANT:=nohf
+  VARIANT:=hf
+  DEPENDS:=@(mips||mipsel)
+endef
+
+define Package/meek-server-sf
+  $(call Package/meek/Default)
+  VARIANT:=sf
   DEPENDS:=@arm
 endef
 
@@ -60,9 +74,11 @@ define Package/meek/description
 endef
 
 Package/meek-client/description=$(Package/meek/description)
-Package/meek-client_nohf/description=$(Package/meek/description)
+Package/meek-client-hf/description=$(Package/meek/description)
+Package/meek-client-sf/description=$(Package/meek/description)
 Package/meek-server/description=$(Package/meek/description)
-Package/meek-server_nohf/description=$(Package/meek/description)
+Package/meek-server-hf/description=$(Package/meek/description)
+Package/meek-server-sf/description=$(Package/meek/description)
 
 GO_TARGET:=./meek-client ./meek-server
 
@@ -71,16 +87,20 @@ define Package/meek-client/install
 	$(INSTALL_BIN) $(PKG_INSTALL_DIR)/bin/meek-client $(1)/opt/sbin
 endef
 
-Package/meek-client_nohf/install=$(Package/meek-client/install)
+Package/meek-client-hf/install=$(Package/meek-client/install)
+Package/meek-client-sf/install=$(Package/meek-client/install)
 
 define Package/meek-server/install
 	$(INSTALL_DIR) $(1)/opt/sbin
 	$(INSTALL_BIN) $(PKG_INSTALL_DIR)/bin/meek-server $(1)/opt/sbin
 endef
 
-Package/meek-server_nohf/install=$(Package/meek-server/install)
+Package/meek-server-hf/install=$(Package/meek-server/install)
+Package/meek-server-sf/install=$(Package/meek-server/install)
 
 $(eval $(call BuildPackage,meek-client))
-$(eval $(call BuildPackage,meek-client_nohf))
+$(eval $(call BuildPackage,meek-client-hf))
+$(eval $(call BuildPackage,meek-client-sf))
 $(eval $(call BuildPackage,meek-server))
-$(eval $(call BuildPackage,meek-server_nohf))
+$(eval $(call BuildPackage,meek-server-hf))
+$(eval $(call BuildPackage,meek-server-sf))
