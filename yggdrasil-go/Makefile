@@ -1,6 +1,6 @@
 # SPDX-License-Identifier: GPL-2.0-only
 #
-# Copyright (C) 2020-2024 Entware
+# Copyright (C) 2020-2026 Entware
 
 include $(TOPDIR)/rules.mk
 
@@ -15,6 +15,7 @@ PKG_MIRROR_HASH:=52653522b1f5a0d1187908c9c76574f095ad1a7e889e4641dd85129b37daeea
 
 PKG_LICENSE:=LGPL-3.0-only
 PKG_LICENSE_FILES:=LICENSE
+PKG_MAINTAINER:=Entware team, https://entware.net
 
 PKG_BUILD_PARALLEL:=1
 
@@ -22,23 +23,30 @@ include $(INCLUDE_DIR)/package.mk
 include $(INCLUDE_DIR)/golang.mk
 
 define Package/yggdrasil-go/Default
-	SECTION:=net
-	CATEGORY:=Network
-	SUBMENU:=Routing and Redirection
-	TITLE:=Encrypted IPv6 network
-	URL:=https://yggdrasil-network.github.io/
-	MAINTAINER:=Entware team, https://entware.net
+  SECTION:=net
+  CATEGORY:=Network
+  SUBMENU:=Routing and Redirection
+  TITLE:=Encrypted IPv6 network
+  URL:=https://yggdrasil-network.github.io/
+  PROVIDES:=yggdrasil-go
 endef
 
 define Package/yggdrasil-go
-	$(call Package/yggdrasil-go/Default)
-	VARIANT:=hf
+  $(call Package/yggdrasil-go/Default)
+  VARIANT:=default
+  DEFAULT_VARIANT:=1
 endef
 
-define Package/yggdrasil-go_nohf
-	$(call Package/yggdrasil-go/Default)
-	VARIANT:=nohf
-	DEPENDS:=@arm
+define Package/yggdrasil-go-hf
+  $(call Package/yggdrasil-go/Default)
+  VARIANT:=hf
+  DEPENDS:=@(mips||mipsel)
+endef
+
+define Package/yggdrasil-go-sf
+  $(call Package/yggdrasil-go/Default)
+  VARIANT:=sf
+  DEPENDS:=@arm
 endef
 
 define Package/yggdrasil-go/description
@@ -50,7 +58,8 @@ define Package/yggdrasil-go/description
   network interfaces simultaneously with much greater throughput.
 endef
 
-Package/yggdrasil-go_nohf/description=$(Package/yggdrasil-go/description)
+Package/yggdrasil-go-hf/description=$(Package/yggdrasil-go/description)
+Package/yggdrasil-go-sf/description=$(Package/yggdrasil-go/description)
 
 GO_LDFLAGS += \
 	-X '$(XIMPORTPATH)/src/version.buildName=yggdrasil-entware' \
@@ -63,7 +72,9 @@ define Package/yggdrasil-go/install
 	$(INSTALL_BIN) $(PKG_INSTALL_DIR)/bin/yggdrasil{,ctl} $(1)/opt/sbin
 endef
 
-Package/yggdrasil-go_nohf/install=$(Package/yggdrasil-go/install)
+Package/yggdrasil-go-hf/install=$(Package/yggdrasil-go/install)
+Package/yggdrasil-go-sf/install=$(Package/yggdrasil-go/install)
 
 $(eval $(call BuildPackage,yggdrasil-go))
-$(eval $(call BuildPackage,yggdrasil-go_nohf))
+$(eval $(call BuildPackage,yggdrasil-go-hf))
+$(eval $(call BuildPackage,yggdrasil-go-sf))
