@@ -1,21 +1,22 @@
 # SPDX-License-Identifier: GPL-2.0-only
 #
-# Copyright (C) 2023-2025 Entware
+# Copyright (C) 2023-2026 Entware
 
 include $(TOPDIR)/rules.mk
 
 PKG_NAME:=chezmoi
-PKG_VERSION:=2.63.1
+PKG_VERSION:=2.69.4
 PKG_RELEASE:=1
 
 PKG_SOURCE_PROTO:=git
-PKG_SOURCE_DATE:=2025-07-22
-PKG_SOURCE_VERSION:=c3ab5f0ba37b2ba58b534eacc65a9a4e8ed75e86
+PKG_SOURCE_DATE:=2026-02-12
+PKG_SOURCE_VERSION:=c4c669c9f2f329233a85802014d26fba3c58a4a4
 PKG_SOURCE_URL:=https://github.com/twpayne/chezmoi
-PKG_MIRROR_HASH:=6830d604de6b9d457cc70bb652fed159a974abcbde2eae58684139903bb35686
+PKG_MIRROR_HASH:=7b9772738cccd7b801c7bc62b769666e5f623db6ef711ce6a08ea4789082320d
 
 PKG_LICENSE:=MIT
 PKG_LICENSE_FILES:=LICENSE
+PKG_MAINTAINER:=Entware team, https://entware.net
 
 PKG_BUILD_PARALLEL:=1
 
@@ -23,29 +24,37 @@ include $(INCLUDE_DIR)/package.mk
 include $(INCLUDE_DIR)/golang.mk
 
 define Package/chezmoi/Default
-	SECTION:=utils
-	CATEGORY:=Utilities
-	TITLE:=Manage dotfiles
-	URL:=https://www.chezmoi.io
-	MAINTAINER:=Entware team, https://entware.net
+  SECTION:=utils
+  CATEGORY:=Utilities
+  TITLE:=Manage dotfiles
+  URL:=https://www.chezmoi.io
+  PROVIDES:=chezmoi
 endef
 
 define Package/chezmoi
-	$(call Package/chezmoi/Default)
-	VARIANT:=hf
+  $(call Package/chezmoi/Default)
+  VARIANT:=default
+  DEFAULT_VARIANT:=1
 endef
 
-define Package/chezmoi_nohf
-	$(call Package/chezmoi/Default)
-	VARIANT:=nohf
-	DEPENDS:=@arm
+define Package/chezmoi-hf
+  $(call Package/chezmoi/Default)
+  VARIANT:=hf
+  DEPENDS:=@(mips||mipsel)
+endef
+
+define Package/chezmoi-sf
+  $(call Package/chezmoi/Default)
+  VARIANT:=sf
+  DEPENDS:=@arm
 endef
 
 define Package/chezmoi/description
   Manage your dotfiles across multiple diverse machines, securely.
 endef
 
-Package/chezmoi_nohf/description=$(Package/chezmoi/description)
+Package/chezmoi-hf/description=$(Package/chezmoi/description)
+Package/chezmoi-sf/description=$(Package/chezmoi/description)
 
 GO_LDFLAGS += \
 	-X 'main.version=v$(PKG_VERSION)' \
@@ -60,7 +69,9 @@ define Package/chezmoi/install
 	$(INSTALL_BIN) $(PKG_INSTALL_DIR)/bin/chezmoi $(1)/opt/bin
 endef
 
-Package/chezmoi_nohf/install=$(Package/chezmoi/install)
+Package/chezmoi-hf/install=$(Package/chezmoi/install)
+Package/chezmoi-sf/install=$(Package/chezmoi/install)
 
 $(eval $(call BuildPackage,chezmoi))
-$(eval $(call BuildPackage,chezmoi_nohf))
+$(eval $(call BuildPackage,chezmoi-hf))
+$(eval $(call BuildPackage,chezmoi-sf))
