@@ -1,20 +1,21 @@
 # SPDX-License-Identifier: GPL-2.0-only
 #
-# Copyright (C) 2023-2025 Entware
+# Copyright (C) 2023-2026 Entware
 
 include $(TOPDIR)/rules.mk
 
 PKG_NAME:=git-lfs
-PKG_VERSION:=3.7.0
+PKG_VERSION:=3.7.1
 PKG_RELEASE:=1
 
 PKG_SOURCE_PROTO:=git
-PKG_SOURCE_VERSION:=92dddf560e62ef7dd25877d87ce072f7595aa52d
+PKG_SOURCE_VERSION:=b84b33847fe6458f36ef521534dc0eac953cb379
 PKG_SOURCE_URL:=https://github.com/git-lfs/git-lfs
-PKG_MIRROR_HASH:=14774b0b3b7dc7dfcd380575c12799ce315c1a1d9f3c7f37b9c32aa688fbf928
+PKG_MIRROR_HASH:=3118d03b93af7d9112e173da56354455e3362dfdce0b45ae493fdeae289ba102
 
 PKG_LICENSE:=MIT
 PKG_LICENSE_FILES:=LICENSE.md
+PKG_MAINTAINER:=Entware team, https://entware.net
 
 PKG_BUILD_PARALLEL:=1
 
@@ -27,19 +28,26 @@ define Package/git-lfs/Default
   SUBMENU:=Version Control Systems
   TITLE:=Git Large File Storage
   URL:=https://git-lfs.github.com
-  MAINTAINER:=Entware team, https://entware.net
-  DEPENDS:=+git
+  PROVIDES:=git-lfs
+  EXTRA_DEPENDS:=git
 endef
 
 define Package/git-lfs
   $(call Package/git-lfs/Default)
-  VARIANT:=hf
+  VARIANT:=default
+  DEFAULT_VARIANT:=1
 endef
 
-define Package/git-lfs_nohf
+define Package/git-lfs-hf
   $(call Package/git-lfs/Default)
-  VARIANT:=nohf
-  DEPENDS+=@arm
+  VARIANT:=hf
+  DEPENDS:=@(mips||mipsel)
+endef
+
+define Package/git-lfs-sf
+  $(call Package/git-lfs/Default)
+  VARIANT:=sf
+  DEPENDS:=@arm
 endef
 
 define Package/git-lfs/description
@@ -48,7 +56,8 @@ define Package/git-lfs/description
   the file contents on a remote server like GitHub.com or GitHub Enterprise.
 endef
 
-Package/git-lfs_nohf/description=$(Package/git-lfs/description)
+Package/git-lfs-hf/description=$(Package/git-lfs/description)
+Package/git-lfs-sf/description=$(Package/git-lfs/description)
 
 define Build/Compile
 	( cd $(PKG_BUILD_DIR); $(GO_BIN_GENERATE) ./commands; )
@@ -64,7 +73,9 @@ define Package/git-lfs/install
 	$(INSTALL_BIN) $(PKG_INSTALL_DIR)/bin/git-lfs $(1)/opt/bin
 endef
 
-Package/git-lfs_nohf/install=$(Package/git-lfs/install)
+Package/git-lfs-hf/install=$(Package/git-lfs/install)
+Package/git-lfs-sf/install=$(Package/git-lfs/install)
 
 $(eval $(call BuildPackage,git-lfs))
-$(eval $(call BuildPackage,git-lfs_nohf))
+$(eval $(call BuildPackage,git-lfs-hf))
+$(eval $(call BuildPackage,git-lfs-sf))
