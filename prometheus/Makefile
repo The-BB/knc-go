@@ -1,21 +1,22 @@
 # SPDX-License-Identifier: GPL-2.0-only
 #
-# Copyright (C) 2023-2025 Entware
+# Copyright (C) 2023-2026 Entware
 
 include $(TOPDIR)/rules.mk
 
 PKG_NAME:=prometheus
-PKG_VERSION:=3.5.0
+PKG_VERSION:=3.9.1
 PKG_RELEASE:=1
 
 PKG_SOURCE_PROTO:=git
-PKG_SOURCE_DATE:=2025-07-14
-PKG_SOURCE_VERSION:=8be3a9560fbdd18a94dedec4b747c35178177202
+PKG_SOURCE_DATE:=2026-01-07
+PKG_SOURCE_VERSION:=9ec59baffb547e24f1468a53eb82901e58feabd8
 PKG_SOURCE_URL:=https://github.com/prometheus/prometheus
-PKG_MIRROR_HASH:=0e75cead9676de3fb243afc6d1e991429222a95be34ce39f7d92bf4d47f06de2
+PKG_MIRROR_HASH:=57faa7ab60fecba5e15143010d801196e8b6a2f6f2008fabd9fbc676a2b6042d
 
 PKG_LICENSE:=Apache-2.0
 PKG_LICENSE_FILES:=LICENSE
+PKG_MAINTAINER:=Entware team, https://entware.net
 
 PKG_BUILD_PARALLEL:=1
 
@@ -28,17 +29,24 @@ define Package/prometheus/Default
   SUBMENU:=prometheus tools
   TITLE:=Monitoring system and time series database
   URL:=http://prometheus.io
-  MAINTAINER:=Entware team, https://entware.net
+  PROVIDES:=prometheus
 endef
 
 define Package/prometheus
   $(call Package/prometheus/Default)
-  VARIANT:=hf
+  VARIANT:=default
+  DEFAULT_VARIANT:=1
 endef
 
-define Package/prometheus_nohf
+define Package/prometheus-hf
   $(call Package/prometheus/Default)
-  VARIANT:=nohf
+  VARIANT:=hf
+  DEPENDS:=@(mips||mipsel)
+endef
+
+define Package/prometheus-sf
+  $(call Package/prometheus/Default)
+  VARIANT:=sf
   DEPENDS:=@arm
 endef
 
@@ -50,20 +58,22 @@ define Package/prometheus/description
   when specified conditions are observed.
 endef
 
-Package/prometheus_nohf/description=$(Package/prometheus/description)
+Package/prometheus-hf/description=$(Package/prometheus/description)
+Package/prometheus-sf/description=$(Package/prometheus/description)
 
 define Package/prometheus/conffiles
 /opt/etc/prometheus/prometheus.yml
 endef
 
-Package/prometheus_nohf/conffiles=$(Package/prometheus/conffiles)
+Package/prometheus-hf/conffiles=$(Package/prometheus/conffiles)
+Package/prometheus-sf/conffiles=$(Package/prometheus/conffiles)
 
 WEB_FILE:=$(PKG_NAME)-web-ui-$(PKG_VERSION).tar.gz
 define Download/prometheus-web-ui
   URL:=https://github.com/prometheus/prometheus/releases/download/v$(PKG_VERSION)/
   URL_FILE:=$(WEB_FILE)
   FILE:=$(WEB_FILE)
-  HASH:=8fec0e43c9b68e85d9dff0ba6cef29c6ba0cfe19ed54b3ff421a1656674b8abe
+  HASH:=a6557f8849d4b1e3f882577a7eff9d22f161a10baaa4e81b8287fe1640afbc5a
 endef
 
 GO_BUILD_ARGS += -a
@@ -106,8 +116,10 @@ define Package/prometheus/install
 	$(INSTALL_DIR) $(1)/opt/var/lib/prometheus
 endef
 
-Package/prometheus_nohf/install=$(Package/prometheus/install)
+Package/prometheus-hf/install=$(Package/prometheus/install)
+Package/prometheus-sf/install=$(Package/prometheus/install)
 
 $(eval $(call Download,prometheus-web-ui))
 $(eval $(call BuildPackage,prometheus))
-$(eval $(call BuildPackage,prometheus_nohf))
+$(eval $(call BuildPackage,prometheus-hf))
+$(eval $(call BuildPackage,prometheus-sf))
