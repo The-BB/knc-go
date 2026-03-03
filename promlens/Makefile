@@ -1,7 +1,7 @@
 # SPDX-License-Identifier: GPL-2.0-only
 #
 # Copyright (C) 2023-2025 Entware
-#
+
 # XXX mips(el): modernc.org/libc/**: build constraints exclude all Go files in ***
 
 include $(TOPDIR)/rules.mk
@@ -18,6 +18,7 @@ PKG_MIRROR_HASH:=0104665451f56178e00d4b936310f75b7d2de767bfce101923f332c220b7d9a
 
 PKG_LICENSE:=Apache-2.0
 PKG_LICENSE_FILES:=LICENSE
+PKG_MAINTAINER:=Entware team, https://entware.net
 
 PKG_BUILD_DEPENDS:=node/host
 PKG_BUILD_PARALLEL:=1
@@ -31,18 +32,19 @@ define Package/promlens/Default
   SUBMENU:=prometheus tools
   TITLE:=The query builder, analyzer, and explainer for PromQL
   URL:=http://prometheus.io
-  MAINTAINER:=Entware team, https://entware.net
+  PROVIDES:=promlens
   DEPENDS:=@!(mips||mipsel)
 endef
 
 define Package/promlens
   $(call Package/promlens/Default)
-  VARIANT:=hf
+  VARIANT:=default
+  DEFAULT_VARIANT:=1
 endef
 
-define Package/promlens_nohf
+define Package/promlens-sf
   $(call Package/promlens/Default)
-  VARIANT:=nohf
+  VARIANT:=sf
   DEPENDS+=@arm
 endef
 
@@ -50,7 +52,7 @@ define Package/promlens/description
   PromLens is a web-based PromQL query builder, analyzer, and visualizer.
 endef
 
-Package/promlens_nohf/description=$(Package/promlens/description)
+Package/promlens-sf/description=$(Package/promlens/description)
 
 GO_BUILD_ARGS += -a
 
@@ -80,7 +82,7 @@ define Package/promlens/install
 	$(INSTALL_BIN) $(PKG_INSTALL_DIR)/bin/promlens $(1)/opt/bin
 endef
 
-Package/promlens_nohf/install=$(Package/promlens/install)
+Package/promlens-sf/install=$(Package/promlens/install)
 
 $(eval $(call BuildPackage,promlens))
-$(eval $(call BuildPackage,promlens_nohf))
+$(eval $(call BuildPackage,promlens-sf))
