@@ -1,58 +1,68 @@
 # SPDX-License-Identifier: GPL-2.0-only
 #
-# Copyright (C) 2024-2025 Entware
+# Copyright (C) 2024-2026 Entware
 
 include $(TOPDIR)/rules.mk
 
 PKG_NAME:=sing-box
-PKG_VERSION:=1.11.15
+PKG_VERSION:=1.12.22
 PKG_RELEASE:=1
 
 PKG_SOURCE_PROTO:=git
 PKG_SOURCE_VERSION:=v$(PKG_VERSION)
 PKG_SOURCE_URL:=https://github.com/SagerNet/sing-box
-PKG_MIRROR_HASH:=7416c399bd4d7ae698bd0f804cf3aec8e1792cdc0b3960e54c1c726b6754b425
+PKG_MIRROR_HASH:=745c47bf121f80b3ec35cb00ba8b3b43d7d9bd60a2715d9a503035a49f5d4d57
 
 PKG_LICENSE:=GPL-3.0-or-later
 PKG_LICENSE_FILES:=LICENSE
+PKG_MAINTAINER:=Entware team, https://entware.net
 
 PKG_BUILD_PARALLEL:=1
 
 include $(INCLUDE_DIR)/package.mk
 include $(INCLUDE_DIR)/golang.mk
 
-define Package/sing-box-go/Default
-	SECTION:=net
-	CATEGORY:=Network
-	SUBMENU:=VPN
-	TITLE:=The universal proxy platform
-	URL:=https://sing-box.sagernet.org
-	MAINTAINER:=Entware team, https://entware.net
+define Package/sing-box/Default
+  SECTION:=net
+  CATEGORY:=Network
+  SUBMENU:=VPN
+  TITLE:=The universal proxy platform
+  URL:=https://sing-box.sagernet.org
+  PROVIDES:=sing-box
 endef
 
-define Package/sing-box-go
-	$(call Package/sing-box-go/Default)
-	VARIANT:=hf
+define Package/sing-box
+  $(call Package/sing-box/Default)
+  VARIANT:=default
+  DEFAULT_VARIANT:=1
 endef
 
-define Package/sing-box-go_nohf
-	$(call Package/sing-box-go/Default)
-	VARIANT:=nohf
-	DEPENDS:=@arm
+define Package/sing-box-hf
+  $(call Package/sing-box/Default)
+  VARIANT:=hf
+  DEPENDS:=@(mips||mipsel)
 endef
 
-define Package/sing-box-go/description
+define Package/sing-box-sf
+  $(call Package/sing-box/Default)
+  VARIANT:=sf
+  DEPENDS:=@arm
+endef
+
+define Package/sing-box/description
  Sing-box is a fast, customizable and univsersal proxy platform that
 can be used to create network proxy servers, clients and transparent proxies.
 endef
 
-Package/sing-box-go_nohf/description=$(Package/sing-box-go/description)
+Package/sing-box-hf/description=$(Package/sing-box/description)
+Package/sing-box-sf/description=$(Package/sing-box/description)
 
-define Package/sing-box-go/conffiles
+define Package/sing-box/conffiles
 /opt/etc/sing-box/config.json
 endef
 
-Package/sing-box-go_nohf/conffiles=$(Package/sing-box-go/conffiles)
+Package/sing-box-hf/conffiles=$(Package/sing-box/conffiles)
+Package/sing-box-sf/conffiles=$(Package/sing-box/conffiles)
 
 XIMPORTPATH:=$(call tolower,$(XIMPORTPATH))
 
@@ -65,17 +75,17 @@ GO_TAGS:= \
 	with_acme, \
 	with_clash_api, \
 	with_dhcp, \
-	with_ech, \
 	with_embedded_tor, \
 	with_grpc, \
 	with_gvisor, \
+	with_naive_outbound, \
 	with_quic, \
-	with_reality_server, \
+	with_tailscale, \
 	with_utls, \
 	with_v2ray_api, \
 	with_wireguard
 
-define Package/sing-box-go/install
+define Package/sing-box/install
 	$(INSTALL_DIR) $(1)/opt/bin
 	$(INSTALL_BIN) $(PKG_INSTALL_DIR)/bin/sing-box $(1)/opt/bin
 	$(INSTALL_DIR) $(1)/opt/etc/sing-box
@@ -84,7 +94,9 @@ define Package/sing-box-go/install
 	$(INSTALL_BIN) ./files/S99sing-box $(1)/opt/etc/init.d
 endef
 
-Package/sing-box-go_nohf/install=$(Package/sing-box-go/install)
+Package/sing-box-hf/install=$(Package/sing-box/install)
+Package/sing-box-sf/install=$(Package/sing-box/install)
 
-$(eval $(call BuildPackage,sing-box-go))
-$(eval $(call BuildPackage,sing-box-go_nohf))
+$(eval $(call BuildPackage,sing-box))
+$(eval $(call BuildPackage,sing-box-hf))
+$(eval $(call BuildPackage,sing-box-sf))
