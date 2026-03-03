@@ -1,17 +1,17 @@
 # SPDX-License-Identifier: GPL-2.0-only
 #
-# Copyright (C) 2023-2025 Entware
+# Copyright (C) 2023-2026 Entware
 
 include $(TOPDIR)/rules.mk
 
 PKG_NAME:=lyrebird
-PKG_VERSION:=0.6.1
+PKG_VERSION:=0.8.1
 PKG_RELEASE:=1
 
 PKG_SOURCE_PROTO:=git
 PKG_SOURCE_VERSION:=$(PKG_NAME)-$(PKG_VERSION)
 PKG_SOURCE_URL:=https://gitlab.torproject.org/tpo/anti-censorship/pluggable-transports/lyrebird
-PKG_MIRROR_HASH:=c80e9e9f9cc1b55e48d4a106fcba7684fe363a1dd3dae093ef31c38d08869d72
+PKG_MIRROR_HASH:=1f8a79e5cee1c2be402e36a07fa2222675b56fbda2151a4f1cc0a2f7ac4a3580
 
 PKG_LICENSE:=GPL-3.0-or-later
 PKG_LICENSE_FILES:=LICENSE LICENSE-GPL3.txt
@@ -27,16 +27,24 @@ define Package/lyrebird/Default
   CATEGORY:=Network
   TITLE:=pluggable transport proxy for Tor, implementing obfs4
   URL:=https://gitlab.torproject.org/tpo/anti-censorship/pluggable-transports/lyrebird
+  PROVIDES:=lyrebird
 endef
 
 define Package/lyrebird
   $(call Package/lyrebird/Default)
-  VARIANT:=hf
+  VARIANT:=default
+  DEFAULT_VARIANT:=1
 endef
 
-define Package/lyrebird_nohf
+define Package/lyrebird-hf
   $(call Package/lyrebird/Default)
-  VARIANT:=nohf
+  VARIANT:=hf
+  DEPENDS:=@(mips||mipsel)
+endef
+
+define Package/lyrebird-sf
+  $(call Package/lyrebird/Default)
+  VARIANT:=sf
   DEPENDS:=@arm
 endef
 
@@ -47,7 +55,8 @@ define Package/lyrebird/description
   protocol ancestery obfs4 is much closer to ScrambleSuit than obfs2/obfs3.
 endef
 
-Package/lyrebird_nohf/description=$(Package/lyrebird/description)
+Package/lyrebird-hf/description=$(Package/lyrebird/description)
+Package/lyrebird-sf/description=$(Package/lyrebird/description)
 
 GO_LDFLAGS += -X 'main.lyrebirdVersion=$(PKG_VERSION)'
 
@@ -58,7 +67,9 @@ define Package/lyrebird/install
 	$(INSTALL_BIN) $(PKG_INSTALL_DIR)/bin/lyrebird $(1)/opt/sbin
 endef
 
-Package/lyrebird_nohf/install=$(Package/lyrebird/install)
+Package/lyrebird-hf/install=$(Package/lyrebird/install)
+Package/lyrebird-sf/install=$(Package/lyrebird/install)
 
 $(eval $(call BuildPackage,lyrebird))
-$(eval $(call BuildPackage,lyrebird_nohf))
+$(eval $(call BuildPackage,lyrebird-hf))
+$(eval $(call BuildPackage,lyrebird-sf))
