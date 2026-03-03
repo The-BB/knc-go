@@ -1,6 +1,6 @@
 # SPDX-License-Identifier: GPL-2.0-only
 #
-# Copyright (C) 2023-2025 Entware
+# Copyright (C) 2023-2026 Entware
 
 # XXX Project archived by the owner on Feb 19, 2025.
 
@@ -18,6 +18,7 @@ PKG_MIRROR_HASH:=73cc75f17aba13ada29440c79edb7840513719141e3cd770fcc521b3576b047
 
 PKG_LICENSE:=BSD-3-Clause
 PKG_LICENSE_FILES:=LICENSE.txt
+PKG_MAINTAINER:=Entware team, https://entware.net
 
 PKG_BUILD_PARALLEL:=1
 
@@ -30,83 +31,30 @@ define Package/goflow/Default
   SUBMENU:=prometheus tools
   TITLE:=a NetFlow/IPFIX/sFlow collector
   URL:=https://github.com/cloudflare/goflow
-  MAINTAINER:=Entware team, https://entware.net
   CONFLICTS:=netflow-exporter
 endef
-
-define Package/cnetflow
-  $(call Package/goflow/Default)
-  TITLE+=(IPFIX/NetFlow v9)
-  VARIANT:=hf
-endef
-
-define Package/cnetflow_nohf
-  $(call Package/goflow/Default)
-  TITLE+=(IPFIX/NetFlow v9)
-  VARIANT:=nohf
-  DEPENDS:=@arm
-endef
-
-define Package/cnetflow/description
-  The high-scalability sFlow/NetFlow/IPFIX collector used
-  internally at Cloudflare.
-  (IPFIX/NetFlow v9)
-endef
-
-Package/cnetflow_nohf/description=$(Package/cnetflow/description)
-
-define Package/cnflegacy
-  $(call Package/goflow/Default)
-  TITLE+=(NetFlow v5)
-  VARIANT:=hf
-endef
-
-define Package/cnflegacy_nohf
-  $(call Package/goflow/Default)
-  TITLE+=(NetFlow v5)
-  VARIANT:=nohf
-  DEPENDS:=@arm
-endef
-
-define Package/cnflegacy/description
-  The high-scalability sFlow/NetFlow/IPFIX collector used
-  internally at Cloudflare.
-  (NetFlow v5)
-endef
-
-Package/cnflegacy_nohf/description=$(Package/cnflegacy/description)
-
-define Package/csflow
-  $(call Package/goflow/Default)
-  TITLE+=(sFlow v5)
-  VARIANT:=hf
-endef
-
-define Package/csflow_nohf
-  $(call Package/goflow/Default)
-  TITLE+=(sFlow v5)
-  VARIANT:=nohf
-  DEPENDS:=@arm
-endef
-
-define Package/csflow/description
-  The high-scalability sFlow/NetFlow/IPFIX collector used
-  internally at Cloudflare.
-  (sFlow v5)
-endef
-
-Package/csflow_nohf/description=$(Package/csflow/description)
 
 define Package/goflow
   $(call Package/goflow/Default)
   TITLE+=(full)
-  VARIANT:=hf
+  VARIANT:=default
+  DEFAULT_VARIANT:=1
+  PROVIDES:=goflow
 endef
 
-define Package/goflow_nohf
+define Package/goflow-hf
   $(call Package/goflow/Default)
   TITLE+=(full)
-  VARIANT:=nohf
+  VARIANT:=hf
+  PROVIDES:=goflow
+  DEPENDS:=@(mips||mipsel)
+endef
+
+define Package/goflow-sf
+  $(call Package/goflow/Default)
+  TITLE+=(full)
+  VARIANT:=sf
+  PROVIDES:=goflow
   DEPENDS:=@arm
 endef
 
@@ -116,7 +64,98 @@ define Package/goflow/description
   (full)
 endef
 
-Package/goflow_nohf/description=$(Package/goflow/description)
+Package/goflow-hf/description=$(Package/goflow/description)
+Package/goflow-sf/description=$(Package/goflow/description)
+
+define Package/cnetflow
+  $(call Package/goflow/Default)
+  TITLE+=(IPFIX/NetFlow v9)
+  VARIANT:=default
+  DEFAULT_VARIANT:=1
+endef
+
+define Package/cnetflow-hf
+  $(call Package/goflow/Default)
+  TITLE+=(IPFIX/NetFlow v9)
+  VARIANT:=hf
+  DEPENDS:=@(mips||mipsel)
+endef
+
+define Package/cnetflow-sf
+  $(call Package/goflow/Default)
+  TITLE+=(IPFIX/NetFlow v9)
+  VARIANT:=sf
+  DEPENDS:=@arm
+endef
+
+define Package/cnetflow/description
+  The high-scalability sFlow/NetFlow/IPFIX collector used
+  internally at Cloudflare.
+  (IPFIX/NetFlow v9)
+endef
+
+Package/cnetflow-hf/description=$(Package/cnetflow/description)
+Package/cnetflow-sf/description=$(Package/cnetflow/description)
+
+define Package/cnflegacy
+  $(call Package/goflow/Default)
+  TITLE+=(NetFlow v5)
+  VARIANT:=default
+  DEFAULT_VARIANT:=1
+endef
+
+define Package/cnflegacy-hf
+  $(call Package/goflow/Default)
+  TITLE+=(NetFlow v5)
+  VARIANT:=hf
+  DEPENDS:=@(mips||mipsel)
+endef
+
+define Package/cnflegacy-sf
+  $(call Package/goflow/Default)
+  TITLE+=(NetFlow v5)
+  VARIANT:=sf
+  DEPENDS:=@arm
+endef
+
+define Package/cnflegacy/description
+  The high-scalability sFlow/NetFlow/IPFIX collector used
+  internally at Cloudflare.
+  (NetFlow v5)
+endef
+
+Package/cnflegacy-hf/description=$(Package/cnflegacy/description)
+Package/cnflegacy-sf/description=$(Package/cnflegacy/description)
+
+define Package/csflow
+  $(call Package/goflow/Default)
+  TITLE+=(sFlow v5)
+  VARIANT:=default
+  DEFAULT_VARIANT:=1
+endef
+
+define Package/csflow-hf
+  $(call Package/goflow/Default)
+  TITLE+=(sFlow v5)
+  VARIANT:=hf
+  DEPENDS:=@(mips||mipsel)
+endef
+
+define Package/csflow-sf
+  $(call Package/goflow/Default)
+  TITLE+=(sFlow v5)
+  VARIANT:=sf
+  DEPENDS:=@arm
+endef
+
+define Package/csflow/description
+  The high-scalability sFlow/NetFlow/IPFIX collector used
+  internally at Cloudflare.
+  (sFlow v5)
+endef
+
+Package/csflow-hf/description=$(Package/csflow/description)
+Package/csflow-sf/description=$(Package/csflow/description)
 
 GO_LDFLAGS += \
 	-X 'main.version=$(PKG_VERSION)' \
@@ -131,7 +170,8 @@ define Package/cnetflow/install
 	$(INSTALL_BIN) ./files/S99cnetflow $(1)/opt/etc/init.d
 endef
 
-Package/cnetflow_nohf/install=$(Package/cnetflow/install)
+Package/cnetflow-hf/install=$(Package/cnetflow/install)
+Package/cnetflow-sf/install=$(Package/cnetflow/install)
 
 define Package/cnflegacy/install
 	$(INSTALL_DIR) $(1)/opt/bin
@@ -140,7 +180,8 @@ define Package/cnflegacy/install
 	$(INSTALL_BIN) ./files/S99cnflegacy $(1)/opt/etc/init.d
 endef
 
-Package/cnflegacy_nohf/install=$(Package/cnflegacy/install)
+Package/cnflegacy-hf/install=$(Package/cnflegacy/install)
+Package/cnflegacy-sf/install=$(Package/cnflegacy/install)
 
 define Package/csflow/install
 	$(INSTALL_DIR) $(1)/opt/bin
@@ -149,7 +190,8 @@ define Package/csflow/install
 	$(INSTALL_BIN) ./files/S99csflow $(1)/opt/etc/init.d
 endef
 
-Package/csflow_nohf/install=$(Package/csflow/install)
+Package/csflow-hf/install=$(Package/csflow/install)
+Package/csflow-sf/install=$(Package/csflow/install)
 
 define Package/goflow/install
 	$(INSTALL_DIR) $(1)/opt/bin
@@ -158,13 +200,18 @@ define Package/goflow/install
 	$(INSTALL_BIN) ./files/S99goflow $(1)/opt/etc/init.d
 endef
 
-Package/goflow_nohf/install=$(Package/goflow/install)
+Package/goflow-hf/install=$(Package/goflow/install)
+Package/goflow-sf/install=$(Package/goflow/install)
 
 $(eval $(call BuildPackage,cnetflow))
-$(eval $(call BuildPackage,cnetflow_nohf))
+$(eval $(call BuildPackage,cnetflow-hf))
+$(eval $(call BuildPackage,cnetflow-sf))
 $(eval $(call BuildPackage,cnflegacy))
-$(eval $(call BuildPackage,cnflegacy_nohf))
+$(eval $(call BuildPackage,cnflegacy-hf))
+$(eval $(call BuildPackage,cnflegacy-sf))
 $(eval $(call BuildPackage,csflow))
-$(eval $(call BuildPackage,csflow_nohf))
+$(eval $(call BuildPackage,csflow-hf))
+$(eval $(call BuildPackage,csflow-sf))
 $(eval $(call BuildPackage,goflow))
-$(eval $(call BuildPackage,goflow_nohf))
+$(eval $(call BuildPackage,goflow-hf))
+$(eval $(call BuildPackage,goflow-sf))
