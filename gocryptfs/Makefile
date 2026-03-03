@@ -1,18 +1,18 @@
 # SPDX-License-Identifier: GPL-2.0-only
 #
-# Copyright (C) 2024-2025 Entware
+# Copyright (C) 2024-2026 Entware
 
 include $(TOPDIR)/rules.mk
 
 PKG_NAME:=gocryptfs
-PKG_VERSION:=2.6.0
+PKG_VERSION:=2.6.1
 PKG_RELEASE:=1
 
 PKG_SOURCE_PROTO:=git
-PKG_SOURCE_DATE:=2025-07-14
+PKG_SOURCE_DATE:=2025-08-10
 PKG_SOURCE_VERSION:=v$(PKG_VERSION)
 PKG_SOURCE_URL:=https://github.com/rfjakob/gocryptfs
-PKG_MIRROR_HASH:=f3469ac6b8f1019c745d47dbc3e8cfbca158eaa3f055412c9270ec012366d372
+PKG_MIRROR_HASH:=7ca2afe5ba975bfd757d1eaf3933dfd947ee815c05333db35f30b46175a6f678
 
 PKG_LICENSE:=MIT
 PKG_LICENSE_FILES:=LICENSE
@@ -28,19 +28,28 @@ define Package/gocryptfs/Default
   SECTION:=utils
   CATEGORY:=Utilities
   SUBMENU:=Encryption
-  TITLE:=Encrypted overlay filesystem written in Go
+  TITLE:=Encrypted overlay filesystem
   URL:=https://nuetzlich.net/gocryptfs
-  DEPENDS:=+fuse-utils +libopenssl
+  PROVIDES:=gocryptfs
+  DEPENDS:=+libc +libgcc +libopenssl +libpthread
+  EXTRA_DEPENDS:=fuse-utils
 endef
 
 define Package/gocryptfs
   $(call Package/gocryptfs/Default)
-  VARIANT:=hf
+  VARIANT:=default
+  DEFAULT_VARIANT:=1
 endef
 
-define Package/gocryptfs_nohf
+define Package/gocryptfs-hf
   $(call Package/gocryptfs/Default)
-  VARIANT:=nohf
+  VARIANT:=hf
+  DEPENDS+=@(mips||mipsel)
+endef
+
+define Package/gocryptfs-sf
+  $(call Package/gocryptfs/Default)
+  VARIANT:=sf
   DEPENDS+=@arm
 endef
 
@@ -48,7 +57,8 @@ define Package/gocryptfs/description
   An encrypted overlay filesystem written in Go.
 endef
 
-Package/gocryptfs_nohf/description=$(Package/gocryptfs/description)
+Package/gocryptfs-hf/description=$(Package/gocryptfs/description)
+Package/gocryptfs-sf/description=$(Package/gocryptfs/description)
 
 # go list -m github.com/hanwen/go-fuse/v2 | cut -d' ' -f2-
 
@@ -64,7 +74,9 @@ define Package/gocryptfs/install
 	$(INSTALL_BIN) $(PKG_INSTALL_DIR)/bin/gocryptfs $(1)/opt/sbin
 endef
 
-Package/gocryptfs_nohf/install=$(Package/gocryptfs/install)
+Package/gocryptfs-hf/install=$(Package/gocryptfs/install)
+Package/gocryptfs-sf/install=$(Package/gocryptfs/install)
 
 $(eval $(call BuildPackage,gocryptfs))
-$(eval $(call BuildPackage,gocryptfs_nohf))
+#$(eval $(call BuildPackage,gocryptfs-hf))
+$(eval $(call BuildPackage,gocryptfs-sf))
