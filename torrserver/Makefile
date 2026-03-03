@@ -5,16 +5,17 @@
 include $(TOPDIR)/rules.mk
 
 PKG_NAME:=torrserver
-PKG_VERSION:=135
+PKG_VERSION:=137
 PKG_RELEASE:=1
 
 PKG_SOURCE_PROTO:=git
 PKG_SOURCE_VERSION:=MatriX.$(PKG_VERSION)
 PKG_SOURCE_URL:=https://github.com/YouROK/TorrServer
-PKG_MIRROR_HASH:=c2a4ec9a1d7650420c0daa3ac6cdacfeccd9a7288c1d71ef6dd820cc72c0831e
+PKG_MIRROR_HASH:=ec3e015dcb975c0eae807f76a7e6835a079921dd30f7c409d9be93df1c280c1f
 
 PKG_LICENSE:=GPL-3.0-only
 PKG_LICENSE_FILES:=LICENSE
+PKG_MAINTAINER:=Entware team, https://entware.net
 
 PKG_BUILD_DEPENDS:=node-yarn/host
 PKG_BUILD_PARALLEL:=1
@@ -24,31 +25,39 @@ include $(INCLUDE_DIR)/package.mk
 include $(INCLUDE_DIR)/golang.mk
 
 define Package/torrserver/Default
-	SECTION:=net
-	CATEGORY:=Network
-	SUBMENU:=BitTorrent
-	TITLE:=stream torrent to http
-	URL:=https://github.com/YouROK/TorrServer
-	MAINTAINER:=Entware team, https://entware.net
-	DEPENDS:=+libstdcpp
+  SECTION:=net
+  CATEGORY:=Network
+  SUBMENU:=BitTorrent
+  TITLE:=stream torrent to http
+  URL:=https://yourok.ru/
+  PROVIDES:=torrserver
+  DEPENDS:=+libc +libgcc +libpthread
 endef
 
 define Package/torrserver
-	$(call Package/torrserver/Default)
-	VARIANT:=hf
+  $(call Package/torrserver/Default)
+  VARIANT:=default
+  DEFAULT_VARIANT:=1
 endef
 
-define Package/torrserver_nohf
-	$(call Package/torrserver/Default)
-	VARIANT:=nohf
-	DEPENDS+=@arm
+define Package/torrserver-hf
+  $(call Package/torrserver/Default)
+  VARIANT:=hf
+  DEPENDS+=@(mips||mipsel)
+endef
+
+define Package/torrserver-sf
+  $(call Package/torrserver/Default)
+  VARIANT:=sf
+  DEPENDS+=@arm
 endef
 
 define Package/torrserver/description
  torrserver is a server to stream torrent via http to torrserv client.
 endef
 
-Package/torrserver_nohf/description=$(Package/torrserver/description)
+Package/torrserver-hf/description=$(Package/torrserver/description)
+Package/torrserver-sf/description=$(Package/torrserver/description)
 
 GO_SRC_SUBDIR:=server
 GO_TAGS:=nosqlite
@@ -57,9 +66,7 @@ GO_TARGET:=./cmd
 define Build/Web
 	( cd $(PKG_BUILD_DIR); \
 		NODE_OPTIONS=--openssl-legacy-provider \
-		$(GO_ENV_COMMON) $(GO_BIN) run \
-		$(if $(findstring s,$(OPENWRT_VERBOSE)),-v -x) \
-		gen_web.go; \
+		$(GO_BIN_RUN) gen_web.go; \
 	)
 	( cd $(PKG_BUILD_DIR)/server; $(GO_BIN_MOD_TIDY); )
 endef
@@ -78,7 +85,9 @@ define Package/torrserver/install
 	touch $(1)/opt/etc/torrserver/.keep
 endef
 
-Package/torrserver_nohf/install=$(Package/torrserver/install)
+Package/torrserver-hf/install=$(Package/torrserver/install)
+Package/torrserver-sf/install=$(Package/torrserver/install)
 
 $(eval $(call BuildPackage,torrserver))
-$(eval $(call BuildPackage,torrserver_nohf))
+#$(eval $(call BuildPackage,torrserver-hf))
+$(eval $(call BuildPackage,torrserver-sf))
