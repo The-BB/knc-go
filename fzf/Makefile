@@ -1,17 +1,17 @@
 # SPDX-License-Identifier: GPL-2.0-only
 #
-# Copyright (C) 2024-2025 Entware
+# Copyright (C) 2024-2026 Entware
 
 include $(TOPDIR)/rules.mk
 
 PKG_NAME:=fzf
-PKG_VERSION:=0.64.0
+PKG_VERSION:=0.67.0
 PKG_RELEASE:=1
 
 PKG_SOURCE_PROTO:=git
-PKG_SOURCE_VERSION:=0076ec2e8d66a725555c256acbe46292019dc1a7
+PKG_SOURCE_VERSION:=2ab923f3ae04d5e915e5ff4a9cd3bd515bfd1ea5
 PKG_SOURCE_URL:=https://github.com/junegunn/fzf
-PKG_MIRROR_HASH:=a411055e00b05a503968d441af6603ca3d3286f8b4d6ff226f3686f71c03cb2d
+PKG_MIRROR_HASH:=0eaa77c90fe01009988981bcd7759ad62df3daaceddf8e12fdac1252bfcdd573
 
 PKG_LICENSE:=MIT
 PKG_LICENSE_FILES:=LICENSE
@@ -27,16 +27,24 @@ define Package/fzf/Default
   CATEGORY:=Utilities
   TITLE:=A command-line fuzzy finder
   URL:=https://github.com/junegunn/fzf
+  PROVIDES:=fzf
 endef
 
 define Package/fzf
   $(call Package/fzf/Default)
-  VARIANT:=hf
+  VARIANT:=default
+  DEFAULT_VARIANT:=1
 endef
 
-define Package/fzf_nohf
+define Package/fzf-hf
   $(call Package/fzf/Default)
-  VARIANT:=nohf
+  VARIANT:=hf
+  DEPENDS:=@(mips||mipsel)
+endef
+
+define Package/fzf-sf
+  $(call Package/fzf/Default)
+  VARIANT:=sf
   DEPENDS:=@arm
 endef
 
@@ -44,7 +52,8 @@ define Package/fzf/description
   fzf is a general-purpose command-line fuzzy finder.
 endef
 
-Package/fzf_nohf/description=$(Package/fzf/description)
+Package/fzf-hf/description=$(Package/fzf/description)
+Package/fzf-sf/description=$(Package/fzf/description)
 
 GO_LDFLAGS += \
 	-X 'main.version=$(PKG_VERSION)' \
@@ -55,7 +64,9 @@ define Package/fzf/install
 	$(INSTALL_BIN) $(PKG_INSTALL_DIR)/bin/fzf $(1)/opt/sbin
 endef
 
-Package/fzf_nohf/install=$(Package/fzf/install)
+Package/fzf-hf/install=$(Package/fzf/install)
+Package/fzf-sf/install=$(Package/fzf/install)
 
 $(eval $(call BuildPackage,fzf))
-$(eval $(call BuildPackage,fzf_nohf))
+$(eval $(call BuildPackage,fzf-hf))
+$(eval $(call BuildPackage,fzf-sf))
