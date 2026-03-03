@@ -1,20 +1,21 @@
 # SPDX-License-Identifier: GPL-2.0-only
 #
-# Copyright (C) 2016-2025 Entware
+# Copyright (C) 2016-2026 Entware
 
 include $(TOPDIR)/rules.mk
 
 PKG_NAME:=rclone
-PKG_VERSION:=1.70.3
+PKG_VERSION:=1.73.1
 PKG_RELEASE:=1
 
 PKG_SOURCE_PROTO:=git
 PKG_SOURCE_VERSION:=v$(PKG_VERSION)
 PKG_SOURCE_URL:=https://github.com/rclone/rclone
-PKG_MIRROR_HASH:=fe34494b3f733396becd1336b18b91733343932fb65c9ad5039187384a97dcc5
+PKG_MIRROR_HASH:=16fa63e0e91427d1bd7a90b0565d4864fb2c230e418d50da44e4750c136e4cfc
 
 PKG_LICENSE:=MIT
 PKG_LICENSE_FILES:=LICENSE
+PKG_MAINTAINER:=Entware team, https://entware.net
 
 PKG_BUILD_PARALLEL:=1
 
@@ -22,23 +23,30 @@ include $(INCLUDE_DIR)/package.mk
 include $(INCLUDE_DIR)/golang.mk
 
 define Package/rclone/Default
-	SECTION:=net
-	CATEGORY:=Network
-	SUBMENU:=File Transfer
-	TITLE:=rsync for cloud storage
-	URL:=https://rclone.org
-	MAINTAINER:=Entware team, https://entware.net
+  SECTION:=net
+  CATEGORY:=Network
+  SUBMENU:=File Transfer
+  TITLE:=rsync for cloud storage
+  URL:=https://rclone.org
+  PROVIDES:=rclone
 endef
 
 define Package/rclone
-	$(call Package/rclone/Default)
-	VARIANT:=hf
+  $(call Package/rclone/Default)
+  VARIANT:=default
+  DEFAULT_VARIANT:=1
 endef
 
-define Package/rclone_nohf
-	$(call Package/rclone/Default)
-	VARIANT:=nohf
-	DEPENDS:=@arm
+define Package/rclone-hf
+  $(call Package/rclone/Default)
+  VARIANT:=hf
+  DEPENDS:=@(mips||mipsel)
+endef
+
+define Package/rclone-sf
+  $(call Package/rclone/Default)
+  VARIANT:=sf
+  DEPENDS:=@arm
 endef
 
 define Package/rclone/description
@@ -56,7 +64,8 @@ define Package/rclone/description
     The local filesystem
 endef
 
-Package/rclone_nohf/description=$(Package/rclone/description)
+Package/rclone-hf/description=$(Package/rclone/description)
+Package/rclone-sf/description=$(Package/rclone/description)
 
 define Build/Prepare
 	$(call Build/Prepare/Default)
@@ -77,7 +86,9 @@ define Package/rclone/install
 	$(INSTALL_DIR) $(1)/opt/var/cache/rclone
 endef
 
-Package/rclone_nohf/install=$(Package/rclone/install)
+Package/rclone-hf/install=$(Package/rclone/install)
+Package/rclone-sf/install=$(Package/rclone/install)
 
 $(eval $(call BuildPackage,rclone))
-$(eval $(call BuildPackage,rclone_nohf))
+$(eval $(call BuildPackage,rclone-hf))
+$(eval $(call BuildPackage,rclone-sf))
