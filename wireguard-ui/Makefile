@@ -1,6 +1,6 @@
 # SPDX-License-Identifier: GPL-2.0-only
 #
-# Copyright (C) 2023-2025 Entware
+# Copyright (C) 2023-2026 Entware
 
 include $(TOPDIR)/rules.mk
 
@@ -30,17 +30,25 @@ define Package/wireguard-ui/Default
   SUBMENU:=VPN
   TITLE:=Wireguard web interface
   URL:=https://github.com/ngoduykhanh/wireguard-ui
+  PROVIDES:=wireguard-ui
   EXTRA_DEPENDS:=ca-bundle, iptables, jq, wireguard-tools
 endef
 
 define Package/wireguard-ui
   $(call Package/wireguard-ui/Default)
-  VARIANT:=hf
+  VARIANT:=default
+  DEFAULT_VARIANT:=1
 endef
 
-define Package/wireguard-ui_nohf
+define Package/wireguard-ui-hf
   $(call Package/wireguard-ui/Default)
-  VARIANT:=nohf
+  VARIANT:=hf
+  DEPENDS:=@(mips||mipsel)
+endef
+
+define Package/wireguard-ui-sf
+  $(call Package/wireguard-ui/Default)
+  VARIANT:=sf
   DEPENDS:=@arm
 endef
 
@@ -48,7 +56,8 @@ define Package/wireguard-ui/description
   A web user interface to manage your WireGuard setup.
 endef
 
-Package/wireguard-ui_nohf/description=$(Package/wireguard-ui/description)
+Package/wireguard-ui-hf/description=$(Package/wireguard-ui/description)
+Package/wireguard-ui-sf/description=$(Package/wireguard-ui/description)
 
 GO_BUILD_ARGS += -a
 
@@ -70,7 +79,9 @@ define Package/wireguard-ui/install
 	$(INSTALL_BIN) $(PKG_INSTALL_DIR)/bin/wireguard-ui $(1)/opt/sbin
 endef
 
-Package/wireguard-ui_nohf/install=$(Package/wireguard-ui/install)
+Package/wireguard-ui-hf/install=$(Package/wireguard-ui/install)
+Package/wireguard-ui-sf/install=$(Package/wireguard-ui/install)
 
 $(eval $(call BuildPackage,wireguard-ui))
-$(eval $(call BuildPackage,wireguard-ui_nohf))
+$(eval $(call BuildPackage,wireguard-ui-hf))
+$(eval $(call BuildPackage,wireguard-ui-sf))
