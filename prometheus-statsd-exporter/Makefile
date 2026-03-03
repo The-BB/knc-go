@@ -1,6 +1,6 @@
 # SPDX-License-Identifier: GPL-2.0-only
 #
-# Copyright (C) 2023-2024 Entware
+# Copyright (C) 2023-2026 Entware
 
 include $(TOPDIR)/rules.mk
 
@@ -16,6 +16,7 @@ PKG_MIRROR_HASH:=adc968e65987e1f18cbcd170d35287ae3ac062271cf91bfacea7fd7f81d98ab
 
 PKG_LICENSE:=Apache-2.0
 PKG_LICENSE_FILES:=LICENSE
+PKG_MAINTAINER:=Entware team, https://entware.net
 
 PKG_BUILD_PARALLEL:=1
 
@@ -28,17 +29,24 @@ define Package/prometheus-statsd-exporter/Default
   SUBMENU:=prometheus tools
   TITLE:=StatsD to Prometheus metrics exporter
   URL:=https://prometheus.io/
-  MAINTAINER:=Entware team, https://entware.net
+  PROVIDES:=prometheus-statsd-exporter
 endef
 
 define Package/prometheus-statsd-exporter
   $(call Package/prometheus-statsd-exporter/Default)
-  VARIANT:=hf
+  VARIANT:=default
+  DEFAULT_VARIANT:=1
 endef
 
-define Package/prometheus-statsd-exporter_nohf
+define Package/prometheus-statsd-exporter-hf
   $(call Package/prometheus-statsd-exporter/Default)
-  VARIANT:=nohf
+  VARIANT:=hf
+  DEPENDS:=@(mips||mipsel)
+endef
+
+define Package/prometheus-statsd-exporter-sf
+  $(call Package/prometheus-statsd-exporter/Default)
+  VARIANT:=sf
   DEPENDS:=@arm
 endef
 
@@ -47,13 +55,15 @@ define Package/prometheus-statsd-exporter/description
   as Prometheus metrics.
 endef
 
-Package/prometheus-statsd-exporter_nohf/description=$(Package/prometheus-statsd-exporter/description)
+Package/prometheus-statsd-exporter-hf/description=$(Package/prometheus-statsd-exporter/description)
+Package/prometheus-statsd-exporter-sf/description=$(Package/prometheus-statsd-exporter/description)
 
 define Package/prometheus-statsd-exporter/conffiles
 /opt/etc/prometheus/statsd_mapping.yml
 endef
 
-Package/prometheus-statsd-exporter_nohf/conffiles=$(Package/prometheus-statsd-exporter/conffiles)
+Package/prometheus-statsd-exporter-hf/conffiles=$(Package/prometheus-statsd-exporter/conffiles)
+Package/prometheus-statsd-exporter-sf/conffiles=$(Package/prometheus-statsd-exporter/conffiles)
 
 GO_BUILD_ARGS += -a
 
@@ -75,7 +85,9 @@ define Package/prometheus-statsd-exporter/install
 	$(INSTALL_DATA) ./files/statsd_mapping.yml $(1)/opt/etc/prometheus
 endef
 
-Package/prometheus-statsd-exporter_nohf/install=$(Package/prometheus-statsd-exporter/install)
+Package/prometheus-statsd-exporter-hf/install=$(Package/prometheus-statsd-exporter/install)
+Package/prometheus-statsd-exporter-sf/install=$(Package/prometheus-statsd-exporter/install)
 
 $(eval $(call BuildPackage,prometheus-statsd-exporter))
-$(eval $(call BuildPackage,prometheus-statsd-exporter_nohf))
+$(eval $(call BuildPackage,prometheus-statsd-exporter-hf))
+$(eval $(call BuildPackage,prometheus-statsd-exporter-sf))
