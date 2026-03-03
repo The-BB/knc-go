@@ -1,12 +1,12 @@
 # SPDX-License-Identifier: GPL-2.0-only
 #
-# Copyright (C) 2023-2024 Entware
+# Copyright (C) 2023-2026 Entware
 
 include $(TOPDIR)/rules.mk
 
 PKG_NAME:=xray-plugin
 PKG_VERSION:=1.8.24
-PKG_RELEASE:=1
+PKG_RELEASE:=2
 
 PKG_SOURCE_PROTO:=git
 PKG_SOURCE_VERSION:=v$(PKG_VERSION)
@@ -28,16 +28,24 @@ define Package/xray-plugin/Default
   SUBMENU:=Web Servers/Proxies
   TITLE:=A SIP003 plugin based on Xray-core
   URL:=https://github.com/teddysun/xray-plugin
+  PROVIDES:=xray-plugin
 endef
 
 define Package/xray-plugin
   $(call Package/xray-plugin/Default)
-  VARIANT:=hf
+  VARIANT:=default
+  DEFAULT_VARIANT:=1
 endef
 
-define Package/xray-plugin_nohf
+define Package/xray-plugin-hf
   $(call Package/xray-plugin/Default)
-  VARIANT:=nohf
+  VARIANT:=hf
+  DEPENDS:=@(mips||mipsel)
+endef
+
+define Package/xray-plugin-sf
+  $(call Package/xray-plugin/Default)
+  VARIANT:=sf
   DEPENDS:=@arm
 endef
 
@@ -45,7 +53,8 @@ define Package/xray-plugin/description
   Yet another SIP003 plugin for shadowsocks, based on Xray-core.
 endef
 
-Package/xray-plugin_nohf/description=$(Package/xray-plugin/description)
+Package/xray-plugin-hf/description=$(Package/xray-plugin/description)
+Package/xray-plugin-sf/description=$(Package/xray-plugin/description)
 
 GO_LDFLAGS += -X 'main.VERSION=v$(PKG_VERSION)'
 
@@ -54,7 +63,9 @@ define Package/xray-plugin/install
 	$(INSTALL_BIN) $(PKG_INSTALL_DIR)/bin/xray-plugin $(1)/opt/bin
 endef
 
-Package/xray-plugin_nohf/install=$(Package/xray-plugin/install)
+Package/xray-plugin-hf/install=$(Package/xray-plugin/install)
+Package/xray-plugin-sf/install=$(Package/xray-plugin/install)
 
 $(eval $(call BuildPackage,xray-plugin))
-$(eval $(call BuildPackage,xray-plugin_nohf))
+$(eval $(call BuildPackage,xray-plugin-hf))
+$(eval $(call BuildPackage,xray-plugin-sf))
