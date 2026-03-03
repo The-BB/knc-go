@@ -1,20 +1,21 @@
 # SPDX-License-Identifier: GPL-2.0-only
 #
-# Copyright (C) 2021-2025 Entware
+# Copyright (C) 2021-2026 Entware
 
 include $(TOPDIR)/rules.mk
 
 PKG_NAME:=tailscale
-PKG_VERSION:=1.84.3
+PKG_VERSION:=1.94.2
 PKG_RELEASE:=1
 
 PKG_SOURCE_PROTO:=git
-PKG_SOURCE_VERSION:=7648989bc54738b1e40dde74fa822984a63cbc05
+PKG_SOURCE_VERSION:=2de4d317a8c2595904f1563ebd98fdcf843da275
 PKG_SOURCE_URL:=https://github.com/tailscale/tailscale
-PKG_MIRROR_HASH:=b5f5b6a06f856c1789bea4c9a3e08f5d25c650ab2dca885b93ffd7e71c5ff9d6
+PKG_MIRROR_HASH:=b9e7fe23f3f4775cd921922a1258837b4d02ba347733177a07e8df7bffad3fe7
 
 PKG_LICENSE:=BSD-3-Clause
 PKG_LICENSE_FILES:=LICENSE
+PKG_MAINTAINER:=Entware team, https://entware.net
 
 PKG_BUILD_PARALLEL:=1
 
@@ -22,24 +23,31 @@ include $(INCLUDE_DIR)/package.mk
 include $(INCLUDE_DIR)/golang.mk
 
 define Package/tailscale/Default
-	SECTION:=net
-	CATEGORY:=Network
-	SUBMENU:=VPN
-	TITLE:=Private WireGuard networks made easy
-	URL:=https://tailscale.com/
-	MAINTAINER:=Entware team, https://entware.net
-	EXTRA_DEPENDS:=ca-bundle, coreutils-nohup
+  SECTION:=net
+  CATEGORY:=Network
+  SUBMENU:=VPN
+  TITLE:=Private WireGuard networks made easy
+  URL:=https://tailscale.com/
+  PROVIDES:=tailscale
+  EXTRA_DEPENDS:=ca-bundle, coreutils-nohup
 endef
 
 define Package/tailscale
-	$(call Package/tailscale/Default)
-	VARIANT:=hf
+  $(call Package/tailscale/Default)
+  VARIANT:=default
+  DEFAULT_VARIANT:=1
 endef
 
-define Package/tailscale_nohf
-	$(call Package/tailscale/Default)
-	VARIANT:=nohf
-	DEPENDS:=@arm
+define Package/tailscale-hf
+  $(call Package/tailscale/Default)
+  VARIANT:=hf
+  DEPENDS:=@(mips||mipsel)
+endef
+
+define Package/tailscale-sf
+  $(call Package/tailscale/Default)
+  VARIANT:=sf
+  DEPENDS:=@arm
 endef
 
 define Package/tailscale/description
@@ -47,7 +55,8 @@ define Package/tailscale/description
  firewall rules for you, and works from anywhere
 endef
 
-Package/tailscale_nohf/description=$(Package/tailscale/description)
+Package/tailscale-hf/description=$(Package/tailscale/description)
+Package/tailscale-sf/description=$(Package/tailscale/description)
 
 PKG_SHORT_VER:=$(subst $(space),.,$(wordlist 1,2,$(subst .,$(space),$(PKG_VERSION))))
 
@@ -67,7 +76,9 @@ define Package/tailscale/install
 	$(INSTALL_BIN) ./files/S06tailscaled $(1)/opt/etc/init.d/
 endef
 
-Package/tailscale_nohf/install=$(Package/tailscale/install)
+Package/tailscale-hf/install=$(Package/tailscale/install)
+Package/tailscale-sf/install=$(Package/tailscale/install)
 
 $(eval $(call BuildPackage,tailscale))
-$(eval $(call BuildPackage,tailscale_nohf))
+$(eval $(call BuildPackage,tailscale-hf))
+$(eval $(call BuildPackage,tailscale-sf))
