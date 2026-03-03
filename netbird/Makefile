@@ -1,22 +1,22 @@
 # SPDX-License-Identifier: GPL-2.0-only
 #
-# Copyright (C) 2024-2025 Entware
+# Copyright (C) 2024-2026 Entware
 
 include $(TOPDIR)/rules.mk
 
 PKG_NAME:=netbird
-PKG_VERSION:=0.51.2
+PKG_VERSION:=0.65.1
 PKG_RELEASE:=1
 
 PKG_SOURCE_PROTO:=git
-PKG_SOURCE_DATE:=2025-07-21
-PKG_SOURCE_VERSION:=86c16cf65150069c1a69743380179ec1ad5bf9bd
+PKG_SOURCE_DATE:=2026-02-14
+PKG_SOURCE_VERSION:=68c481fa44a0790583f80ae8fa1d34e425b8d83b
 PKG_SOURCE_URL:=https://github.com/netbirdio/netbird
-PKG_MIRROR_HASH:=fccb3914578cfde686743309c958f41249a51be627f3901eb39048a6be435e7a
+PKG_MIRROR_HASH:=4d0867f43820cd2f749fefcdd863eff9195e63e800d7cf137abb50a85d52717e
 
-PKG_MAINTAINER:=Entware team, https://entware.net
 PKG_LICENSE:=BSD-3-Clause
 PKG_LICENSE_FILES:=LICENSE
+PKG_MAINTAINER:=Entware team, https://entware.net
 
 PKG_BUILD_PARALLEL:=1
 # for management (and signal?)
@@ -31,17 +31,24 @@ define Package/netbird/Default
   SUBMENU:=VPN
   TITLE:=A WireGuard-based mesh network (client)
   URL:=https://netbird.io/
-#  DEPENDS:=+ca-bundle +iptables
+  PROVIDES:=netbird
 endef
 
 define Package/netbird
   $(call Package/netbird/Default)
-  VARIANT:=hf
+  VARIANT:=default
+  DEFAULT_VARIANT:=1
 endef
 
-define Package/netbird_nohf
+define Package/netbird-hf
   $(call Package/netbird/Default)
-  VARIANT:=nohf
+  VARIANT:=hf
+  DEPENDS:=@(mips||mipsel)
+endef
+
+define Package/netbird-sf
+  $(call Package/netbird/Default)
+  VARIANT:=sf
   DEPENDS:=@arm
 endef
 
@@ -50,14 +57,16 @@ define Package/netbird/description
   mesh network with SSO/MFA and simple access controls.
 endef
 
-Package/netbird_nohf/description=$(Package/netbird/description)
+Package/netbird-hf/description=$(Package/netbird/description)
+Package/netbird-sf/description=$(Package/netbird/description)
 
 define Package/netbird/conffiles
 /opt/etc/netbird/config.json
 /opt/etc/netbird/env
 endef
 
-Package/netbird_nohf/conffiles=$(Package/netbird/conffiles)
+Package/netbird-hf/conffiles=$(Package/netbird/conffiles)
+Package/netbird-sf/conffiles=$(Package/netbird/conffiles)
 
 GO_LDFLAGS += \
 	-X '$(XIMPORTPATH)/version.version=$(PKG_VERSION)' \
@@ -79,7 +88,9 @@ define Package/netbird/install
 #	$(INSTALL_BIN) $(PKG_INSTALL_DIR)/bin/signal $(1)/opt/sbin/netbird-signal
 endef
 
-Package/netbird_nohf/install=$(Package/netbird/install)
+Package/netbird-hf/install=$(Package/netbird/install)
+Package/netbird-sf/install=$(Package/netbird/install)
 
 $(eval $(call BuildPackage,netbird))
-$(eval $(call BuildPackage,netbird_nohf))
+$(eval $(call BuildPackage,netbird-hf))
+$(eval $(call BuildPackage,netbird-sf))
