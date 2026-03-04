@@ -74,7 +74,7 @@ GO_LDFLAGS += \
 	-X 'main.date=$(PKG_SOURCE_DATE)' \
 	-X 'main.builtBy=Entware'
 
-GO_TARGET:=./client ./management ./signal
+GO_TARGET:=./client #./management ./signal
 
 define Package/netbird/install
 	$(INSTALL_DIR) $(1)/opt/etc/init.d
