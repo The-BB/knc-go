@@ -5,20 +5,19 @@
 include $(TOPDIR)/rules.mk
 
 PKG_NAME:=adguardhome
-PKG_VERSION:=0.107.71
+PKG_VERSION:=0.107.73
 PKG_RELEASE:=1
 
 PKG_SOURCE_PROTO:=git
-PKG_SOURCE_DATE:=2025-12-08
-PKG_SOURCE_VERSION:=42a2653d3245313b6247ada092c66e2e11c72468
+PKG_SOURCE_DATE:=2026-03-10
+PKG_SOURCE_VERSION:=c003e9f9c04311a13ca7a873a8437f80711102a5
 PKG_SOURCE_URL:=https://github.com/AdguardTeam/AdGuardHome
-PKG_MIRROR_HASH:=86cc7df245d31d539b1474ea9b43d7d064187b20aaa62f8834a52758ea0f64d1
+PKG_MIRROR_HASH:=7e060c28a433940cfc2723956738b8195675be6e957f9c0473b2760f13d8711c
 
 PKG_LICENSE:=GPL-3.0-only
 PKG_LICENSE_FILES:=LICENSE.txt
 PKG_MAINTAINER:=Entware team, https://entware.net
 
-PKG_BUILD_DEPENDS:=node-yarn/host
 PKG_BUILD_PARALLEL:=1
 
 include $(INCLUDE_DIR)/package.mk
@@ -65,18 +64,22 @@ endef
 Package/adguardhome-hf/conffiles=$(Package/adguardhome/conffiles)
 Package/adguardhome-sf/conffiles=$(Package/adguardhome/conffiles)
 
+AGH_FRONTEND:=$(PKG_NAME)-frontend-$(PKG_VERSION).tar.gz
+define Download/adguardhome-frontend
+  URL:=$(PKG_SOURCE_URL)/releases/download/v$(PKG_VERSION)/
+  URL_FILE:=AdGuardHome_frontend.tar.gz
+  FILE:=$(AGH_FRONTEND)
+  HASH:=a69c540fe6959575330bdea150e31eee0c0c204985bf50e3522ce6d292e3c64e
+endef
+
 GO_LDFLAGS += \
 	-X '$(XIMPORTPATH)/internal/version.channel=release' \
 	-X '$(XIMPORTPATH)/internal/version.version=v$(PKG_VERSION)' \
 	-X '$(XIMPORTPATH)/internal/version.committime=$(PKG_SOURCE_DATE)'
 
-define Build/Compile
-	( cd $(PKG_BUILD_DIR); \
-		NODE_OPTIONS=--openssl-legacy-provider \
-		$(MAKE) js-deps js-build; \
-	)
-	( cd $(PKG_BUILD_DIR); $(GO_BIN_MOD_TIDY); )
-	$(call Build/Compile/Go)
+define Build/Prepare
+	$(call Build/Prepare/Default)
+	$(TAR) -xf $(DL_DIR)/$(AGH_FRONTEND) --strip-components=1 -C $(PKG_BUILD_DIR)
 endef
 
 define Package/adguardhome/install
@@ -91,6 +94,7 @@ endef
 Package/adguardhome-hf/install=$(Package/adguardhome/install)
 Package/adguardhome-sf/install=$(Package/adguardhome/install)
 
+$(eval $(call Download,adguardhome-frontend))
 $(eval $(call BuildPackage,adguardhome))
 $(eval $(call BuildPackage,adguardhome-hf))
 $(eval $(call BuildPackage,adguardhome-sf))
