@@ -75,13 +75,26 @@ GO_VARS += \
 	GOGC=off \
 	GO111MODULE=on
 
-define Build/Compile
+FRONTEND:=$(PKG_NAME)-frontend-$(PKG_VERSION).tar.gz
+
+define Build/Frontend
 	( cd $(PKG_BUILD_DIR)/frontend; \
-		XDG_DATA_HOME=$(TMP_DIR)/pnpm-cache \
-		pnpm install --frozen-lockfile; \
-		XDG_DATA_HOME=$(TMP_DIR)/pnpm-cache \
-		pnpm run build; \
+		if [ ! -f "$(DL_DIR)/$(FRONTEND)" ]; then \
+			XDG_DATA_HOME=$(TMP_DIR)/pnpm-cache \
+				pnpm install --frozen-lockfile; \
+			XDG_DATA_HOME=$(TMP_DIR)/pnpm-cache \
+				pnpm run build; \
+			cd $(PKG_BUILD_DIR) && \
+			$(TAR) -cf $(DL_DIR)/$(FRONTEND) frontend/dist; \
+		else \
+			cd $(PKG_BUILD_DIR) && \
+			$(TAR) -xf $(DL_DIR)/$(FRONTEND); \
+		fi; \
 	)
+endef
+
+define Build/Compile
+	$(call Build/Frontend)
 	$(call Build/Compile/Go)
 endef
 
