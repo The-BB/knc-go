@@ -106,5 +106,5 @@ Package/sing-box-hf/install=$(Package/sing-box/install)
 Package/sing-box-sf/install=$(Package/sing-box/install)
 
 $(eval $(call BuildPackage,sing-box))
-$(eval $(call BuildPackage,sing-box-hf))
+#$(eval $(call BuildPackage,sing-box-hf))
 $(eval $(call BuildPackage,sing-box-sf))
