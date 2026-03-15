@@ -63,16 +63,23 @@ GO_SRC_SUBDIR:=server
 GO_TAGS:=nosqlite
 GO_TARGET:=./cmd
 
-define Build/Web
+FRONTEND:=$(PKG_NAME)-frontend-$(PKG_VERSION).tar.gz
+
+define Build/Frontend
 	( cd $(PKG_BUILD_DIR); \
-		NODE_OPTIONS=--openssl-legacy-provider \
-		$(GO_BIN_RUN) gen_web.go; \
+		if [ ! -f "$(DL_DIR)/$(FRONTEND)" ]; then \
+			NODE_OPTIONS=--openssl-legacy-provider \
+				$(GO_BIN_RUN) gen_web.go; \
+			$(TAR) -cf $(DL_DIR)/$(FRONTEND) web/build; \
+		else \
+			$(TAR) -xf $(DL_DIR)/$(FRONTEND); \
+		fi; \
 	)
 	( cd $(PKG_BUILD_DIR)/server; $(GO_BIN_MOD_TIDY); )
 endef
 
 define Build/Compile
-	$(call Build/Web)
+	$(call Build/Frontend)
 	$(call Build/Compile/Go)
 endef
 
