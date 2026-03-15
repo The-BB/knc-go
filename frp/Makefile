@@ -74,9 +74,40 @@ GO_VARS += GO111MODULE=on
 GO_TAGS:=frpc, frps
 GO_TARGET:=./cmd/frpc ./cmd/frps
 
+FRPC_FRONTEND:=frpc-frontend-$(PKG_VERSION).tar.gz
+FRPS_FRONTEND:=frps-frontend-$(PKG_VERSION).tar.gz
+
+define Build/frpc-frontend
+	( cd $(PKG_BUILD_DIR)/web/frpc; \
+		if [ ! -f "$(DL_DIR)/$(FRPC_FRONTEND)" ]; then \
+			yarn install; \
+			yarn run build; \
+			cd $(PKG_BUILD_DIR) && \
+			$(TAR) -cf $(DL_DIR)/$(FRPC_FRONTEND) web/frpc/dist; \
+		else \
+			cd $(PKG_BUILD_DIR) && \
+			$(TAR) -xf $(DL_DIR)/$(FRPC_FRONTEND); \
+		fi; \
+	)
+endef
+
+define Build/frps-frontend
+	( cd $(PKG_BUILD_DIR)/web/frps; \
+		if [ ! -f "$(DL_DIR)/$(FRPS_FRONTEND)" ]; then \
+			yarn install; \
+			yarn run build; \
+			cd $(PKG_BUILD_DIR) && \
+			$(TAR) -cf $(DL_DIR)/$(FRPS_FRONTEND) web/frps/dist; \
+		else \
+			cd $(PKG_BUILD_DIR) && \
+			$(TAR) -xf $(DL_DIR)/$(FRPS_FRONTEND); \
+		fi; \
+	)
+endef
+
 define Build/Compile
-	( cd $(PKG_BUILD_DIR)/web/frpc; yarn install; yarn run build; )
-	( cd $(PKG_BUILD_DIR)/web/frps; yarn install; yarn run build; )
+	$(call Build/frpc-frontend)
+	$(call Build/frps-frontend)
 	$(call Build/Compile/Go)
 endef
 
