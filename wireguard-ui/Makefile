@@ -67,8 +67,22 @@ GO_LDFLAGS += \
 	-X 'main.gitCommit=$(COMMIT_SHORT)' \
 	-X 'main.gitRef=master'
 
+FRONTEND:=$(PKG_NAME)-frontend-$(PKG_VERSION).tar.gz
+
+define Build/Frontend
+	( cd $(PKG_BUILD_DIR); \
+		if [ ! -f "$(DL_DIR)/$(FRONTEND)" ]; then \
+			$(SHELL) ./prepare_assets.sh; \
+			$(FIND) assets -type f -iname "*.map" -delete; \
+			$(TAR) -cf $(DL_DIR)/$(FRONTEND) assets; \
+		else \
+			$(TAR) -xf $(DL_DIR)/$(FRONTEND); \
+		fi; \
+	)
+endef
+
 define Build/Compile
-	( cd $(PKG_BUILD_DIR); $(SHELL) ./prepare_assets.sh; )
+	$(call Build/Frontend)
 	$(call Build/Compile/Go)
 endef
 
