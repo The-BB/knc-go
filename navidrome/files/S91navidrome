@@ -9,6 +9,4 @@ PROG="/opt/sbin/$PROCS"
 ARGS="-c /opt/etc/$PROCS.toml"
 PREARGS=""
 
-
-
 . /opt/etc/init.d/rc.func
