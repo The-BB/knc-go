@@ -5,13 +5,13 @@
 include $(TOPDIR)/rules.mk
 
 PKG_NAME:=sing-box
-PKG_VERSION:=1.13.7
+PKG_VERSION:=1.13.8
 PKG_RELEASE:=1
 
 PKG_SOURCE_PROTO:=git
 PKG_SOURCE_VERSION:=v$(PKG_VERSION)
 PKG_SOURCE_URL:=https://github.com/SagerNet/sing-box
-PKG_MIRROR_HASH:=85f5f88722007664b35a76ffca1bad34d788d2f591e9a2ed8a60e717abbe3aea
+PKG_MIRROR_HASH:=bebc9be8791eaafe9857c869f7e78244bfefb2ccfd92c2189cf6210c414825e6
 
 PKG_LICENSE:=GPL-3.0-or-later
 PKG_LICENSE_FILES:=LICENSE
@@ -75,6 +75,10 @@ GO_LDFLAGS += \
 
 GO_TARGET:=./cmd/sing-box
 
+ifneq ($(or $(CONFIG_mips),$(CONFIG_mipsel)),y)
+  GO_TAGS_EXT:=,with_naive_outbound,with_purego
+endif
+
 GO_TAGS:= \
 	badlinkname, \
 	tfogo_checklinkname0, \
@@ -85,14 +89,13 @@ GO_TAGS:= \
 	with_embedded_tor, \
 	with_grpc, \
 	with_gvisor, \
-	$(if $(CONFIG_mips),,with_naive_outbound), \
 	with_ocm, \
-	$(if $(CONFIG_mips),,with_purego), \
 	with_quic, \
 	with_tailscale, \
 	with_utls, \
 	with_v2ray_api, \
-	with_wireguard
+	with_wireguard \
+	$(GO_TAGS_EXT)
 
 define Package/sing-box/install
 	$(INSTALL_DIR) $(1)/opt/bin
