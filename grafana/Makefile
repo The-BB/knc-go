@@ -114,6 +114,8 @@ endef
 define Build/Compile
 	$(call Build/Deps)
 	$(call Build/Web)
+	# XXX remove *.map
+	$(FIND) $(PKG_BUILD_DIR) -type f -name "*.map" -delete
 	$(call Build/Compile/Go)
 endef
 
@@ -131,8 +133,6 @@ define Package/grafana/install
 	$(INSTALL_DIR) $(1)/opt/share/grafana/plugins-bundled/internal/input-datasource
 	$(CP) $(PKG_BUILD_DIR)/plugins-bundled/internal/input-datasource/dist/* \
 		$(1)/opt/share/grafana/plugins-bundled/internal/input-datasource
-	# XXX remove *.map
-	$(FIND) $(1)/opt/share/grafana -type f -a -iname "*.map" -delete
 	$(INSTALL_DIR) $(1)/opt/var/lib/grafana/plugins
 	$(INSTALL_DIR) $(1)/opt/var/log/grafana
 endef
