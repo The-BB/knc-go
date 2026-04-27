@@ -84,6 +84,8 @@ define Build/Frontend
 				pnpm install --frozen-lockfile; \
 			XDG_DATA_HOME=$(TMP_DIR)/pnpm-cache \
 				pnpm run build; \
+			$(FIND) dist -type f -name "*.br" -o -name "*.gz" | \
+				$(XARGS) rm -rf; \
 			cd $(PKG_BUILD_DIR) && \
 			$(TAR) -cf $(DL_DIR)/$(FRONTEND) frontend/dist; \
 		else \
