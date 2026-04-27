@@ -78,6 +78,32 @@ GO_LDFLAGS += \
 GO_TAGS:=netgo
 GO_TARGET:=./cmd/alertmanager ./cmd/amtool
 
+FRONTEND:=$(PKG_NAME)-frontend-$(PKG_VERSION).tar.gz
+
+ifeq (,$(wildcard $(DL_DIR)/$(FRONTEND)))
+PKG_BUILD_DEPENDS:=node/host
+endif
+
+define Build/Frontend
+	( cd $(PKG_BUILD_DIR)/ui/app; \
+		if [ ! -f "$(DL_DIR)/$(FRONTEND)" ]; then \
+			npm ci; npm run build; \
+			if [ -d "$(PKG_BUILD_DIR)/ui/app/dist/assets" ]; then \
+				cd $(PKG_BUILD_DIR) && \
+				$(TAR) -cf $(DL_DIR)/$(FRONTEND) ui/app/dist; \
+			fi; \
+		else \
+			cd $(PKG_BUILD_DIR) && \
+			$(TAR) -xf $(DL_DIR)/$(FRONTEND); \
+		fi; \
+	)
+endef
+
+define Build/Compile
+	$(call Build/Frontend)
+	$(call Build/Compile/Go)
+endef
+
 define Package/alertmanager/install
 	$(INSTALL_DIR) $(1)/opt/bin
 	$(INSTALL_BIN) $(PKG_INSTALL_DIR)/bin/{alertmanager,amtool} $(1)/opt/bin
