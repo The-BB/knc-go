@@ -9,7 +9,7 @@ PROG="/opt/sbin/$PROCS"
 { [ -f "/opt/etc/$PROCS/env" ] && . /opt/etc/"$PROCS"/env ; } || \
 { printf "\033[1;31m %s \033[0m\n" "Abort: conf file not found." && exit 1 ; }
 
-pre_cmd() {
+start_pre() {
 #  rm -f /opt/var/run/"$PROCS".sock
   for i in /opt/var/lib/"$PROCS" /opt/var/log/"$PROCS"; do
     [ -d "$i" ] || {
@@ -18,7 +18,7 @@ pre_cmd() {
   done
 }
 
-PRECMD="pre_cmd"
+PRECMD="start_pre"
 ARGS="service run $FLAGS"
 PREARGS=""
 
