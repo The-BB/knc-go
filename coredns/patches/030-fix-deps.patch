@@ -1,0 +1,49 @@
+# github.com/mdlayher/netlink
+../../../../dl/go-mod-cache/github.com/mdlayher/netlink@v1.6.2/conn_linux.go:105:9: too many return values
+	have (int, error)
+	want (error)
+../../../../dl/go-mod-cache/github.com/mdlayher/netlink@v1.6.2/conn_linux.go:105:35: not enough arguments in call to c.s.Sendmsg
+	have ([]byte, nil, *"golang.org/x/sys/unix".SockaddrNetlink, number)
+	want (context.Context, []byte, []byte, "golang.org/x/sys/unix".Sockaddr, int)
+../../../../dl/go-mod-cache/github.com/mdlayher/netlink@v1.6.2/conn_linux.go:116:9: too many return values
+	have (int, error)
+	want (error)
+../../../../dl/go-mod-cache/github.com/mdlayher/netlink@v1.6.2/conn_linux.go:116:33: not enough arguments in call to c.s.Sendmsg
+	have ([]byte, nil, *"golang.org/x/sys/unix".SockaddrNetlink, number)
+	want (context.Context, []byte, []byte, "golang.org/x/sys/unix".Sockaddr, int)
+../../../../dl/go-mod-cache/github.com/mdlayher/netlink@v1.6.2/conn_linux.go:127:42: not enough arguments in call to c.s.Recvmsg
+	have ([]byte, nil, number)
+	want (context.Context, []byte, []byte, int)
+../../../../dl/go-mod-cache/github.com/mdlayher/netlink@v1.6.2/conn_linux.go:142:41: not enough arguments in call to c.s.Recvmsg
+	have ([]byte, nil, number)
+	want (context.Context, []byte, []byte, int)
+
+---
+
+--- a/go.mod
++++ b/go.mod
+@@ -144,7 +144,8 @@ require (
+ 	github.com/linkdata/deadlock v0.5.5 // indirect
+ 	github.com/lufia/plan9stats v0.0.0-20260216142805-b3301c5f2a88 // indirect
+ 	github.com/mailru/easyjson v0.7.7 // indirect
+-	github.com/mdlayher/socket v0.5.1 // indirect
++	github.com/mdlayher/netlink v1.11.2 // indirect
++	github.com/mdlayher/socket v0.6.0 // indirect
+ 	github.com/mdlayher/vsock v1.2.1 // indirect
+ 	github.com/minio/simdjson-go v0.4.5 // indirect
+ 	github.com/mitchellh/go-homedir v1.1.0 // indirect
+--- a/go.sum
++++ b/go.sum
+@@ -267,8 +267,10 @@ github.com/lufia/plan9stats v0.0.0-20260
+ github.com/lufia/plan9stats v0.0.0-20260216142805-b3301c5f2a88/go.mod h1:autxFIvghDt3jPTLoqZ9OZ7s9qTGNAWmYCjVFWPX/zg=
+ github.com/mailru/easyjson v0.7.7 h1:UGYAvKxe3sBsEDzO8ZeWOSlIQfWFlxbzLZe7hwFURr0=
+ github.com/mailru/easyjson v0.7.7/go.mod h1:xzfreul335JAWq5oZzymOObrkdz5UnU4kGfJJLY9Nlc=
+-github.com/mdlayher/socket v0.5.1 h1:VZaqt6RkGkt2OE9l3GcC6nZkqD3xKeQLyfleW/uBcos=
+-github.com/mdlayher/socket v0.5.1/go.mod h1:TjPLHI1UgwEv5J1B5q0zTZq12A/6H7nKmtTanQE37IQ=
++github.com/mdlayher/netlink v1.11.2 h1:HKh2jqe+omdSWcQ88nrT7INE61B0NXfiSPFdgL4YbNI=
++github.com/mdlayher/netlink v1.11.2/go.mod h1:uT2Yc/QLaZubzDpZIBi9d4GoeLwtp3x1AMeqSRrK2sA=
++github.com/mdlayher/socket v0.6.0 h1:ScZPaAGyO1icQnbFrhPM8mnXyMu9qukC1K4ZoM2IQKU=
++github.com/mdlayher/socket v0.6.0/go.mod h1:q7vozUAnxSqnjHc12Fik5yUKIzfZ8ITCfMkhOtE9z18=
+ github.com/mdlayher/vsock v1.2.1 h1:pC1mTJTvjo1r9n9fbm7S1j04rCgCzhCOS5DY0zqHlnQ=
+ github.com/mdlayher/vsock v1.2.1/go.mod h1:NRfCibel++DgeMD8z/hP+PPTjlNJsdPOmxcnENvE+SE=
+ github.com/miekg/dns v1.1.31/go.mod h1:KNUDUusw/aVsxyTYZM1oqvCicbwhgbNgztCETuNZ7xM=

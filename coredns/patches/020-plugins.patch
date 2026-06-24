@@ -8,8 +8,8 @@
 +#geoip:geoip
  cancel:cancel
  tls:tls
- quic:quic
-@@ -39,14 +39,14 @@ trace:trace
+ proxyproto:proxyproto
+@@ -40,14 +40,14 @@ trace:trace
  ready:ready
  health:health
  pprof:pprof
@@ -27,7 +27,7 @@
  loadbalance:loadbalance
  tsig:tsig
  cache:cache
-@@ -59,15 +59,15 @@ minimal:minimal
+@@ -60,15 +60,15 @@ minimal:minimal
  template:template
  transfer:transfer
  hosts:hosts
@@ -47,7 +47,7 @@
  loop:loop
  forward:forward
  grpc:grpc
-@@ -77,3 +77,7 @@ on:github.com/coredns/caddy/onevent
+@@ -78,3 +78,7 @@ on:github.com/coredns/caddy/onevent
  sign:sign
  view:view
  nomad:nomad
