@@ -1,24 +1,21 @@
 --- a/cmd/headscale/cli/dump_config.go
 +++ b/cmd/headscale/cli/dump_config.go
-@@ -13,13 +13,13 @@ func init() {
+@@ -13,10 +13,10 @@ func init() {
  
  var dumpConfigCmd = &cobra.Command{
  	Use:    "dumpConfig",
 -	Short:  "dump current config to /etc/headscale/config.dump.yaml, integration test only",
 +	Short:  "dump current config to /opt/etc/headscale/config.dump.yaml, integration test only",
  	Hidden: true,
- 	Args: func(cmd *cobra.Command, args []string) error {
- 		return nil
- 	},
- 	Run: func(cmd *cobra.Command, args []string) {
+ 	RunE: func(cmd *cobra.Command, args []string) error {
 -		err := viper.WriteConfigAs("/etc/headscale/config.dump.yaml")
 +		err := viper.WriteConfigAs("/opt/etc/headscale/config.dump.yaml")
  		if err != nil {
- 			//nolint
- 			fmt.Println("Failed to dump config")
+ 			return fmt.Errorf("dumping config: %w", err)
+ 		}
 --- a/cmd/headscale/cli/root.go
 +++ b/cmd/headscale/cli/root.go
-@@ -34,7 +34,7 @@ func init() {
+@@ -23,7 +23,7 @@ func init() {
  
  	cobra.OnInitialize(initConfig)
  	rootCmd.PersistentFlags().
@@ -29,7 +26,7 @@
  	rootCmd.PersistentFlags().
 --- a/cmd/headscale/headscale_test.go
 +++ b/cmd/headscale/headscale_test.go
-@@ -39,7 +39,7 @@ func TestConfigFileLoading(t *testing.T)
+@@ -37,7 +37,7 @@ func TestConfigFileLoading(t *testing.T)
  	assert.Equal(t, "127.0.0.1:8080", viper.GetString("listen_addr"))
  	assert.Equal(t, "127.0.0.1:9090", viper.GetString("metrics_listen_addr"))
  	assert.Equal(t, "sqlite", viper.GetString("database.type"))
@@ -38,7 +35,7 @@
  	assert.Empty(t, viper.GetString("tls_letsencrypt_hostname"))
  	assert.Equal(t, ":http", viper.GetString("tls_letsencrypt_listen"))
  	assert.Equal(t, "HTTP-01", viper.GetString("tls_letsencrypt_challenge_type"))
-@@ -71,7 +71,7 @@ func TestConfigLoading(t *testing.T) {
+@@ -67,7 +67,7 @@ func TestConfigLoading(t *testing.T) {
  	assert.Equal(t, "127.0.0.1:8080", viper.GetString("listen_addr"))
  	assert.Equal(t, "127.0.0.1:9090", viper.GetString("metrics_listen_addr"))
  	assert.Equal(t, "sqlite", viper.GetString("database.type"))
@@ -49,9 +46,9 @@
  	assert.Equal(t, "HTTP-01", viper.GetString("tls_letsencrypt_challenge_type"))
 --- a/hscontrol/types/config.go
 +++ b/hscontrol/types/config.go
-@@ -327,9 +327,9 @@ func LoadConfig(path string, isFile bool
- 	} else {
+@@ -380,9 +380,9 @@ func LoadConfig(path string, isFile bool
  		viper.SetConfigName("config")
+ 
  		if path == "" {
 -			viper.AddConfigPath("/etc/headscale/")
 +			viper.AddConfigPath("/opt/etc/headscale/")
@@ -61,7 +58,7 @@
  		} else {
  			// For testing
  			viper.AddConfigPath(path)
-@@ -343,7 +343,7 @@ func LoadConfig(path string, isFile bool
+@@ -396,7 +396,7 @@ func LoadConfig(path string, isFile bool
  
  	viper.SetDefault("policy.mode", "file")
  
@@ -70,7 +67,7 @@
  	viper.SetDefault("tls_letsencrypt_challenge_type", HTTP01ChallengeType)
  
  	viper.SetDefault("log.level", "info")
-@@ -362,7 +362,7 @@ func LoadConfig(path string, isFile bool
+@@ -415,7 +415,7 @@ func LoadConfig(path string, isFile bool
  	viper.SetDefault("derp.server.automatically_add_embedded_derp_region", true)
  	viper.SetDefault("derp.update_frequency", "3h")
  
@@ -111,11 +108,11 @@
 +		"HEADSCALE_PRIVATE_KEY_PATH":                  "/opt/tmp/private.key",
 +		"HEADSCALE_NOISE_PRIVATE_KEY_PATH":            "/opt/tmp/noise_private.key",
  		"HEADSCALE_METRICS_LISTEN_ADDR":               "0.0.0.0:9090",
- 		"HEADSCALE_DERP_URLS":                         "https://controlplane.tailscale.com/derpmap/default",
- 		"HEADSCALE_DERP_AUTO_UPDATE_ENABLED":          "false",
+ 		"HEADSCALE_DEBUG_PORT":                        "40000",
+ 
 --- a/integration/hsic/hsic.go
 +++ b/integration/hsic/hsic.go
-@@ -40,10 +40,10 @@ import (
+@@ -41,10 +41,10 @@ import (
  const (
  	hsicHashLength                = 6
  	dockerContextPath             = "../."
@@ -129,17 +126,8 @@
 +	tlsKeyPath                    = "/opt/etc/headscale/tls.key"
  	headscaleDefaultPort          = 8080
  	IntegrationTestDockerFileName = "Dockerfile.integration"
- )
-@@ -225,7 +225,7 @@ func WithEmbeddedDERPServerOnly() Option
- 		hsic.env["HEADSCALE_DERP_SERVER_REGION_CODE"] = "headscale"
- 		hsic.env["HEADSCALE_DERP_SERVER_REGION_NAME"] = "Headscale Embedded DERP"
- 		hsic.env["HEADSCALE_DERP_SERVER_STUN_LISTEN_ADDR"] = "0.0.0.0:3478"
--		hsic.env["HEADSCALE_DERP_SERVER_PRIVATE_KEY_PATH"] = "/tmp/derp.key"
-+		hsic.env["HEADSCALE_DERP_SERVER_PRIVATE_KEY_PATH"] = "/opt/tmp/derp.key"
- 
- 		// Envknob for enabling DERP debug logs
- 		hsic.env["DERP_DEBUG_LOGS"] = "true"
-@@ -244,10 +244,10 @@ func WithDERPConfig(derpMap tailcfg.DERP
+ 	defaultDirPerm                = 0o755
+@@ -248,10 +248,10 @@ func WithDERPConfig(derpMap tailcfg.DERP
  			return
  		}
  
@@ -152,7 +140,7 @@
  				contents: contents,
  			})
  
-@@ -300,7 +300,7 @@ func (hsic *HeadscaleInContainer) buildE
+@@ -303,7 +303,7 @@ func (hsic *HeadscaleInContainer) buildE
  	commands = append(commands, "while ! ip route show default >/dev/null 2>&1; do sleep 0.1; done")
  
  	// Wait for config.yaml to be written (always written after container start)
@@ -161,7 +149,7 @@
  
  	// If CA certs are configured, wait for them to be written
  	if len(hsic.caCerts) > 0 {
-@@ -312,12 +312,12 @@ func (hsic *HeadscaleInContainer) buildE
+@@ -315,12 +315,12 @@ func (hsic *HeadscaleInContainer) buildE
  	commands = append(commands, "update-ca-certificates")
  
  	// Run headscale serve
@@ -176,8 +164,8 @@
 +	return []string{"/bin/sh", "-c", strings.Join(commands, " ; ")}
  }
  
- // New returns a new HeadscaleInContainer instance.
-@@ -416,8 +416,8 @@ func New(
+ // New returns a new [HeadscaleInContainer] instance.
+@@ -441,8 +441,8 @@ func New(
  
  	env := []string{
  		"HEADSCALE_DEBUG_PROFILING_ENABLED=1",
@@ -188,16 +176,16 @@
  		"HEADSCALE_DEBUG_DEADLOCK=1",
  		"HEADSCALE_DEBUG_DEADLOCK_TIMEOUT=5s",
  		"HEADSCALE_DEBUG_HIGH_CARDINALITY_METRICS=1",
-@@ -570,7 +570,7 @@ func New(
+@@ -596,7 +596,7 @@ func New(
  		}
  	}
  
 -	err = hsic.WriteFile("/etc/headscale/config.yaml", []byte(MinimumConfigYAML()))
 +	err = hsic.WriteFile("/opt/etc/headscale/config.yaml", []byte(MinimumConfigYAML()))
  	if err != nil {
- 		return nil, fmt.Errorf("failed to write headscale config to container: %w", err)
+ 		return nil, fmt.Errorf("writing headscale config to container: %w", err)
  	}
-@@ -622,7 +622,7 @@ func (t *HeadscaleInContainer) hasTLS()
+@@ -649,7 +649,7 @@ func (t *HeadscaleInContainer) hasTLS()
  
  // Shutdown stops and cleans up the Headscale container.
  func (t *HeadscaleInContainer) Shutdown() (string, string, error) {
@@ -205,8 +193,8 @@
 +	stdoutPath, stderrPath, err := t.SaveLog("/opt/tmp/control")
  	if err != nil {
  		log.Printf(
- 			"Failed to save log from control: %s",
-@@ -630,7 +630,7 @@ func (t *HeadscaleInContainer) Shutdown(
+ 			"saving log from control: %s",
+@@ -657,7 +657,7 @@ func (t *HeadscaleInContainer) Shutdown(
  		)
  	}
  
@@ -214,8 +202,8 @@
 +	err = t.SaveMetrics(fmt.Sprintf("/opt/tmp/control/%s_metrics.txt", t.hostname))
  	if err != nil {
  		log.Printf(
- 			"Failed to metrics from control: %s",
-@@ -649,7 +649,7 @@ func (t *HeadscaleInContainer) Shutdown(
+ 			"saving metrics from control: %s",
+@@ -676,7 +676,7 @@ func (t *HeadscaleInContainer) Shutdown(
  		)
  	}
  
@@ -223,8 +211,8 @@
 +	err = t.SaveProfile("/opt/tmp/control")
  	if err != nil {
  		log.Printf(
- 			"Failed to save profile from control: %s",
-@@ -657,7 +657,7 @@ func (t *HeadscaleInContainer) Shutdown(
+ 			"saving profile from control: %s",
+@@ -684,7 +684,7 @@ func (t *HeadscaleInContainer) Shutdown(
  		)
  	}
  
@@ -232,8 +220,8 @@
 +	err = t.SaveMapResponses("/opt/tmp/control")
  	if err != nil {
  		log.Printf(
- 			"Failed to save mapresponses from control: %s",
-@@ -667,7 +667,7 @@ func (t *HeadscaleInContainer) Shutdown(
+ 			"saving mapresponses from control: %s",
+@@ -694,7 +694,7 @@ func (t *HeadscaleInContainer) Shutdown(
  
  	// We dont have a database to save if we use postgres
  	if !t.postgres {
@@ -241,8 +229,8 @@
 +		err = t.SaveDatabase("/opt/tmp/control")
  		if err != nil {
  			log.Printf(
- 				"Failed to save database from control: %s",
-@@ -807,7 +807,7 @@ func extractTarToDirectory(tarData []byt
+ 				"saving database from control: %s",
+@@ -859,7 +859,7 @@ func extractTarToDirectory(tarData []byt
  }
  
  func (t *HeadscaleInContainer) SaveProfile(savePath string) error {
@@ -251,7 +239,7 @@
  	if err != nil {
  		return err
  	}
-@@ -818,7 +818,7 @@ func (t *HeadscaleInContainer) SaveProfi
+@@ -870,7 +870,7 @@ func (t *HeadscaleInContainer) SaveProfi
  }
  
  func (t *HeadscaleInContainer) SaveMapResponses(savePath string) error {
@@ -260,7 +248,7 @@
  	if err != nil {
  		return err
  	}
-@@ -835,7 +835,7 @@ func (t *HeadscaleInContainer) SaveDatab
+@@ -887,7 +887,7 @@ func (t *HeadscaleInContainer) SaveDatab
  	}
  
  	// Also check for any .sqlite files
@@ -269,36 +257,36 @@
  	if err != nil {
  		log.Printf("Warning: could not find sqlite files: %v", err)
  	} else {
-@@ -843,7 +843,7 @@ func (t *HeadscaleInContainer) SaveDatab
+@@ -895,7 +895,7 @@ func (t *HeadscaleInContainer) SaveDatab
  	}
  
  	// Check if the database file exists and has a schema
 -	dbPath := "/tmp/integration_test_db.sqlite3"
 +	dbPath := "/opt/tmp/integration_test_db.sqlite3"
+ 
  	fileInfo, err := t.Execute([]string{"ls", "-la", dbPath})
  	if err != nil {
- 		return fmt.Errorf("database file does not exist at %s: %w", dbPath, err)
-@@ -860,7 +860,7 @@ func (t *HeadscaleInContainer) SaveDatab
- 		return errors.New("database file exists but has no schema (empty database)")
+@@ -914,7 +914,7 @@ func (t *HeadscaleInContainer) SaveDatab
+ 		return errors.New("database file exists but has no schema (empty database)") //nolint:err113
  	}
  
 -	tarFile, err := t.FetchPath("/tmp/integration_test_db.sqlite3")
 +	tarFile, err := t.FetchPath("/opt/tmp/integration_test_db.sqlite3")
  	if err != nil {
- 		return fmt.Errorf("failed to fetch database file: %w", err)
+ 		return fmt.Errorf("fetching database file: %w", err)
  	}
 --- a/integration/tsic/tsic.go
 +++ b/integration/tsic/tsic.go
-@@ -42,7 +42,7 @@ const (
- 	defaultPingTimeout   = 200 * time.Millisecond
+@@ -41,7 +41,7 @@ const (
+ 	tsicHashLength       = 6
  	defaultPingCount     = 5
  	dockerContextPath    = "../."
 -	caCertRoot           = "/usr/local/share/ca-certificates"
 +	caCertRoot           = "/opt/share/ca-certificates"
  	dockerExecuteTimeout = 60 * time.Second
+ 	tailscaleBin         = "tailscale"
  )
- 
-@@ -564,7 +564,7 @@ func New(
+@@ -591,7 +591,7 @@ func New(
  
  // Shutdown stops and cleans up the Tailscale container.
  func (t *TailscaleInContainer) Shutdown() (string, string, error) {
@@ -306,25 +294,25 @@
 +	stdoutPath, stderrPath, err := t.SaveLog("/opt/tmp/control")
  	if err != nil {
  		log.Printf(
- 			"Failed to save log from %s: %s",
-@@ -908,9 +908,9 @@ func (t *TailscaleInContainer) Status(sa
- 		return nil, fmt.Errorf("failed to unmarshal tailscale status: %w", err)
+ 			"saving log from %s: %s",
+@@ -950,9 +950,9 @@ func (t *TailscaleInContainer) Status(sa
+ 		return nil, fmt.Errorf("unmarshalling tailscale status: %w", err)
  	}
  
--	err = os.WriteFile(fmt.Sprintf("/tmp/control/%s_status.json", t.hostname), []byte(result), 0o755)
-+	err = os.WriteFile(fmt.Sprintf("/opt/tmp/control/%s_status.json", t.hostname), []byte(result), 0o755)
+-	err = os.WriteFile(fmt.Sprintf("/tmp/control/%s_status.json", t.hostname), []byte(result), 0o755) //nolint:gosec // test infrastructure log files
++	err = os.WriteFile(fmt.Sprintf("/opt/tmp/control/%s_status.json", t.hostname), []byte(result), 0o755) //nolint:gosec // test infrastructure log files
  	if err != nil {
 -		return nil, fmt.Errorf("status netmap to /tmp/control: %w", err)
 +		return nil, fmt.Errorf("status netmap to /opt/tmp/control: %w", err)
  	}
  
  	return &status, err
-@@ -968,9 +968,9 @@ func (t *TailscaleInContainer) Netmap()
- 		return nil, fmt.Errorf("failed to unmarshal tailscale netmap: %w", err)
+@@ -1010,9 +1010,9 @@ func (t *TailscaleInContainer) Netmap()
+ 		return nil, fmt.Errorf("unmarshalling tailscale netmap: %w", err)
  	}
  
--	err = os.WriteFile(fmt.Sprintf("/tmp/control/%s_netmap.json", t.hostname), []byte(result), 0o755)
-+	err = os.WriteFile(fmt.Sprintf("/opt/tmp/control/%s_netmap.json", t.hostname), []byte(result), 0o755)
+-	err = os.WriteFile(fmt.Sprintf("/tmp/control/%s_netmap.json", t.hostname), []byte(result), 0o755) //nolint:gosec // test infrastructure log files
++	err = os.WriteFile(fmt.Sprintf("/opt/tmp/control/%s_netmap.json", t.hostname), []byte(result), 0o755) //nolint:gosec // test infrastructure log files
  	if err != nil {
 -		return nil, fmt.Errorf("saving netmap to /tmp/control: %w", err)
 +		return nil, fmt.Errorf("saving netmap to /opt/tmp/control: %w", err)
