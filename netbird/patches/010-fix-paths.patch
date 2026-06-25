@@ -1,8 +1,8 @@
 --- a/client/cmd/root.go
 +++ b/client/cmd/root.go
-@@ -102,11 +102,11 @@ func Execute() error {
- }
- 
+@@ -116,11 +116,11 @@ func Execute() error {
+ // maps, custom DNS resolver address, Rosenpass options, auto-connect
+ // disabling, lazy connection).
  func init() {
 -	defaultConfigPathDir = "/etc/netbird/"
 -	defaultLogFileDir = "/var/log/netbird/"
@@ -16,7 +16,7 @@
  
  	switch runtime.GOOS {
  	case "windows":
-@@ -125,7 +125,7 @@ func init() {
+@@ -139,7 +139,7 @@ func init() {
  	oldDefaultConfigPath = oldDefaultConfigPathDir + "config.json"
  	oldDefaultLogFile = oldDefaultLogFileDir + "client.log"
  
@@ -49,7 +49,7 @@
  		}
 --- a/client/internal/debug/debug.go
 +++ b/client/internal/debug/debug.go
-@@ -217,8 +217,8 @@ const (
+@@ -232,8 +232,8 @@ const (
  	errorLogFile  = "netbird.err"
  	stdoutLogFile = "netbird.out"
  
@@ -62,7 +62,7 @@
  // MetricsExporter is an interface for exporting metrics
 --- a/client/internal/profilemanager/service.go
 +++ b/client/internal/profilemanager/service.go
-@@ -31,8 +31,8 @@ var (
+@@ -63,8 +63,8 @@ func (e *ErrAmbiguousHandle) Error() str
  
  func init() {
  
@@ -86,7 +86,7 @@
  	ipv4ForwardingPath = "net.ipv4.ip_forward"
 --- a/client/ssh/client/client.go
 +++ b/client/ssh/client/client.go
-@@ -29,7 +29,7 @@ import (
+@@ -30,7 +30,7 @@ import (
  
  const (
  	// DefaultDaemonAddr is the default address for the NetBird daemon
@@ -95,7 +95,7 @@
  	// DefaultDaemonAddrWindows is the default address for the NetBird daemon on Windows
  	DefaultDaemonAddrWindows = "tcp://127.0.0.1:41731"
  )
-@@ -442,8 +442,8 @@ func getKnownHostsFiles() []string {
+@@ -443,8 +443,8 @@ func getKnownHostsFiles() []string {
  		netbirdKnownHosts := filepath.Join(programData, "ssh", "ssh_known_hosts.d", "99-netbird")
  		files = append(files, netbirdKnownHosts)
  	} else {
@@ -169,7 +169,7 @@
  	defer file.Close()
 --- a/client/ui/client_ui.go
 +++ b/client/ui/client_ui.go
-@@ -146,7 +146,7 @@ type cliFlags struct {
+@@ -161,7 +161,7 @@ type cliFlags struct {
  func parseFlags() *cliFlags {
  	var flags cliFlags
  
@@ -180,7 +180,7 @@
  	}
 --- a/combined/cmd/config.go
 +++ b/combined/cmd/config.go
-@@ -194,7 +194,7 @@ func DefaultConfig() *CombinedConfig {
+@@ -201,7 +201,7 @@ func DefaultConfig() *CombinedConfig {
  			LogLevel:           "info",
  			LogFile:            "console",
  			StunPorts:          []int{3478},
@@ -189,7 +189,7 @@
  			Auth: AuthConfig{
  				Storage: AuthStorageConfig{
  					Type: "sqlite3",
-@@ -216,7 +216,7 @@ func DefaultConfig() *CombinedConfig {
+@@ -223,7 +223,7 @@ func DefaultConfig() *CombinedConfig {
  			// LogLevel inherited from Server.LogLevel via ApplySimplifiedDefaults
  		},
  		Management: ManagementConfig{
@@ -198,7 +198,7 @@
  			Auth: AuthConfig{
  				Storage: AuthStorageConfig{
  					Type: "sqlite3",
-@@ -337,7 +337,7 @@ func (c *CombinedConfig) applyManagement
+@@ -344,7 +344,7 @@ func (c *CombinedConfig) applyManagement
  	if c.Management.LogLevel == "" {
  		c.Management.LogLevel = c.Server.LogLevel
  	}
